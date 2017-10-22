@@ -3,6 +3,7 @@
 
 from setuptools import setup, find_packages
 import os
+import re
 import subprocess
 
 name = 'pyfritzhome'
@@ -17,9 +18,9 @@ try:
 except (OSError, subprocess.CalledProcessError, IOError) as e:
     try:
         with open(version_py, 'r') as f:
-            d = dict()
-            exec(f, d)
-            version = d['__version__']
+            for line in f.readlines():
+                val = re.findall("__version__ = '([^']+)'", line)
+            version = val[0]
     except IOError:
         version = 'unknown'
 
