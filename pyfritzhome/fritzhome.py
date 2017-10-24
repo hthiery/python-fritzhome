@@ -41,13 +41,15 @@ class Fritzhome(object):
         rsp.raise_for_status()
         return rsp.text.strip()
 
-    def _login_request(self, username=None, secret=None, timeout=10):
+    def _login_request(self, username=None, secret=None, cmd=None, timeout=10):
         url = 'http://' + self._host + '/login_sid.lua'
         params = {}
         if username:
             params['username'] = username
         if secret:
             params['response'] = secret
+        if cmd:
+            params['response'] = cmd
 
         plain = self._request(url, params, timeout)
         dom = xml.dom.minidom.parseString(plain)
@@ -56,13 +58,20 @@ class Fritzhome(object):
 
         return (sid, challenge)
 
+    def _logout_request(self, timeout=10):
+        _LOGGER.info('logout')
+        url = 'http://' + self._host + '/login_sid.lua'
+        params = {
+            'security:command/logout': '121424',
+            'sid': self._sid
+        }
+
+        plain = self._request(url, params, timeout)
+
     def _create_login_secret(self, challenge, password):
         to_hash = (challenge + '-' + password).encode('UTF-16LE')
         hashed = hashlib.md5(to_hash).hexdigest()
         return '{0}-{1}'.format(challenge, hashed)
-
-#    def _haq_request(self, cmd, ain=None, param=None):
-#        url = 'http://' + self._host + '/net/home_auto_query.lua'
 
     def _aha_request(self, cmd, ain=None, param=None):
         url = 'http://' + self._host + '/webservices/homeautoswitch.lua'
@@ -76,14 +85,12 @@ class Fritzhome(object):
             params['ain'] = ain
 
         plain = self._request(url, params)
-        _LOGGER.info("plain=%s", plain)
         if plain == 'inval':
             raise InvalidError
         return plain
 
     def login(self, retry=3):
         (sid, challenge) = self._login_request()
-        _LOGGER.debug("sid=%s challenge", (sid, challenge))
         if sid == '0000000000000000':
             secret = self._create_login_secret(challenge, self._password)
             (sid2, challenge) = self._login_request(
@@ -92,10 +99,9 @@ class Fritzhome(object):
                 _LOGGER.warning("login failed %s", sid2)
                 raise LoginError(self._user)
         self._sid = sid2
-        _LOGGER.info("login")
 
     def logout(self):
-        pass
+        self._logout_request()
 
     def get_devices(self):
         """Get the list of all known devices."""

@@ -120,7 +120,7 @@ def main(args=None):
     if args.verbose:
         logging.getLogger('pyfritzhome').setLevel(logging.DEBUG)
 
-    fritz = None
+    fritzbox = None
     rv = 0
     try:
         fritzbox = Fritzhome(host=args.host, user=args.user,
@@ -128,8 +128,8 @@ def main(args=None):
         fritzbox.login()
         args.func(fritzbox, args)
     finally:
-        if fritz is not None:
-            fritz.logout()
+        if fritzbox is not None:
+            fritzbox.logout()
 
     return rv
 
