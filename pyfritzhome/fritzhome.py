@@ -155,11 +155,11 @@ class Fritzhome(object):
 
     def get_switch_power(self, ain):
         plain = self._aha_request('getswitchpower', ain=ain)
-        return plain
+        return int(plain)
 
     def get_switch_energy(self, ain):
         plain = self._aha_request('getswitchenergy', ain=ain)
-        return plain
+        return int(plain)
 
     def get_temperature(self, ain):
         plain = self._aha_request('gettemperature', ain=ain)
