@@ -1,7 +1,7 @@
 Python Library to access AVM Fritz!Box homeautomation
 =====================================================
 
-|BuildStatus| |Coveralls| |CodeClimate|
+|BuildStatus| |PypiVersion| |Coveralls| |CodeClimate|
 
 Tested Devices
 --------------
@@ -11,11 +11,13 @@ Tested Devices
 
 .. |BuildStatus| image:: https://travis-ci.org/hthiery/python-fritzhome.png?branch=master
                  :target: https://travis-ci.org/hthiery/python-fritzhome
+.. |PyPiVersion| image:: https://badge.fury.io/py/pyfritzhome.svg
+                 :target: http://badge.fury.io/py/pyfritzhome
+.. |Coveralls|   image:: https://coveralls.io/repos/github/hthiery/python-fritzhome/badge.svg?branch=master
+                 :target: https://coveralls.io/github/hthiery/python-fritzhome?branch=master
 .. |CodeClimate| image:: https://api.codeclimate.com/v1/badges/fc83491ef0ae81080882/maintainability
 				 :target: https://codeclimate.com/github/hthiery/python-fritzhome/maintainability
 				 :alt: Maintainability
-.. |Coveralls|   image:: https://coveralls.io/repos/github/hthiery/python-fritzhome/badge.svg?branch=master
-                 :target: https://coveralls.io/github/hthiery/python-fritzhome?branch=master
 
 .. _Comet DECT: https://www.eurotronic.org/produkte/comet-dect.html
 .. _FRITZ!DECT 200: https://avm.de/produkte/fritzdect/fritzdect-200/
