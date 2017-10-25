@@ -26,9 +26,9 @@ def list_all(fritz, args):
         if device.has_temperature_sensor:
             print("temperature=%f" % device.get_temperature())
         if device.has_thermostat:
-            print("soll=%s" % device.get_soll_temperature())
-            print("komfort=%s" % device.get_komfort_temperature())
-            print("absenk=%s" % device.get_absenk_temperature())
+            print("target=%s" % device.get_target_temperature())
+            print("comfort=%s" % device.get_comfort_temperature())
+            print("eco=%s" % device.get_eco_temperature())
 
 def device_name(fritz, args):
     """Command that prints the device name."""

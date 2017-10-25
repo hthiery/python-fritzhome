@@ -88,7 +88,7 @@ class Fritzhome(object):
             'sid': self._sid
         }
         if param:
-            params['params'] = param
+            params['param'] = param
         if ain:
             params['ain'] = ain
 
@@ -164,6 +164,31 @@ class Fritzhome(object):
     def get_temperature(self, ain):
         plain = self._aha_request('gettemperature', ain=ain)
         return float(int(plain) / 10.0)
+
+    def get_target_temperature(self, ain):
+        plain = self._aha_request('gethkrtsoll', ain=ain)
+        return ((float(plain) - 16) / 2 + 8)
+
+    def set_target_temperature(self, ain, temperature):
+        TEMPERATE_OFF = 253
+        TEMPERATE_ON = 254
+
+        param = 16 + ((temperature - 8) * 2)
+
+        r = range(16, 56)
+        if param < r[0]:
+            param = 253
+        elif param > r[-1]:
+            param = 254
+        plain = self._aha_request('sethkrsoll', ain=ain, param=int(param))
+
+    def get_comfort_temperature(self, ain):
+        plain = self._aha_request('gethkrkomfort', ain=ain)
+        return ((float(plain) - 16) / 2 + 8)
+
+    def get_eco_temperature(self, ain):
+        plain = self._aha_request('gethkrabsenk', ain=ain)
+        return ((float(plain) - 16) / 2 + 8)
 
     def get_soll_temperature(self, ain):
         plain = self._aha_request('gethkrtsoll', ain=ain)
@@ -265,18 +290,30 @@ class Device(object):
     def get_temperature(self):
         return self._fritz.get_temperature(self.ain)
 
+    def get_target_temperature(self):
+        return self._fritz.get_target_temperature(self.ain)
+
+    def set_target_temperature(self, temperature):
+        return self._fritz.set_target_temperature(self, self.ain, temperature)
+
+    def get_comfort_temperature(self):
+        return self._fritz.get_comfort_temperature(self.ain)
+
+    def get_eco_temperature(self):
+        return self._fritz.get_eco_temperature(self.ain)
+
+    # these will be removed
     def get_soll_temperature(self):
-        return self._fritz.get_soll_temperature(self.ain)
+        return self._fritz.get_target_temperature(self.ain)
 
     def set_soll_temperature(self, temperature):
-        return self._fritz.set_soll_temperature(self, self.ain, temperature)
+        return self._fritz.set_target_temperature(self, self.ain, temperature)
 
     def get_komfort_temperature(self):
-        return self._fritz.get_komfort_temperature(self.ain)
+        return self._fritz.get_comfort_temperature(self.ain)
 
     def get_absenk_temperature(self):
-        return self._fritz.get_absenk_temperature(self.ain)
-
+        return self._fritz.get_eco_temperature(self.ain)
 
 class Alarm(Device):
     def __init__(self, node=None):
