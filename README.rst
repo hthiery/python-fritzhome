@@ -9,6 +9,43 @@ Tested Devices
 * `FRITZ!DECT 200`_ with firmware 03.87
 * `Comet DECT`_ with firmware 03.54
 
+
+fritzhome CLI tool
+------------------
+
+You have to add a user with the rights to access the smarthome actors.
+
+In the fritzbox webinterface under "System -> FRITZ!Box-Benutzer" you can
+add a new user.
+
+.. code:: shell
+
+    $ fritzhome -f fritz.box  -u smarthome -p smarthome  list
+    #############
+    ain=11959 0171328
+    id=16
+    name=Badezimmer
+    productname=Comet DECT
+    manufacturer=AVM
+    present=True
+    temperature=21.000000
+    soll=22.0
+    komfort=22.0
+    absenk=19.0
+    #############
+    ain=08761 0045657
+    id=17
+    name=FRITZ!DECT 200 #2
+    productname=FRITZ!DECT 200
+    manufacturer=AVM
+    present=True
+    switch_state=True
+    switch_power=0
+    switch_energy=88863
+    temperature=21.000000
+
+
+
 .. |BuildStatus| image:: https://travis-ci.org/hthiery/python-fritzhome.png?branch=master
                  :target: https://travis-ci.org/hthiery/python-fritzhome
 .. |PyPiVersion| image:: https://badge.fury.io/py/pyfritzhome.svg
