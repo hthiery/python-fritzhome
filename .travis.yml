@@ -1,26 +1,23 @@
 sudo: false
 language: python
 python:
-  - '2.7'
-  - '3.4'
-  - '3.5'
+- '2.7'
+- '3.4'
+- '3.5'
 install:
-  - pip install python-coveralls
-  - pip install coverage
-  - pip install nose
-  - pip install future
-
+- pip install python-coveralls
+- pip install coverage
+- pip install nose
+- pip install future
 script:
-  - python setup.py install
-  - nosetests --with-coverage
-
+- python setup.py install
+- nosetests --with-coverage
 after_success:
-  - coveralls
-
+- coveralls
 deploy:
   provider: pypi
   user: hthiery
   password:
-    secure: IA/s6+ya7hyOJTY8JDWl+qYzR7ulM/T93rWXEya4ZtaFuIO5isw5Yw8GLZABANZCTfvG16WaY1ojTc0CNuKh8Wdbw7J4csz5s0l2ZkN7Y7iOCmCmHz8Mz/zKUJa48CpQIFrWL82/iMFMxfCyjouwA5HF3rbfGTmVHFWRBDW7jjNmSwsp1oMaN1C6qGmNvYrDoEbfMoTLtU8Jt0z88chc5fKs7v5QAbwuUDDNIi2/Wj8gXbz80jjq+jdAYl78dQ2TWcw+SlsJE0LdUsWg/J3VomPc0ajsP5AztU3UK1lGL+BAXqMZab6Xwn0t9MhFUev3BEAJPwsIxsX+sgzN7O2Dgm4dEG4+Vpy3vm1A4u7VCnHR1/jyiEv7fWVrye2bzuXISySu+iQDwJET7Y9bSYnLDVlO6uVQXbGkP43ZTu8Ph7fjGCue+/OiCLK6Auy7Li+VPTmOCIyzrQY0HfTX4n6RrAsaj6DgGtS6GWAVEdPwyMKWv/wTkriK0nrPXI6D5adlactkmirkOe5qAnzOf2e/YsWx3ySBvesvsA3b2J+znjpcPNDDvhZ5h9QIBeNpkv1YQO6tAXGKr0aliCZBdBo3Ucok2EZl/v1/zRiaHl4/xGlNpFrBpLvbWAaYbJn2Dx6YNDKQIVSvay8s+1/GMnWI+jHtMAj5E2cXS5u48XM7sWA=
+    secure: kYpBY2oQ4IyYO+sqrMqhlprqO83VEwWeG3fJm54LKhCtA0sZPT4Puq0VZzeLgnDX808Ym7I+zBL98YEZArEs6s6tkrQ8EODhV5nAoPIwLRE70deJrpPel2XFpYTTdcMuvrJog7LypYtE7TQkzZwIXFSEKUT5TBR7dTwKJa4qd7FQDQKvbl409B7uVesMGFZdAtA5lvKQvna8Q2Oobq3UmmE2GfvSwJ5BsdZ0w3iRsioxQBJ5aCJYAJvP2fKUROE0ScEw1zbFWIxaD78c99d843ncMGaUo87hpVF8nWv0QvPgW4wt+RDbO41KRefckUjrJl2lGpzsKhNgME9V8GngM0iCTR+0uTnZswafdmoXTPsTfrYJcDen44fLrpaCl8jOmvjDInukM/WmqGNKK3zoL18j9pps9XBiNlhj2EIDdEJJmP6xua9ER5mc69rYw234NFk4tgQmYxGzuKOlSHbbmun0jlwTf82wUwvhRXcaPSIRg9p1pZsopnNWKaQOynbIG6l8AEf1S45WJvRj5Z71i4fX0eNzV6yYYAOp9ZuO5oiWbt1P7muLRQOtrQBEizda1j4f+7FDHHftHLGvvhBawtla5C4uv1418NxcftoEK2+52HrhrZVr1wRwgIAij5Ri994GRrab3pRRVhOpVOXMjBMG/WkwRHyOaJYl+Ytavds=
   on:
     tags: true
