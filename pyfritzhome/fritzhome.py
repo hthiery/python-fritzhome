@@ -169,6 +169,9 @@ class Fritzhome(object):
         plain = self._aha_request('gethkrtsoll', ain=ain)
         return ((float(plain) - 16) / 2 + 8)
 
+    def set_soll_temperature(self, ain, temperature):
+        plain = self._aha_request('sethkrsoll', ain=ain, param=temperature)
+
     def get_komfort_temperature(self, ain):
         plain = self._aha_request('gethkrkomfort', ain=ain)
         return ((float(plain) - 16) / 2 + 8)
@@ -237,39 +240,42 @@ class Device(object):
         return bool(self._functionsbitmask & self.DECT_REPEATER_MASK)
 
     def get_present(self):
-        return self._fritz.get_device_present(ain=self.ain)
+        return self._fritz.get_device_present(self.ain)
 
 
     def get_switch_state(self):
-        return self._fritz.get_switch_state(ain=self.ain)
+        return self._fritz.get_switch_state(self.ain)
 
     def set_switch_state_on(self):
-        return self._fritz.set_switch_state_on(ain=self.ain)
+        return self._fritz.set_switch_state_on(self.ain)
 
     def set_switch_state_off(self):
-        return self._fritz.set_switch_state_off(ain=self.ain)
+        return self._fritz.set_switch_state_off(self.ain)
 
     def set_switch_state_toggle(self):
-        return self._fritz.set_switch_state_toggle(ain=self.ain)
+        return self._fritz.set_switch_state_toggle(self.ain)
 
     def get_switch_power(self):
-        return self._fritz.get_switch_power(ain=self.ain)
+        return self._fritz.get_switch_power(self.ain)
 
     def get_switch_energy(self):
-        return self._fritz.get_switch_energy(ain=self.ain)
+        return self._fritz.get_switch_energy(self.ain)
 
 
     def get_temperature(self):
-        return self._fritz.get_temperature(ain=self.ain)
+        return self._fritz.get_temperature(self.ain)
 
     def get_soll_temperature(self):
-        return self._fritz.get_soll_temperature(ain=self.ain)
+        return self._fritz.get_soll_temperature(self.ain)
+
+    def set_soll_temperature(self, temperature):
+        return self._fritz.set_soll_temperature(self, self.ain, temperature)
 
     def get_komfort_temperature(self):
-        return self._fritz.get_komfort_temperature(ain=self.ain)
+        return self._fritz.get_komfort_temperature(self.ain)
 
     def get_absenk_temperature(self):
-        return self._fritz.get_absenk_temperature(ain=self.ain)
+        return self._fritz.get_absenk_temperature(self.ain)
 
 
 class Alarm(Device):
