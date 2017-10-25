@@ -13,22 +13,26 @@ def list_all(fritz, args):
 
     for device in devices:
         print('#############')
-        print('ain=%s' % device.ain)
-        print('id=%s' % device.id)
         print('name=%s' % device.name)
-        print('productname=%s' % device.productname)
-        print('manufacturer=%s' % device.manufacturer)
-        print("present=%s" % device.get_present())
+        print('  productname=%s' % device.productname)
+        print('  manufacturer=%s' % device.manufacturer)
+        print('  ain=%s' % device.ain)
+        print('  id=%s' % device.id)
+        print('  fw=%s' % device.fw_version)
+        print("  present=%s" % device.get_present())
+
         if device.has_switch:
-            print("switch_state=%s" % device.get_switch_state())
-            print("switch_power=%s" % device.get_switch_power())
-            print("switch_energy=%s" % device.get_switch_energy())
+            print("  switch_state=%s" % device.get_switch_state())
+            print("  switch_power=%s" % device.get_switch_power())
+            print("  switch_energy=%s" % device.get_switch_energy())
+
         if device.has_temperature_sensor:
-            print("temperature=%f" % device.get_temperature())
+            print("  temperature=%f" % device.get_temperature())
+
         if device.has_thermostat:
-            print("target=%s" % device.get_target_temperature())
-            print("comfort=%s" % device.get_comfort_temperature())
-            print("eco=%s" % device.get_eco_temperature())
+            print("  target=%s" % device.get_target_temperature())
+            print("  comfort=%s" % device.get_comfort_temperature())
+            print("  eco=%s" % device.get_eco_temperature())
 
 def device_name(fritz, args):
     """Command that prints the device name."""

@@ -190,21 +190,6 @@ class Fritzhome(object):
         plain = self._aha_request('gethkrabsenk', ain=ain)
         return ((float(plain) - 16) / 2 + 8)
 
-    def get_soll_temperature(self, ain):
-        plain = self._aha_request('gethkrtsoll', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
-
-    def set_soll_temperature(self, ain, temperature):
-        plain = self._aha_request('sethkrsoll', ain=ain, param=temperature)
-
-    def get_komfort_temperature(self, ain):
-        plain = self._aha_request('gethkrkomfort', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
-
-    def get_absenk_temperature(self, ain):
-        plain = self._aha_request('gethkrabsenk', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
-
 
 class Device(object):
 
@@ -302,18 +287,6 @@ class Device(object):
     def get_eco_temperature(self):
         return self._fritz.get_eco_temperature(self.ain)
 
-    # these will be removed
-    def get_soll_temperature(self):
-        return self._fritz.get_target_temperature(self.ain)
-
-    def set_soll_temperature(self, temperature):
-        return self._fritz.set_target_temperature(self, self.ain, temperature)
-
-    def get_komfort_temperature(self):
-        return self._fritz.get_comfort_temperature(self.ain)
-
-    def get_absenk_temperature(self):
-        return self._fritz.get_eco_temperature(self.ain)
 
 class Alarm(Device):
     def __init__(self, node=None):
