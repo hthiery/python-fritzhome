@@ -100,11 +100,29 @@ class TestFritzhome(object):
         fritz._request = mock
 
         eq_(fritz.get_device_name(ain='1234'), 'testname')
-#        fritz._request.assert_called_once_with(
-#            'http://10.0.0.1/webservices/homeautoswitch.lua',
-#            params = {
-#                'switchcmd': 'getswitchname',
-#                'sid': None,
-#            }
-#        )
 
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'sid': None, 'ain': '1234', 'switchcmd': 'getswitchname'})
+
+
+    def test_set_target_temperature(self):
+        mock = MagicMock()
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+
+        fritz.set_target_temperature('1', 25.5)
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrsoll', 'param': 51})
+
+        fritz.set_target_temperature('1', 0.0)
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrsoll', 'param': 253})
+
+        fritz.set_target_temperature('1', 32.0)
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrsoll', 'param': 254})
