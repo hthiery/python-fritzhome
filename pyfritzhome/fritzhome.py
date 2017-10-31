@@ -10,9 +10,10 @@ import hashlib
 import logging
 import xml.dom.minidom
 
+from .errors import (InvalidError, LoginError)
+
 _LOGGER = logging.getLogger(__name__)
 
-from .errors import (InvalidError, LoginError)
 
 def get_text(nodelist):
     """Get the value from a text node."""
@@ -21,6 +22,7 @@ def get_text(nodelist):
         if node.nodeType == node.TEXT_NODE:
             value.append(node.data)
     return ''.join(value)
+
 
 def get_node_value(node, name):
     return get_text(node.getElementsByTagName(name)[0].childNodes)
@@ -170,9 +172,6 @@ class Fritzhome(object):
         return ((float(plain) - 16) / 2 + 8)
 
     def set_target_temperature(self, ain, temperature):
-        TEMPERATE_OFF = 253
-        TEMPERATE_ON = 254
-
         param = 16 + ((temperature - 8) * 2)
 
         r = range(16, 56)
@@ -180,7 +179,7 @@ class Fritzhome(object):
             param = 253
         elif param > r[-1]:
             param = 254
-        plain = self._aha_request('sethkrsoll', ain=ain, param=int(param))
+        self._aha_request('sethkrsoll', ain=ain, param=int(param))
 
     def get_comfort_temperature(self, ain):
         plain = self._aha_request('gethkrkomfort', ain=ain)
@@ -195,7 +194,7 @@ class Fritzhome(object):
         return ((float(plain) - 16) / 2 + 8)
 
     def set_soll_temperature(self, ain, temperature):
-        plain = self._aha_request('sethkrsoll', ain=ain, param=temperature)
+        self._aha_request('sethkrsoll', ain=ain, param=temperature)
 
     def get_komfort_temperature(self, ain):
         plain = self._aha_request('gethkrkomfort', ain=ain)
@@ -267,7 +266,6 @@ class Device(object):
     def get_present(self):
         return self._fritz.get_device_present(self.ain)
 
-
     def get_switch_state(self):
         return self._fritz.get_switch_state(self.ain)
 
@@ -285,7 +283,6 @@ class Device(object):
 
     def get_switch_energy(self):
         return self._fritz.get_switch_energy(self.ain)
-
 
     def get_temperature(self):
         return self._fritz.get_temperature(self.ain)
@@ -315,17 +312,21 @@ class Device(object):
     def get_absenk_temperature(self):
         return self._fritz.get_eco_temperature(self.ain)
 
+
 class Alarm(Device):
     def __init__(self, node=None):
         raise NotImplemented
+
 
 class Thermostat(Device):
     def __init__(self, node=None):
         raise NotImplemented
 
+
 class Switch(Device):
     def __init__(self, node=None):
         raise NotImplemented
+
 
 class Repeater(Device):
     def __init__(self, node=None):
