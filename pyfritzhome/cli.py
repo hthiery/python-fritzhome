@@ -30,29 +30,36 @@ def list_all(fritz, args):
             print("comfort=%s" % device.get_comfort_temperature())
             print("eco=%s" % device.get_eco_temperature())
 
+
 def device_name(fritz, args):
     """Command that prints the device name."""
     print(fritz.get_actor_name(args.ain))
+
 
 def device_presence(fritz, args):
     """Command that prints the device presence."""
     print(int(fritz.get_actor_present(args.ain)))
 
+
 def switch_get(fritz, args):
     """Command that get the device switch state."""
     print(fritz.get_switch_state(args.ain))
+
 
 def switch_on(fritz, args):
     """Command that set the device switch state to on."""
     fritz.set_switch_state_on(args.ain)
 
+
 def switch_off(fritz, args):
     """Command that set the device switch state to off."""
     fritz.set_switch_state_off(args.ain)
 
+
 def switch_toggle(fritz, args):
     """Command that toggles the device switch state."""
     fritz.set_switch_state_toggle(args.ain)
+
 
 def main(args=None):
     """The main function."""
@@ -120,7 +127,6 @@ def main(args=None):
                            help='Actor Identification')
     subparser.set_defaults(func=switch_toggle)
 
-
     args = parser.parse_args(args)
 
     logging.basicConfig()
@@ -136,6 +142,7 @@ def main(args=None):
     finally:
         if fritzbox is not None:
             fritzbox.logout()
+
 
 if __name__ == '__main__':
     main()
