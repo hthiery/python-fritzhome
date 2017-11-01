@@ -18,17 +18,18 @@ def list_all(fritz, args):
         print('name=%s' % device.name)
         print('productname=%s' % device.productname)
         print('manufacturer=%s' % device.manufacturer)
-        print("present=%s" % device.get_present())
-        if device.has_switch:
-            print("switch_state=%s" % device.get_switch_state())
-            print("switch_power=%s" % device.get_switch_power())
-            print("switch_energy=%s" % device.get_switch_energy())
-        if device.has_temperature_sensor:
-            print("temperature=%f" % device.get_temperature())
+#        print("present=%s" % device.get_present())
+#        if device.has_switch:
+#            print("switch_state=%s" % device.get_switch_state())
+#            print("switch_power=%s" % device.get_switch_power())
+#            print("switch_energy=%s" % device.get_switch_energy())
+#        if device.has_temperature_sensor:
+#            print("temperature=%f" % device.get_temperature())
         if device.has_thermostat:
-            print("target=%s" % device.get_target_temperature())
-            print("comfort=%s" % device.get_comfort_temperature())
-            print("eco=%s" % device.get_eco_temperature())
+            print("battery_low=%s" % device.battery_low)
+            print("target=%s" % device.target_temperature)
+            print("comfort=%s" % device.comfort_temperature)
+            print("eco=%s" % device.eco_temperature)
 
 
 def device_name(fritz, args):

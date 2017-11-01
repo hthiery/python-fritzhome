@@ -6,14 +6,18 @@ from mock import MagicMock
 from requests import Response
 from pyfritzhome import (Fritzhome, LoginError)
 
+from .elements import (device_list_xml, login_rsp_without_valid_sid,
+                       login_rsp_with_valid_sid)
+
+
 class TestFritzhome(object):
 
     @raises(LoginError)
     def test_login_fail(self):
         mock = MagicMock()
         mock.side_effect = [
-            '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000000</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>',
-            '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000000</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>',
+            login_rsp_without_valid_sid,
+            login_rsp_without_valid_sid,
         ]
 
         fritz = Fritzhome('10.0.0.1', 'user', 'pass')
@@ -24,67 +28,40 @@ class TestFritzhome(object):
 
         mock = MagicMock()
         mock.side_effect = [
-            '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000000</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>',
-            '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000001</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>',
+            login_rsp_without_valid_sid,
+            login_rsp_with_valid_sid,
         ]
 
         fritz = Fritzhome('10.0.0.1', 'user', 'pass')
         fritz._request = mock
         fritz.login()
+
+    def test_get_device_element(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_list_xml,
+            device_list_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        elements = fritz.get_device_element('08761 0000434')
+        eq_(elements.getAttribute('identifier'), '08761 0000434')
+        eq_(elements.getAttribute('fwversion'), '03.33')
+
+        elements = fritz.get_device_element('08761 1048079')
+        eq_(elements.getAttribute('identifier'), '08761 1048079')
+        eq_(elements.getAttribute('fwversion'), '03.44')
 
     def test_aha_get_devices(self):
 
         mock = MagicMock()
         mock.side_effect = [
-            '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000000</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>',
-            '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000001</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>',
-"""<devicelist version="1">
-    <device identifier="08761 0000434" id="17" functionbitmask="896" fwversion="03.33" manufacturer="AVM" productname="FRITZ!DECT 200">
-        <present>1</present>
-        <name>Steckdose</name>
-        <switch>
-            <state>1</state>
-            <mode>auto</mode>
-            <lock>0</lock>
-            <devicelock>0</devicelock>
-        </switch>
-        <powermeter>
-            <power>0</power>
-            <energy>707</energy>
-        </powermeter>
-        <temperature>
-            <celsius>285</celsius>
-            <offset>0</offset>
-        </temperature>
-    </device>
-    <device identifier="08761 1048079" id="16" functionbitmask="1280" fwversion="03.33" manufacturer="AVM" productname="FRITZ!DECT Repeater 100">
-        <present>1</present>
-        <name>FRITZ!DECT Rep 100 #1</name>
-        <temperature>
-            <celsius>288</celsius>
-            <offset>0</offset>
-        </temperature>
-    </device>
-    <group identifier="65:3A:18-900" id="900" functionbitmask="512" fwversion="1.0" manufacturer="AVM" productname="">
-        <present>1</present>
-        <name>Gruppe</name>
-        <switch>
-            <state>1</state>
-            <mode>auto</mode>
-            <lock/>
-            <devicelock/>
-        </switch>
-        <groupinfo>
-            <masterdeviceid>0</masterdeviceid>
-            <members>17</members>
-        </groupinfo>
-    </group>
-</devicelist>"""
+            device_list_xml,
         ]
 
         fritz = Fritzhome('10.0.0.1', 'user', 'pass')
         fritz._request = mock
-        fritz.login()
         devices = fritz.get_devices()
         eq_(devices[0].name, 'Steckdose')
         eq_(devices[1].name, 'FRITZ!DECT Rep 100 #1')
@@ -104,7 +81,6 @@ class TestFritzhome(object):
         fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
             {'sid': None, 'ain': '1234', 'switchcmd': 'getswitchname'})
-
 
     def test_set_target_temperature(self):
         mock = MagicMock()
