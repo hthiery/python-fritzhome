@@ -192,7 +192,7 @@ class Fritzhome(object):
             param = 253
         elif param > r[-1]:
             param = 254
-        self._aha_request('sethkrsoll', ain=ain, param=int(param))
+        self._aha_request('sethkrtsoll', ain=ain, param=int(param))
 
     def get_comfort_temperature(self, ain):
         plain = self._aha_request('gethkrkomfort', ain=ain)

@@ -118,14 +118,14 @@ class TestFritzhome(object):
         fritz.set_target_temperature('1', 25.5)
         fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrsoll', 'param': 51})
+            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrtsoll', 'param': 51})
 
         fritz.set_target_temperature('1', 0.0)
         fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrsoll', 'param': 253})
+            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrtsoll', 'param': 253})
 
         fritz.set_target_temperature('1', 32.0)
         fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrsoll', 'param': 254})
+            {'sid': None, 'ain': '1', 'switchcmd': 'sethkrtsoll', 'param': 254})
