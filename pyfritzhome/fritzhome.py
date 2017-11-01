@@ -46,7 +46,7 @@ class Fritzhome(object):
         rsp.raise_for_status()
         return rsp.text.strip()
 
-    def _login_request(self, username=None, secret=None, cmd=None, timeout=10):
+    def _login_request(self, username=None, secret=None, timeout=10):
         """Send a login request with paramerters."""
         url = 'http://' + self._host + '/login_sid.lua'
         params = {}
@@ -54,8 +54,6 @@ class Fritzhome(object):
             params['username'] = username
         if secret:
             params['response'] = secret
-        if cmd:
-            params['response'] = cmd
 
         plain = self._request(url, params, timeout)
         dom = xml.dom.minidom.parseString(plain)
