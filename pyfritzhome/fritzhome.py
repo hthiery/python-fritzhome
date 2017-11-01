@@ -115,17 +115,32 @@ class Fritzhome(object):
         """Logout."""
         self._logout_request()
 
-    def get_devices(self):
-        """Get the list of all known devices."""
+    def get_device_elements(self):
         plain = self._aha_request('getdevicelistinfos')
         dom = xml.dom.minidom.parseString(plain)
+        return dom.getElementsByTagName("device")
 
+    def get_device_element(self, ain):
+        elements = self.get_device_elements()
+        for element in elements:
+            if element.getAttribute('identifier') == ain:
+                return element
+        return None
+
+    def get_devices(self):
+        """Get the list of all known devices."""
         devices = []
-        for element in dom.getElementsByTagName("device"):
-            device = Device(self, node=element)
+        for element in self.get_device_elements():
+            device = FritzhomeDevice(self, node=element)
             devices.append(device)
-
         return devices
+
+    def get_device_by_ain(self, ain):
+        """Returns a device specified by the AIN."""
+        devices = self.get_devices()
+        for device in devices:
+            if device.ain == ain:
+                return device
 
     def get_switchlist(self):
         plain = self._aha_request('getswitchlist')
@@ -189,23 +204,8 @@ class Fritzhome(object):
         plain = self._aha_request('gethkrabsenk', ain=ain)
         return ((float(plain) - 16) / 2 + 8)
 
-    def get_soll_temperature(self, ain):
-        plain = self._aha_request('gethkrtsoll', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
 
-    def set_soll_temperature(self, ain, temperature):
-        self._aha_request('sethkrsoll', ain=ain, param=temperature)
-
-    def get_komfort_temperature(self, ain):
-        plain = self._aha_request('gethkrkomfort', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
-
-    def get_absenk_temperature(self, ain):
-        plain = self._aha_request('gethkrabsenk', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
-
-
-class Device(object):
+class FritzhomeDevice(object):
 
     ALARM_MASK = 0x010
     UNKNOWN_MASK = 0x020
@@ -225,19 +225,56 @@ class Device(object):
         if fritz is not None:
             self._fritz = fritz
         if node is not None:
-            _LOGGER.debug(node.toprettyxml())
-            self.ain = node.getAttribute("identifier")
-            self.id = node.getAttribute("id")
-            self._functionsbitmask = int(node.getAttribute("functionbitmask"))
-            self.fw_version = node.getAttribute("fwversion")
-            self.manufacturer = node.getAttribute("manufacturer")
-            self.productname = node.getAttribute("productname")
-            self.name = get_node_value(node, 'name')
-            self._present = get_node_value(node, 'present')
+            self._update_from_node(node)
+
+    def _update_from_node(self, node):
+        _LOGGER.debug(node.toprettyxml())
+        self.ain = node.getAttribute("identifier")
+        self.id = node.getAttribute("id")
+        self._functionsbitmask = int(node.getAttribute("functionbitmask"))
+        self.fw_version = node.getAttribute("fwversion")
+        self.manufacturer = node.getAttribute("manufacturer")
+        self.productname = node.getAttribute("productname")
+
+        self.name = get_node_value(node, 'name')
+        self._present = get_node_value(node, 'present')
+
+        if self.has_thermostat:
+            n = node.getElementsByTagName('hkr')[0]
+            self.actual_temperature = get_node_value(n, 'tist')
+            self.target_temperature = get_node_value(n, 'tsoll')
+            self.eco_temperature = get_node_value(n, 'absenk')
+            self.comfort_temperature = get_node_value(n, 'komfort')
+            self.lock = bool(int(get_node_value(n, 'lock')))
+            self.device_lock = bool(int(get_node_value(n, 'devicelock')))
+            self.error_code = get_node_value(n, 'errorcode')
+            #self.battery_low = bool(get_node_value(n, 'batterylow'))
+            self.battery_low = bool(int(get_node_value(n, 'batterylow')))
+
+        if self.has_switch:
+            n = node.getElementsByTagName('switch')[0]
+            self.switch_state = bool(int(get_node_value(n, 'state')))
+            self.switch_mode = get_node_value(n, 'mode')
+            self.lock = bool(get_node_value(n, 'lock'))
+            self.device_lock = bool(get_node_value(n, 'devicelock'))
+
+        if self.has_powermeter:
+            n = node.getElementsByTagName('powermeter')[0]
+            self.power = get_node_value(n, 'power')
+            self.energy = get_node_value(n, 'energy')
+
+        if self.has_temperature_sensor:
+            n = node.getElementsByTagName('temperature')[0]
+            self.offset = get_node_value(n, 'offset')
+            self.temperature = get_node_value(n, 'celsius')
 
     def __repr__(self):
         return '{} {} {} {}'.format(self.ain, self._id,
                                     self.manufacturer, self.productname)
+
+    def update(self):
+        node = self._fritz.get_device_element(self.ain)
+        self._update_from_node(node)
 
     @property
     def has_alarm(self):
@@ -291,43 +328,10 @@ class Device(object):
         return self._fritz.get_target_temperature(self.ain)
 
     def set_target_temperature(self, temperature):
-        return self._fritz.set_target_temperature(self, self.ain, temperature)
+        return self._fritz.set_target_temperature(self.ain, temperature)
 
     def get_comfort_temperature(self):
         return self._fritz.get_comfort_temperature(self.ain)
 
     def get_eco_temperature(self):
         return self._fritz.get_eco_temperature(self.ain)
-
-    # these will be removed
-    def get_soll_temperature(self):
-        return self._fritz.get_target_temperature(self.ain)
-
-    def set_soll_temperature(self, temperature):
-        return self._fritz.set_target_temperature(self, self.ain, temperature)
-
-    def get_komfort_temperature(self):
-        return self._fritz.get_comfort_temperature(self.ain)
-
-    def get_absenk_temperature(self):
-        return self._fritz.get_eco_temperature(self.ain)
-
-
-class Alarm(Device):
-    def __init__(self, node=None):
-        raise NotImplemented
-
-
-class Thermostat(Device):
-    def __init__(self, node=None):
-        raise NotImplemented
-
-
-class Switch(Device):
-    def __init__(self, node=None):
-        raise NotImplemented
-
-
-class Repeater(Device):
-    def __init__(self, node=None):
-        raise NotImplemented
