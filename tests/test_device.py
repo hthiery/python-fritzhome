@@ -9,6 +9,19 @@ from .elements import (device_list_xml, device_list_battery_ok_xml,
                        device_list_battery_low_xml)
 
 
+def get_switch_test_device():
+    mock = MagicMock()
+    mock.side_effect = [
+        device_list_xml,
+        '1'
+    ]
+
+    fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+    fritz._request = mock
+    element = fritz.get_device_element('08761 0000434')
+    device = FritzhomeDevice(fritz=fritz, node=element)
+    return device
+
 class TestDevice(object):
 
     def test_device_init(self):
@@ -43,3 +56,96 @@ class TestDevice(object):
         assert_false(device.battery_low)
         device.update()
         assert_true(device.battery_low)
+
+    def test_get_device_present(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '1',
+            '0'
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        assert_true(device.get_present())
+        assert_false(device.get_present())
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'getswitchpresent', 'sid': None})
+
+    def test_get_switch_state(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '1',
+            '0'
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        assert_true(device.get_switch_state())
+        assert_false(device.get_switch_state())
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'getswitchstate', 'sid': None})
+
+    def test_set_switch_state(self):
+        mock = MagicMock()
+        #mock.side_effect = [
+        #    True,
+        #    True,
+        #]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        device.set_switch_state_on()
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'setswitchon', 'sid': None})
+
+        device.set_switch_state_off()
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'setswitchoff', 'sid': None})
+
+        device.set_switch_state_toggle()
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'setswitchtoggle', 'sid': None})
+
+    def test_get_temperature(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '245',
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        eq_(device.get_temperature(), 24.5)
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'gettemperature', 'sid': None})
+
+    def test_get_target_temperature(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '38',
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        eq_(device.get_target_temperature(), 19.0)
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'gethkrtsoll', 'sid': None})
+
