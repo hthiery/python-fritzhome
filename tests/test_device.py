@@ -119,6 +119,36 @@ class TestDevice(object):
              { 'ain': u'08761 0000434', 'switchcmd':
              'setswitchtoggle', 'sid': None})
 
+    def test_get_switch_power(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '18000',
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        eq_(device.get_switch_power(), 18000)
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'getswitchpower', 'sid': None})
+
+    def test_get_switch_energy(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '2000',
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        eq_(device.get_switch_energy(), 2000)
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'getswitchenergy', 'sid': None})
+
     def test_get_temperature(self):
         mock = MagicMock()
         mock.side_effect = [
@@ -149,3 +179,32 @@ class TestDevice(object):
              { 'ain': u'08761 0000434', 'switchcmd':
              'gethkrtsoll', 'sid': None})
 
+    def test_get_eco_temperature(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '40',
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        eq_(device.get_eco_temperature(), 20.0)
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'gethkrabsenk', 'sid': None})
+
+    def test_get_comfort_temperature(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            '41',
+        ]
+
+        device = get_switch_test_device()
+        device._fritz._request = mock
+
+        eq_(device.get_comfort_temperature(), 20.5)
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+             { 'ain': u'08761 0000434', 'switchcmd':
+             'gethkrkomfort', 'sid': None})

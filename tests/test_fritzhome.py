@@ -51,17 +51,34 @@ class TestFritzhome(object):
         mock.side_effect = [
             device_list_xml,
             device_list_xml,
+            device_list_xml,
         ]
 
         fritz = Fritzhome('10.0.0.1', 'user', 'pass')
         fritz._request = mock
-        elements = fritz.get_device_element('08761 0000434')
-        eq_(elements.getAttribute('identifier'), '08761 0000434')
-        eq_(elements.getAttribute('fwversion'), '03.33')
+        element = fritz.get_device_element('08761 0000434')
+        eq_(element.getAttribute('identifier'), '08761 0000434')
+        eq_(element.getAttribute('fwversion'), '03.33')
 
-        elements = fritz.get_device_element('08761 1048079')
-        eq_(elements.getAttribute('identifier'), '08761 1048079')
-        eq_(elements.getAttribute('fwversion'), '03.44')
+        element = fritz.get_device_element('08761 1048079')
+        eq_(element.getAttribute('identifier'), '08761 1048079')
+        eq_(element.getAttribute('fwversion'), '03.44')
+
+        element = fritz.get_device_element('unknown')
+        eq_(element, None)
+
+    def test_get_device_by_ain(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_list_xml,
+            device_list_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        device = fritz.get_device_by_ain('08761 0000434')
+        eq_(device.ain, '08761 0000434')
+
 
     def test_aha_get_devices(self):
 
