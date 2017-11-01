@@ -25,7 +25,6 @@ class TestFritzhome(object):
         fritz.login()
 
     def test_login(self):
-
         mock = MagicMock()
         mock.side_effect = [
             login_rsp_without_valid_sid,
@@ -35,6 +34,17 @@ class TestFritzhome(object):
         fritz = Fritzhome('10.0.0.1', 'user', 'pass')
         fritz._request = mock
         fritz.login()
+
+    def test_logout(self):
+        mock = MagicMock()
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+
+        fritz.logout()
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/login_sid.lua',
+            {'sid': None, 'security:command/logout': '1'})
 
     def test_get_device_element(self):
         mock = MagicMock()

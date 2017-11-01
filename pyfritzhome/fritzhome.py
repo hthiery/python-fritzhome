@@ -46,7 +46,7 @@ class Fritzhome(object):
         rsp.raise_for_status()
         return rsp.text.strip()
 
-    def _login_request(self, username=None, secret=None, timeout=10):
+    def _login_request(self, username=None, secret=None):
         """Send a login request with paramerters."""
         url = 'http://' + self._host + '/login_sid.lua'
         params = {}
@@ -55,7 +55,7 @@ class Fritzhome(object):
         if secret:
             params['response'] = secret
 
-        plain = self._request(url, params, timeout)
+        plain = self._request(url, params)
         dom = xml.dom.minidom.parseString(plain)
         sid = get_text(dom.getElementsByTagName('SID')[0].childNodes)
         challenge = get_text(
@@ -63,16 +63,16 @@ class Fritzhome(object):
 
         return (sid, challenge)
 
-    def _logout_request(self, timeout=10):
+    def _logout_request(self):
         """Send a logout request."""
         _LOGGER.info('logout')
         url = 'http://' + self._host + '/login_sid.lua'
         params = {
-            'security:command/logout': '121424',
+            'security:command/logout': '1',
             'sid': self._sid
         }
 
-        self._request(url, params, timeout)
+        self._request(url, params)
 
     def _create_login_secret(self, challenge, password):
         """Create a login secret."""
