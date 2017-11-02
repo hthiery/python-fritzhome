@@ -12,24 +12,31 @@ def list_all(fritz, args):
     devices = fritz.get_devices()
 
     for device in devices:
-        print('#############')
-        print('ain=%s' % device.ain)
-        print('id=%s' % device.id)
+        print('#' * 30)
         print('name=%s' % device.name)
-        print('productname=%s' % device.productname)
-        print('manufacturer=%s' % device.manufacturer)
-#        print("present=%s" % device.get_present())
-#        if device.has_switch:
-#            print("switch_state=%s" % device.get_switch_state())
-#            print("switch_power=%s" % device.get_switch_power())
-#            print("switch_energy=%s" % device.get_switch_energy())
-#        if device.has_temperature_sensor:
-#            print("temperature=%f" % device.get_temperature())
+        print('  ain=%s' % device.ain)
+        print('  id=%s' % device.id)
+        print('  productname=%s' % device.productname)
+        print('  manufacturer=%s' % device.manufacturer)
+        print("  present=%s" % device.present)
+        if device.has_switch:
+            print(" Switch:")
+            print("  switch_state=%s" % device.switch_state)
+        if device.has_switch:
+            print(" Powermeter:")
+            print("  switch_power=%s" % device.power)
+            print("  switch_energy=%s" % device.energy)
+        if device.has_temperature_sensor:
+            print(" Temperature:")
+            print("  temperature=%f" % device.temperature)
+            print("  offset=%f" % device.offset)
         if device.has_thermostat:
-            print("battery_low=%s" % device.battery_low)
-            print("target=%s" % device.target_temperature)
-            print("comfort=%s" % device.comfort_temperature)
-            print("eco=%s" % device.eco_temperature)
+            print(" Thermostat:")
+            print("  battery_low=%s" % device.battery_low)
+            print("  actual=%s" % device.actual_temperature)
+            print("  target=%s" % device.target_temperature)
+            print("  comfort=%s" % device.comfort_temperature)
+            print("  eco=%s" % device.eco_temperature)
 
 
 def device_name(fritz, args):

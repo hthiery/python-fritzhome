@@ -112,6 +112,7 @@ class Fritzhome(object):
     def logout(self):
         """Logout."""
         self._logout_request()
+        self._sid = None
 
     def get_device_elements(self):
         plain = self._aha_request('getdevicelistinfos')
@@ -231,18 +232,17 @@ class FritzhomeDevice(object):
         self.productname = node.getAttribute("productname")
 
         self.name = get_node_value(node, 'name')
-        self._present = get_node_value(node, 'present')
+        self.present = bool(get_node_value(node, 'present'))
 
         if self.has_thermostat:
             n = node.getElementsByTagName('hkr')[0]
-            self.actual_temperature = get_node_value(n, 'tist')
-            self.target_temperature = get_node_value(n, 'tsoll')
-            self.eco_temperature = get_node_value(n, 'absenk')
-            self.comfort_temperature = get_node_value(n, 'komfort')
+            self.actual_temperature = int(get_node_value(n, 'tist')) / 2
+            self.target_temperature = int(get_node_value(n, 'tsoll')) / 2
+            self.eco_temperature = int(get_node_value(n, 'absenk')) / 2
+            self.comfort_temperature = int(get_node_value(n, 'komfort')) / 2
             self.lock = bool(int(get_node_value(n, 'lock')))
             self.device_lock = bool(int(get_node_value(n, 'devicelock')))
-            self.error_code = get_node_value(n, 'errorcode')
-            #self.battery_low = bool(get_node_value(n, 'batterylow'))
+            self.error_code = int(get_node_value(n, 'errorcode'))
             self.battery_low = bool(int(get_node_value(n, 'batterylow')))
 
         if self.has_switch:
@@ -254,13 +254,13 @@ class FritzhomeDevice(object):
 
         if self.has_powermeter:
             n = node.getElementsByTagName('powermeter')[0]
-            self.power = get_node_value(n, 'power')
-            self.energy = get_node_value(n, 'energy')
+            self.power = int(get_node_value(n, 'power'))
+            self.energy = int(get_node_value(n, 'energy'))
 
         if self.has_temperature_sensor:
             n = node.getElementsByTagName('temperature')[0]
-            self.offset = get_node_value(n, 'offset')
-            self.temperature = get_node_value(n, 'celsius')
+            self.offset = int(get_node_value(n, 'offset')) / 10
+            self.temperature = int(get_node_value(n, 'celsius')) / 10
 
     def __repr__(self):
         return '{} {} {} {}'.format(self.ain, self._id,
