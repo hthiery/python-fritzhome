@@ -4,7 +4,7 @@ from nose.tools import eq_, raises
 from mock import MagicMock
 
 from requests import Response
-from pyfritzhome import (Fritzhome, LoginError)
+from pyfritzhome import (Fritzhome, InvalidError, LoginError)
 
 from .elements import (device_list_xml, login_rsp_without_valid_sid,
                        login_rsp_with_valid_sid)
@@ -46,6 +46,40 @@ class TestFritzhome(object):
             'http://10.0.0.1/login_sid.lua',
             {'sid': None, 'security:command/logout': '1'})
 
+    def test_aha_request(self):
+        mock = MagicMock()
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+
+        fritz._aha_request(cmd='testcmd')
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'sid': None, 'switchcmd': 'testcmd'})
+
+        fritz._aha_request(cmd='testcmd', ain='1')
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'sid': None, 'switchcmd': 'testcmd', 'ain': '1'})
+
+        fritz._aha_request(cmd='testcmd', ain='1', param={'a': '1', 'b': '2'})
+        fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'sid': None, 'switchcmd': 'testcmd', 'ain': '1',
+             'param': {'a': '1', 'b': '2'}})
+
+    @raises(InvalidError)
+    def test_aha_request_invalid(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            'inval',
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+
+        fritz._aha_request(cmd='estcmd')
+
     def test_get_device_element(self):
         mock = MagicMock()
         mock.side_effect = [
@@ -78,7 +112,6 @@ class TestFritzhome(object):
         fritz._request = mock
         device = fritz.get_device_by_ain('08761 0000434')
         eq_(device.ain, '08761 0000434')
-
 
     def test_aha_get_devices(self):
 

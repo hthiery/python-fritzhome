@@ -140,10 +140,6 @@ class Fritzhome(object):
             if device.ain == ain:
                 return device
 
-    def get_switchlist(self):
-        plain = self._aha_request('getswitchlist')
-        print(plain)
-
     def get_device_present(self, ain):
         plain = self._aha_request('getswitchpresent', ain=ain)
         return bool(int(plain))
