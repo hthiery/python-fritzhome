@@ -215,6 +215,22 @@ class FritzhomeDevice(object):
     _id = None
     manufacturer = None
     productname = None
+    actual_temperature = None
+    target_temperature = None
+    eco_temperature = None
+    comfort_temperature = None
+    lock = None
+    device_lock = None
+    error_code = None
+    battery_low = None
+    switch_state = None
+    switch_mode = None
+    lock = None
+    device_lock = None
+    power = None
+    energy = None
+    offset = None
+    temperature = None
 
     def __init__(self, fritz=None, node=None, *args, **kwargs):
         if fritz is not None:
@@ -232,7 +248,10 @@ class FritzhomeDevice(object):
         self.productname = node.getAttribute("productname")
 
         self.name = get_node_value(node, 'name')
-        self.present = bool(get_node_value(node, 'present'))
+        self.present = bool(int(get_node_value(node, 'present')))
+
+        if self.present is False:
+            return
 
         if self.has_thermostat:
             n = node.getElementsByTagName('hkr')[0]

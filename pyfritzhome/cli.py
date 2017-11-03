@@ -19,6 +19,10 @@ def list_all(fritz, args):
         print('  productname=%s' % device.productname)
         print('  manufacturer=%s' % device.manufacturer)
         print("  present=%s" % device.present)
+
+        if device.present is False:
+            continue
+
         if device.has_switch:
             print(" Switch:")
             print("  switch_state=%s" % device.switch_state)
