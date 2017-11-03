@@ -120,3 +120,30 @@ device_list_battery_low_xml = """<devicelist version="1">
         </hkr>
     </device>
 </devicelist>"""
+
+
+device_not_present_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.54" id="18" identifier="11960 0089208" manufacturer="AVM" productname="Comet DECT">
+        <present>0</present>
+        <name>Kitchen</name>
+        <temperature>
+            <celsius/>
+            <offset/>
+        </temperature>
+        <hkr>
+            <tist/>
+            <tsoll/>
+            <absenk/>
+            <komfort/>
+            <lock/>
+            <devicelock/>
+            <errorcode>0</errorcode>
+            <batterylow>0</batterylow>
+            <nextchange>
+                <endperiod>0</endperiod>
+                <tchange>255</tchange>
+            </nextchange>
+        </hkr>
+    </device>
+</devicelist>"""

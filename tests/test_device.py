@@ -6,7 +6,7 @@ from mock import MagicMock
 from pyfritzhome import (FritzhomeDevice, Fritzhome)
 
 from .elements import (device_list_xml, device_list_battery_ok_xml,
-                       device_list_battery_low_xml)
+                       device_list_battery_low_xml, device_not_present_xml)
 
 
 def get_switch_test_device():
@@ -37,9 +37,24 @@ class TestDevice(object):
 
         eq_(device.ain, '08761 0000434')
         eq_(device.fw_version, '03.33')
+        assert_true(device.present)
         assert_true(device.has_switch)
         assert_true(device.has_temperature_sensor)
         assert_true(device.has_powermeter)
+
+    def test_device_init_present_false(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_not_present_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('11960 0089208')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '11960 0089208')
+        assert_false(device.present)
 
     def test_device_update(self):
         mock = MagicMock()
