@@ -2,6 +2,7 @@ from __future__ import print_function
 import logging
 import argparse
 
+from version import __version__
 from pyfritzhome import Fritzhome
 
 _LOGGER = logging.getLogger(__name__)
@@ -87,6 +88,9 @@ def main(args=None):
                         help='Username')
     parser.add_argument('-a', '--ain', type=str, dest='ain',
                         help='Actor Identification', default=None)
+    parser.add_argument('-V', '--version', action='version',
+                        version='{version}'.format(version=__version__),
+                        help='Print version')
 
     _sub = parser.add_subparsers(title='Commands')
 
