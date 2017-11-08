@@ -225,8 +225,6 @@ class FritzhomeDevice(object):
     battery_low = None
     switch_state = None
     switch_mode = None
-    lock = None
-    device_lock = None
     power = None
     energy = None
     offset = None
