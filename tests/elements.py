@@ -147,3 +147,25 @@ device_not_present_xml = """<?xml version="1.0" ?>
         </hkr>
     </device>
 </devicelist>"""
+
+device_no_devicelock_element_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="896" fwversion="03.59" id="16" identifier="08761 0373130" manufacturer="AVM" productname="FRITZ!DECT 200">
+            <present>1</present>
+            <name>FRITZ!DECT 200 #1</name>
+            <switch>
+                    <state>1</state>
+                    <mode>manuell</mode>
+                    <lock>1</lock>
+            </switch>
+            <powermeter>
+                    <power>114580</power>
+                    <energy>87830</energy>
+            </powermeter>
+            <temperature>
+                    <celsius>220</celsius>
+                    <offset>0</offset>
+            </temperature>
+    </device>
+
+</devicelist>"""
