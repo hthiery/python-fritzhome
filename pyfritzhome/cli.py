@@ -2,7 +2,11 @@ from __future__ import print_function
 import logging
 import argparse
 
-from version import __version__
+try:
+    from version import __version__
+except:
+    __version__ = 'dev'
+
 from pyfritzhome import Fritzhome
 
 _LOGGER = logging.getLogger(__name__)
