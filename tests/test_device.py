@@ -68,8 +68,8 @@ class TestDevice(object):
         element = fritz.get_device_element('08761 0373130')
         device = FritzhomeDevice(node=element)
 
-        eq_(device.ain, '11960 0089208')
-        assert_false(device.present)
+        eq_(device.ain, '08761 0373130')
+        assert_true(device.present)
 
     def test_device_update(self):
         mock = MagicMock()

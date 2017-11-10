@@ -258,16 +258,24 @@ class FritzhomeDevice(object):
             self.eco_temperature = int(get_node_value(n, 'absenk')) / 2
             self.comfort_temperature = int(get_node_value(n, 'komfort')) / 2
             self.lock = bool(int(get_node_value(n, 'lock')))
-            self.device_lock = bool(int(get_node_value(n, 'devicelock')))
             self.error_code = int(get_node_value(n, 'errorcode'))
             self.battery_low = bool(int(get_node_value(n, 'batterylow')))
+            # optional value
+            try:
+                self.device_lock = bool(int(get_node_value(n, 'devicelock')))
+            except IndexError:
+                pass
 
         if self.has_switch:
             n = node.getElementsByTagName('switch')[0]
             self.switch_state = bool(int(get_node_value(n, 'state')))
             self.switch_mode = get_node_value(n, 'mode')
             self.lock = bool(get_node_value(n, 'lock'))
-            self.device_lock = bool(get_node_value(n, 'devicelock'))
+            # optional value
+            try:
+                self.device_lock = bool(int(get_node_value(n, 'devicelock')))
+            except IndexError:
+                pass
 
         if self.has_powermeter:
             n = node.getElementsByTagName('powermeter')[0]
