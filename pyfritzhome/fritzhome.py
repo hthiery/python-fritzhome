@@ -1,9 +1,3 @@
-"""
-References:
- - https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AHA-HTTP-Interface.pdf
- - https://github.com/DerMitch/fritzbox-smarthome
-"""
-
 from __future__ import print_function
 from requests import Session
 import hashlib

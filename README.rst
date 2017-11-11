@@ -44,6 +44,11 @@ add a new user.
     switch_energy=88863
     temperature=21.000000
 
+References
+----------
+
+ - https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AHA-HTTP-Interface.pdf
+ - https://github.com/DerMitch/fritzbox-smarthome
 
 
 .. |BuildStatus| image:: https://travis-ci.org/hthiery/python-fritzhome.png?branch=master
