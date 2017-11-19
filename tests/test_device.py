@@ -7,7 +7,8 @@ from pyfritzhome import (FritzhomeDevice, Fritzhome)
 
 from .elements import (device_list_xml, device_list_battery_ok_xml,
                        device_list_battery_low_xml, device_not_present_xml,
-                       device_no_devicelock_element_xml)
+                       device_no_devicelock_element_xml,
+                       device_hkr_fw_03_50_xml, device_hkr_fw_03_54_xml)
 
 
 def get_switch_test_device():
@@ -69,6 +70,38 @@ class TestDevice(object):
         device = FritzhomeDevice(node=element)
 
         eq_(device.ain, '08761 0373130')
+        assert_true(device.present)
+
+    def test_device_hkr_fw_03_50(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_hkr_fw_03_50_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('12345')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '12345')
+        assert_true(device.present)
+        eq_(device.device_lock, None)
+        eq_(device.lock, None)
+        eq_(device.error_code, None)
+        eq_(device.battery_low, None)
+
+    def test_device_hkr_fw_03_54(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_hkr_fw_03_54_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('23456')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '23456')
         assert_true(device.present)
 
     def test_device_update(self):

@@ -169,3 +169,47 @@ device_no_devicelock_element_xml = """<?xml version="1.0" ?>
     </device>
 
 </devicelist>"""
+
+device_hkr_fw_03_50_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.50" id="17" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Comet DECT #2</name>
+        <temperature>
+            <celsius>230</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>46</tist>
+            <tsoll>45</tsoll>
+            <absenk>32</absenk>
+            <komfort>45</komfort>
+        </hkr>
+    </device>
+</devicelist>"""
+
+device_hkr_fw_03_54_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.54" id="18" identifier="23456" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Badezimmer</name>
+        <temperature>
+            <celsius>205</celsius>
+            <offset>-15</offset>
+        </temperature>
+        <hkr>
+            <tist>41</tist>
+            <tsoll>36</tsoll>
+            <absenk>36</absenk>
+            <komfort>42</komfort>
+            <lock>0</lock>
+            <devicelock>0</devicelock>
+            <errorcode>0</errorcode>
+            <batterylow>0</batterylow>
+            <nextchange>
+                <endperiod>1508342400</endperiod>
+                <tchange>42</tchange>
+            </nextchange>
+        </hkr>
+    </device>
+</devicelist>"""
