@@ -1,8 +1,8 @@
 from __future__ import print_function
-from requests import Session
 import hashlib
 import logging
 import xml.dom.minidom
+from requests import Session
 
 from .errors import (InvalidError, LoginError)
 
@@ -19,6 +19,7 @@ def get_text(nodelist):
 
 
 def get_node_value(node, name):
+    """Get the value from a node."""
     return get_text(node.getElementsByTagName(name)[0].childNodes)
 
 
@@ -68,7 +69,8 @@ class Fritzhome(object):
 
         self._request(url, params)
 
-    def _create_login_secret(self, challenge, password):
+    @staticmethod
+    def _create_login_secret(challenge, password):
         """Create a login secret."""
         to_hash = (challenge + '-' + password).encode('UTF-16LE')
         hashed = hashlib.md5(to_hash).hexdigest()
@@ -109,11 +111,13 @@ class Fritzhome(object):
         self._sid = None
 
     def get_device_elements(self):
+        """Get the DOM elments for the device list."""
         plain = self._aha_request('getdevicelistinfos')
         dom = xml.dom.minidom.parseString(plain)
         return dom.getElementsByTagName("device")
 
     def get_device_element(self, ain):
+        """Get the DOM elment for the specified device."""
         elements = self.get_device_elements()
         for element in elements:
             if element.getAttribute('identifier') == ain:
@@ -136,66 +140,78 @@ class Fritzhome(object):
                 return device
 
     def get_device_present(self, ain):
+        """Get the device presence."""
         plain = self._aha_request('getswitchpresent', ain=ain)
         return bool(int(plain))
 
     def get_device_name(self, ain):
+        """Get the device name."""
         plain = self._aha_request('getswitchname', ain=ain)
         return plain
 
     def get_switch_state(self, ain):
+        """Get the switch state."""
         plain = self._aha_request('getswitchstate', ain=ain)
         return bool(int(plain))
 
     def set_switch_state_on(self, ain):
+        """Set the switch to on state."""
         plain = self._aha_request('setswitchon', ain=ain)
         return bool(int(plain))
 
     def set_switch_state_off(self, ain):
+        """Set the switch to off state."""
         plain = self._aha_request('setswitchoff', ain=ain)
         return bool(int(plain))
 
     def set_switch_state_toggle(self, ain):
+        """Toglle the switch state."""
         plain = self._aha_request('setswitchtoggle', ain=ain)
         return bool(int(plain))
 
     def get_switch_power(self, ain):
+        """Get the switch power consumption."""
         plain = self._aha_request('getswitchpower', ain=ain)
         return int(plain)
 
     def get_switch_energy(self, ain):
+        """Get the switch energy."""
         plain = self._aha_request('getswitchenergy', ain=ain)
         return int(plain)
 
     def get_temperature(self, ain):
+        """Get the device temperature sensor value."""
         plain = self._aha_request('gettemperature', ain=ain)
         return float(int(plain) / 10.0)
 
     def get_target_temperature(self, ain):
+        """Get the thermostate target temperature."""
         plain = self._aha_request('gethkrtsoll', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
+        return (float(plain) - 16) / 2 + 8
 
     def set_target_temperature(self, ain, temperature):
+        """Set the thermostate target temperature."""
         param = 16 + ((temperature - 8) * 2)
 
-        r = range(16, 56)
-        if param < r[0]:
+        if param < min(range(16, 56)):
             param = 253
-        elif param > r[-1]:
+        elif param > max(range(16, 56)):
             param = 254
         self._aha_request('sethkrtsoll', ain=ain, param=int(param))
 
     def get_comfort_temperature(self, ain):
+        """Get the thermostate comfort temperature."""
         plain = self._aha_request('gethkrkomfort', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
+        return (float(plain) - 16) / 2 + 8
 
     def get_eco_temperature(self, ain):
+        """Get the thermostate eco temperature."""
         plain = self._aha_request('gethkrabsenk', ain=ain)
-        return ((float(plain) - 16) / 2 + 8)
+        return (float(plain) - 16) / 2 + 8
 
 
 class FritzhomeDevice(object):
-
+    """The Fritzhome Device class."""
     ALARM_MASK = 0x010
     UNKNOWN_MASK = 0x020
     THERMOSTAT_MASK = 0x040
@@ -224,7 +240,7 @@ class FritzhomeDevice(object):
     offset = None
     temperature = None
 
-    def __init__(self, fritz=None, node=None, *args, **kwargs):
+    def __init__(self, fritz=None, node=None):
         if fritz is not None:
             self._fritz = fritz
         if node is not None:
@@ -246,118 +262,138 @@ class FritzhomeDevice(object):
             return
 
         if self.has_thermostat:
-            n = node.getElementsByTagName('hkr')[0]
-            self.actual_temperature = int(get_node_value(n, 'tist')) / 2
-            self.target_temperature = int(get_node_value(n, 'tsoll')) / 2
-            self.eco_temperature = int(get_node_value(n, 'absenk')) / 2
-            self.comfort_temperature = int(get_node_value(n, 'komfort')) / 2
+            val = node.getElementsByTagName('hkr')[0]
+            self.actual_temperature = int(get_node_value(val, 'tist')) / 2
+            self.target_temperature = int(get_node_value(val, 'tsoll')) / 2
+            self.eco_temperature = int(get_node_value(val, 'absenk')) / 2
+            self.comfort_temperature = int(get_node_value(val, 'komfort')) / 2
 
             # optional value
             try:
-                self.device_lock = bool(int(get_node_value(n, 'devicelock')))
+                self.device_lock = bool(int(get_node_value(val, 'devicelock')))
             except IndexError:
                 pass
 
             try:
-                self.lock = bool(int(get_node_value(n, 'lock')))
+                self.lock = bool(int(get_node_value(val, 'lock')))
             except IndexError:
                 pass
 
             try:
-                self.error_code = int(get_node_value(n, 'errorcode'))
+                self.error_code = int(get_node_value(val, 'errorcode'))
             except IndexError:
                 pass
 
             try:
-                self.battery_low = bool(int(get_node_value(n, 'batterylow')))
+                self.battery_low = bool(int(get_node_value(val, 'batterylow')))
             except IndexError:
                 pass
 
         if self.has_switch:
-            n = node.getElementsByTagName('switch')[0]
-            self.switch_state = bool(int(get_node_value(n, 'state')))
-            self.switch_mode = get_node_value(n, 'mode')
-            self.lock = bool(get_node_value(n, 'lock'))
+            val = node.getElementsByTagName('switch')[0]
+            self.switch_state = bool(int(get_node_value(val, 'state')))
+            self.switch_mode = get_node_value(val, 'mode')
+            self.lock = bool(get_node_value(val, 'lock'))
             # optional value
             try:
-                self.device_lock = bool(int(get_node_value(n, 'devicelock')))
+                self.device_lock = bool(int(get_node_value(val, 'devicelock')))
             except IndexError:
                 pass
 
         if self.has_powermeter:
-            n = node.getElementsByTagName('powermeter')[0]
-            self.power = int(get_node_value(n, 'power'))
-            self.energy = int(get_node_value(n, 'energy'))
+            val = node.getElementsByTagName('powermeter')[0]
+            self.power = int(get_node_value(val, 'power'))
+            self.energy = int(get_node_value(val, 'energy'))
 
         if self.has_temperature_sensor:
-            n = node.getElementsByTagName('temperature')[0]
-            self.offset = int(get_node_value(n, 'offset')) / 10
-            self.temperature = int(get_node_value(n, 'celsius')) / 10
+            val = node.getElementsByTagName('temperature')[0]
+            self.offset = int(get_node_value(val, 'offset')) / 10
+            self.temperature = int(get_node_value(val, 'celsius')) / 10
 
     def __repr__(self):
+        """Return a string."""
         return '{} {} {} {}'.format(self.ain, self._id,
                                     self.manufacturer, self.productname)
 
     def update(self):
+        """Update the device values."""
         node = self._fritz.get_device_element(self.ain)
         self._update_from_node(node)
 
     @property
     def has_alarm(self):
+        """Check if the device has alarm function."""
         return bool(self._functionsbitmask & self.ALARM_MASK)
 
     @property
     def has_thermostat(self):
+        """Check if the device has thermostat function."""
         return bool(self._functionsbitmask & self.THERMOSTAT_MASK)
 
     @property
     def has_powermeter(self):
+        """Check if the device has powermeter function."""
         return bool(self._functionsbitmask & self.POWER_METER_MASK)
 
     @property
     def has_temperature_sensor(self):
+        """Check if the device has temperature function."""
         return bool(self._functionsbitmask & self.TEMPERATURE_MASK)
 
     @property
     def has_switch(self):
+        """Check if the device has switch function."""
         return bool(self._functionsbitmask & self.SWITCH_MASK)
 
     @property
     def has_repeater(self):
+        """Check if the device has repeater function."""
         return bool(self._functionsbitmask & self.DECT_REPEATER_MASK)
 
     def get_present(self):
+        """Check if the device is present."""
         return self._fritz.get_device_present(self.ain)
 
     def get_switch_state(self):
+        """Get the switch state."""
         return self._fritz.get_switch_state(self.ain)
 
     def set_switch_state_on(self):
+        """Set the switch state to on."""
         return self._fritz.set_switch_state_on(self.ain)
 
     def set_switch_state_off(self):
+        """Set the switch state to off."""
         return self._fritz.set_switch_state_off(self.ain)
 
     def set_switch_state_toggle(self):
+        """Toggle the switch state."""
         return self._fritz.set_switch_state_toggle(self.ain)
 
     def get_switch_power(self):
+        """ the switch state."""
         return self._fritz.get_switch_power(self.ain)
 
     def get_switch_energy(self):
+        """Get the switch energy."""
         return self._fritz.get_switch_energy(self.ain)
 
     def get_temperature(self):
+        """Get the device temperature value."""
         return self._fritz.get_temperature(self.ain)
 
     def get_target_temperature(self):
+        """Get the thermostate target temperature."""
         return self._fritz.get_target_temperature(self.ain)
 
     def set_target_temperature(self, temperature):
+        """Set the thermostate target temperature."""
         return self._fritz.set_target_temperature(self.ain, temperature)
 
     def get_comfort_temperature(self):
+        """Get the thermostate comfort temperature."""
         return self._fritz.get_comfort_temperature(self.ain)
 
     def get_eco_temperature(self):
+        """Get the thermostate eco temperature."""
         return self._fritz.get_eco_temperature(self.ain)
