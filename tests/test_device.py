@@ -8,7 +8,8 @@ from pyfritzhome import (FritzhomeDevice, Fritzhome)
 from .elements import (device_list_xml, device_list_battery_ok_xml,
                        device_list_battery_low_xml, device_not_present_xml,
                        device_no_devicelock_element_xml,
-                       device_hkr_fw_03_50_xml, device_hkr_fw_03_54_xml)
+                       device_hkr_fw_03_50_xml, device_hkr_fw_03_54_xml,
+                       device_hkr_no_temp_values_xml)
 
 
 def get_switch_test_device():
@@ -271,3 +272,18 @@ class TestDevice(object):
             'http://10.0.0.1/webservices/homeautoswitch.lua',
              { 'ain': u'08761 0000434', 'switchcmd':
              'gethkrkomfort', 'sid': None})
+
+    def test_hkr_without_temperature_values(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_hkr_no_temp_values_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('11960 0071472')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '11960 0071472')
+        eq_(device.offset, None)
+        eq_(device.temperature, None)

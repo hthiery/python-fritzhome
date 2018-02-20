@@ -213,3 +213,26 @@ device_hkr_fw_03_54_xml = """<?xml version="1.0" ?>
         </hkr>
     </device>
 </devicelist>"""
+
+device_hkr_no_temp_values_xml= """<device functionbitmask="320" fwversion="03.54" id="22" identifier="11960 0071472" manufacturer="AVM" productname="Comet DECT">
+	<present>1</present>
+	<name>Thermostat Wohnzimmer Seite</name>
+	<temperature>
+		<celsius/>
+		<offset/>
+	</temperature>
+	<hkr>
+		<tist>44</tist>
+		<tsoll>42</tsoll>
+		<absenk>36</absenk>
+		<komfort>42</komfort>
+		<lock>0</lock>
+		<devicelock>0</devicelock>
+		<errorcode>5</errorcode>
+		<batterylow>0</batterylow>
+		<nextchange>
+			<endperiod>1519160400</endperiod>
+			<tchange>36</tchange>
+		</nextchange>
+	</hkr>
+</device>"""
