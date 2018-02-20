@@ -117,6 +117,7 @@ class Fritzhome(object):
         """Get the DOM elments for the device list."""
         plain = self._aha_request('getdevicelistinfos')
         dom = xml.dom.minidom.parseString(plain)
+        _LOGGER.info(dom)
         return dom.getElementsByTagName("device")
 
     def get_device_element(self, ain):
@@ -310,8 +311,15 @@ class FritzhomeDevice(object):
 
         if self.has_temperature_sensor:
             val = node.getElementsByTagName('temperature')[0]
-            self.offset = int(get_node_value(val, 'offset')) / 10
-            self.temperature = int(get_node_value(val, 'celsius')) / 10
+            try:
+                self.offset = int(get_node_value(val, 'offset')) / 10
+            except ValueError:
+                pass
+
+            try:
+                self.temperature = int(get_node_value(val, 'celsius')) / 10
+            except ValueError:
+                pass
 
     def __repr__(self):
         """Return a string."""

@@ -39,8 +39,8 @@ def list_all(fritz, args):
             print("  switch_energy=%s" % device.energy)
         if device.has_temperature_sensor:
             print(" Temperature:")
-            print("  temperature=%f" % device.temperature)
-            print("  offset=%f" % device.offset)
+            print("  temperature=%s" % device.temperature)
+            print("  offset=%s" % device.offset)
         if device.has_thermostat:
             print(" Thermostat:")
             print("  battery_low=%s" % device.battery_low)
