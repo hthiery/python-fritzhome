@@ -267,7 +267,13 @@ class FritzhomeDevice(object):
 
         if self.has_thermostat:
             val = node.getElementsByTagName('hkr')[0]
-            self.actual_temperature = int(get_node_value(val, 'tist')) / 2
+
+            # pass if get_node_value is empty to prevent ValueError exception if device is not responding
+            try:
+                self.actual_temperature = int(get_node_value(val, 'tist')) / 2
+            except ValueError:
+                pass
+
             self.target_temperature = int(get_node_value(val, 'tsoll')) / 2
             self.eco_temperature = int(get_node_value(val, 'absenk')) / 2
             self.comfort_temperature = int(get_node_value(val, 'komfort')) / 2
