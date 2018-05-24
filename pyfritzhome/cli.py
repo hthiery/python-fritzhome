@@ -48,6 +48,9 @@ def list_all(fritz, args):
             print("  target=%s" % device.target_temperature)
             print("  comfort=%s" % device.comfort_temperature)
             print("  eco=%s" % device.eco_temperature)
+        if device.has_alarm:
+            print(" Alert:")
+            print("  alert=%s" % device.alert_state)
 
 
 def device_name(fritz, args):

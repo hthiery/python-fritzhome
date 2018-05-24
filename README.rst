@@ -8,6 +8,7 @@ Tested Devices
 * `FRITZ!Box 6490 Cable`_ with FRITZ!OS 06.85
 * `FRITZ!DECT 200`_ with firmware 03.87
 * `Comet DECT`_ with firmware 03.54
+* `Panasonic KX-HNS101`
 
 
 fritzhome CLI tool

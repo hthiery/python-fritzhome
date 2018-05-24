@@ -213,6 +213,10 @@ class Fritzhome(object):
         plain = self._aha_request('gethkrabsenk', ain=ain)
         return (float(plain) - 16) / 2 + 8
 
+    def get_alert_state(self, ain):
+        """Get the alert state."""
+        device = self.get_device_by_ain(ain)
+        return device.alert_state
 
 class FritzhomeDevice(object):
     """The Fritzhome Device class."""
@@ -243,6 +247,7 @@ class FritzhomeDevice(object):
     energy = None
     offset = None
     temperature = None
+    alert_state = None
 
     def __init__(self, fritz=None, node=None):
         if fritz is not None:
@@ -325,6 +330,13 @@ class FritzhomeDevice(object):
             try:
                 self.temperature = int(get_node_value(val, 'celsius')) / 10
             except ValueError:
+                pass
+        
+        if self.has_alarm:
+            val = node.getElementsByTagName('alert')[0]
+            try:
+                self.alert_state = bool(int(get_node_value(val, 'state')))
+            except IndexError:
                 pass
 
     def __repr__(self):
