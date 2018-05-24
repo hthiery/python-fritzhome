@@ -9,7 +9,8 @@ from .elements import (device_list_xml, device_list_battery_ok_xml,
                        device_list_battery_low_xml, device_not_present_xml,
                        device_no_devicelock_element_xml,
                        device_hkr_fw_03_50_xml, device_hkr_fw_03_54_xml,
-                       device_hkr_no_temp_values_xml)
+                       device_hkr_no_temp_values_xml, device_alert_on_xml,
+                       device_alert_off_xml, device_alert_no_alertstate_xml)
 
 
 def get_switch_test_device():
@@ -104,6 +105,52 @@ class TestDevice(object):
 
         eq_(device.ain, '23456')
         assert_true(device.present)
+
+    def test_device_alert_on(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_alert_on_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('05333 0077045-1')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '05333 0077045-1')
+        assert_true(device.present)
+        eq_(device.alert_state, True)
+
+    def test_device_alert_off(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_alert_off_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('05333 0077045-2')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '05333 0077045-2')
+        assert_true(device.present)
+        eq_(device.alert_state, False)
+
+    def test_device_alert_no_alertstate(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_alert_no_alertstate_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('05333 0077045-3')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '05333 0077045-3')
+        assert_true(device.present)
+        eq_(device.alert_state, None)
+
 
     def test_device_update(self):
         mock = MagicMock()

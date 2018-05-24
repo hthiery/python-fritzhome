@@ -53,6 +53,19 @@ device_list_xml = """<devicelist version="1">
             </nextchange>
         </hkr>
     </device>
+    <device functionbitmask="8208" fwversion="0.0" id="2000" 
+     identifier="05333 0077045-1" manufacturer="0x0512" productname="HAN-FUN">
+        <present>1</present>
+        <name>Fenster</name>
+        <etsiunitinfo>
+            <etsideviceid>406</etsideviceid>
+            <unittype>514</unittype>
+            <interfaces>256</interfaces>
+        </etsiunitinfo>
+        <alert>
+            <state>1</state>
+        </alert>
+    </device>
     <group identifier="65:3A:18-900" id="900" functionbitmask="512" fwversion="1.0" manufacturer="AVM" productname="">
         <present>1</present>
         <name>Gruppe</name>
@@ -235,4 +248,41 @@ device_hkr_no_temp_values_xml= """<device functionbitmask="320" fwversion="03.54
 			<tchange>36</tchange>
 		</nextchange>
 	</hkr>
+</device>"""
+
+device_alert_on_xml = """<device functionbitmask="8208" fwversion="0.0" id="2000" identifier="05333 0077045-1" manufacturer="0x0512" productname="HAN-FUN">
+    <present>1</present>
+    <name>Fenster</name>
+    <etsiunitinfo>
+        <etsideviceid>406</etsideviceid>
+        <unittype>514</unittype>
+        <interfaces>256</interfaces>
+    </etsiunitinfo>
+    <alert>
+        <state>1</state>
+    </alert>
+</device>"""
+
+device_alert_off_xml = """<device functionbitmask="8208" fwversion="0.0" id="2000" identifier="05333 0077045-2" manufacturer="0x0512" productname="HAN-FUN">
+    <present>1</present>
+    <name>Fenster</name>
+    <etsiunitinfo>
+        <etsideviceid>406</etsideviceid>
+        <unittype>514</unittype>
+        <interfaces>256</interfaces>
+    </etsiunitinfo>
+    <alert>
+        <state>0</state>
+    </alert>
+</device>"""
+
+device_alert_no_alertstate_xml = """<device functionbitmask="8208" fwversion="0.0" id="2000" identifier="05333 0077045-3" manufacturer="0x0512" productname="HAN-FUN">
+    <present>1</present>
+    <name>Fenster</name>
+    <etsiunitinfo>
+        <etsideviceid>406</etsideviceid>
+        <unittype>514</unittype>
+        <interfaces>256</interfaces>
+    </etsiunitinfo>
+    <alert></alert>
 </device>"""

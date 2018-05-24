@@ -162,3 +162,14 @@ class TestFritzhome(object):
         fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
             {'sid': None, 'ain': '1', 'switchcmd': 'sethkrtsoll', 'param': 254})
+
+    def test_get_alert_state(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_list_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+
+        eq_(fritz.get_alert_state('05333 0077045-1'), True)
