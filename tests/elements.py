@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 login_rsp_without_valid_sid = '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000000</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>'
 
 login_rsp_with_valid_sid = '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000001</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>'
@@ -286,3 +288,25 @@ device_alert_no_alertstate_xml = """<device functionbitmask="8208" fwversion="0.
     </etsiunitinfo>
     <alert></alert>
 </device>"""
+
+device_with_umlaut_in_name_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="896" fwversion="03.59" id="16" identifier="08761 0373130" manufacturer="AVM" productname="FRITZ!DECT 200">
+            <present>1</present>
+            <name>äöü</name>
+            <switch>
+                    <state>1</state>
+                    <mode>manuell</mode>
+                    <lock>1</lock>
+            </switch>
+            <powermeter>
+                    <power>114580</power>
+                    <energy>87830</energy>
+            </powermeter>
+            <temperature>
+                    <celsius>220</celsius>
+                    <offset>0</offset>
+            </temperature>
+    </device>
+
+</devicelist>"""

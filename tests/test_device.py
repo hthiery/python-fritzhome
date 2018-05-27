@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from nose.tools import eq_, assert_true, assert_false
 from mock import MagicMock
@@ -8,6 +9,7 @@ from pyfritzhome import (FritzhomeDevice, Fritzhome)
 from .elements import (device_list_xml, device_list_battery_ok_xml,
                        device_list_battery_low_xml, device_not_present_xml,
                        device_no_devicelock_element_xml,
+                       device_with_umlaut_in_name_xml,
                        device_hkr_fw_03_50_xml, device_hkr_fw_03_54_xml,
                        device_hkr_no_temp_values_xml, device_alert_on_xml,
                        device_alert_off_xml, device_alert_no_alertstate_xml)
@@ -73,6 +75,20 @@ class TestDevice(object):
 
         eq_(device.ain, '08761 0373130')
         assert_true(device.present)
+
+    def test_device_umlaut(self):
+        mock = MagicMock()
+        mock.side_effect = [
+            device_with_umlaut_in_name_xml,
+        ]
+
+        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        fritz._request = mock
+        element = fritz.get_device_element('08761 0373130')
+        device = FritzhomeDevice(node=element)
+
+        eq_(device.ain, '08761 0373130')
+        eq_(device.name, u'äöü')
 
     def test_device_hkr_fw_03_50(self):
         mock = MagicMock()
