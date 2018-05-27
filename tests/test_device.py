@@ -31,18 +31,20 @@ def get_switch_test_device():
     device = FritzhomeDevice(fritz=fritz, node=element)
     return device
 
+
 class TestDevice(object):
 
+    def setup(self):
+        self.mock = MagicMock()
+        self.fritz = Fritzhome('10.0.0.1', 'user', 'pass')
+        self.fritz._request = self.mock
+
     def test_device_init(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_list_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('08761 0000434')
-        device = FritzhomeDevice(node=element)
+        device = self.fritz.get_device_by_ain('08761 0000434')
 
         eq_(device.ain, '08761 0000434')
         eq_(device.fw_version, '03.33')
@@ -52,59 +54,41 @@ class TestDevice(object):
         assert_true(device.has_powermeter)
 
     def test_device_init_present_false(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_not_present_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('11960 0089208')
-        device = FritzhomeDevice(node=element)
+        device = self.fritz.get_device_by_ain('11960 0089208')
 
         eq_(device.ain, '11960 0089208')
         assert_false(device.present)
 
     def test_device_init_no_devicelock_element(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_no_devicelock_element_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('08761 0373130')
-        device = FritzhomeDevice(node=element)
+        device = self.fritz.get_device_by_ain('08761 0373130')
 
         eq_(device.ain, '08761 0373130')
         assert_true(device.present)
 
     def test_device_umlaut(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_with_umlaut_in_name_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('08761 0373130')
-        device = FritzhomeDevice(node=element)
+        device = self.fritz.get_device_by_ain('08761 0373130')
 
         eq_(device.ain, '08761 0373130')
         eq_(device.name, u'äöü')
 
     def test_device_hkr_fw_03_50(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_fw_03_50_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('12345')
-        device = FritzhomeDevice(node=element)
-
-        eq_(device.ain, '12345')
+        device = self.fritz.get_device_by_ain('12345')
         assert_true(device.present)
         eq_(device.device_lock, None)
         eq_(device.lock, None)
@@ -112,96 +96,65 @@ class TestDevice(object):
         eq_(device.battery_low, None)
 
     def test_device_hkr_fw_03_54(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_fw_03_54_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('23456')
-        device = FritzhomeDevice(node=element)
-
-        eq_(device.ain, '23456')
+        device = self.fritz.get_device_by_ain('23456')
         assert_true(device.present)
 
     def test_device_alert_on(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_alert_on_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('05333 0077045-1')
-        device = FritzhomeDevice(node=element)
-
-        eq_(device.ain, '05333 0077045-1')
+        device = self.fritz.get_device_by_ain('05333 0077045-1')
         assert_true(device.present)
         eq_(device.alert_state, True)
 
     def test_device_alert_off(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_alert_off_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('05333 0077045-2')
-        device = FritzhomeDevice(node=element)
-
-        eq_(device.ain, '05333 0077045-2')
+        device = self.fritz.get_device_by_ain('05333 0077045-2')
         assert_true(device.present)
         eq_(device.alert_state, False)
 
     def test_device_alert_no_alertstate(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_alert_no_alertstate_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('05333 0077045-3')
-        device = FritzhomeDevice(node=element)
-
-        eq_(device.ain, '05333 0077045-3')
+        device = self.fritz.get_device_by_ain('05333 0077045-3')
         assert_true(device.present)
         eq_(device.alert_state, None)
 
-
     def test_device_update(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_list_battery_ok_xml,
             device_list_battery_low_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('11959 0171328')
-        device = FritzhomeDevice(fritz=fritz, node=element)
-
+        device = self.fritz.get_device_by_ain('11959 0171328')
         assert_false(device.battery_low)
         device.update()
         assert_true(device.battery_low)
 
     def test_get_device_present(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '1',
             '0'
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         assert_true(device.get_present())
         assert_false(device.get_present())
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'getswitchpresent', 'sid': None})
 
     def test_get_switch_state(self):
@@ -218,15 +171,11 @@ class TestDevice(object):
         assert_false(device.get_switch_state())
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'getswitchstate', 'sid': None})
 
     def test_set_switch_state(self):
         mock = MagicMock()
-        #mock.side_effect = [
-        #    True,
-        #    True,
-        #]
 
         device = get_switch_test_device()
         device._fritz._request = mock
@@ -234,19 +183,19 @@ class TestDevice(object):
         device.set_switch_state_on()
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'setswitchon', 'sid': None})
 
         device.set_switch_state_off()
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'setswitchoff', 'sid': None})
 
         device.set_switch_state_toggle()
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'setswitchtoggle', 'sid': None})
 
     def test_get_switch_power(self):
@@ -261,7 +210,7 @@ class TestDevice(object):
         eq_(device.get_switch_power(), 18000)
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'getswitchpower', 'sid': None})
 
     def test_get_switch_energy(self):
@@ -276,7 +225,7 @@ class TestDevice(object):
         eq_(device.get_switch_energy(), 2000)
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'getswitchenergy', 'sid': None})
 
     def test_get_temperature(self):
@@ -291,7 +240,7 @@ class TestDevice(object):
         eq_(device.get_temperature(), 24.5)
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'gettemperature', 'sid': None})
 
     def test_get_target_temperature(self):
@@ -306,7 +255,7 @@ class TestDevice(object):
         eq_(device.get_target_temperature(), 19.0)
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'gethkrtsoll', 'sid': None})
 
     def test_get_eco_temperature(self):
@@ -321,7 +270,7 @@ class TestDevice(object):
         eq_(device.get_eco_temperature(), 20.0)
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'gethkrabsenk', 'sid': None})
 
     def test_get_comfort_temperature(self):
@@ -336,18 +285,15 @@ class TestDevice(object):
         eq_(device.get_comfort_temperature(), 20.5)
         device._fritz._request.assert_called_with(
             'http://10.0.0.1/webservices/homeautoswitch.lua',
-             { 'ain': u'08761 0000434', 'switchcmd':
+            {'ain': u'08761 0000434', 'switchcmd':
              'gethkrkomfort', 'sid': None})
 
     def test_hkr_without_temperature_values(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_no_temp_values_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('11960 0071472')
+        element = self.fritz.get_device_element('11960 0071472')
         device = FritzhomeDevice(node=element)
 
         eq_(device.ain, '11960 0071472')
@@ -355,81 +301,46 @@ class TestDevice(object):
         eq_(device.temperature, None)
 
     def test_hkr_get_state_on(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_state_on_xml,
             device_hkr_state_on_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('12345')
-        device = FritzhomeDevice(node=element)
-        device._fritz = fritz
-
-        eq_(device.ain, '12345')
+        device = self.fritz.get_device_by_ain('12345')
         eq_(device.get_hkr_state(), 'on')
 
     def test_hkr_get_state_off(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_state_off_xml,
             device_hkr_state_off_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('12345')
-        device = FritzhomeDevice(node=element)
-        device._fritz = fritz
-
-        eq_(device.ain, '12345')
+        device = self.fritz.get_device_by_ain('12345')
         eq_(device.get_hkr_state(), 'off')
 
     def test_hkr_get_state_eco(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_state_eco_xml,
             device_hkr_state_eco_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('12345')
-        device = FritzhomeDevice(node=element)
-        device._fritz = fritz
-
-        eq_(device.ain, '12345')
+        device = self.fritz.get_device_by_ain('12345')
         eq_(device.get_hkr_state(), 'eco')
 
     def test_hkr_get_state_comfort(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_state_comfort_xml,
             device_hkr_state_comfort_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('12345')
-        device = FritzhomeDevice(node=element)
-        device._fritz = fritz
-
-        eq_(device.ain, '12345')
+        device = self.fritz.get_device_by_ain('12345')
         eq_(device.get_hkr_state(), 'comfort')
 
     def test_hkr_get_state_manual(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             device_hkr_state_manual_xml,
             device_hkr_state_manual_xml,
         ]
 
-        fritz = Fritzhome('10.0.0.1', 'user', 'pass')
-        fritz._request = mock
-        element = fritz.get_device_element('12345')
-        device = FritzhomeDevice(node=element)
-        device._fritz = fritz
-
-        eq_(device.ain, '12345')
+        device = self.fritz.get_device_by_ain('12345')
         eq_(device.get_hkr_state(), 'manual')
