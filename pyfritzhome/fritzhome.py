@@ -277,13 +277,13 @@ class FritzhomeDevice(object):
 
             # pass if get_node_value is empty to prevent ValueError exception if device is not responding
             try:
-                self.actual_temperature = int(get_node_value(val, 'tist')) / 2
+                self.actual_temperature = float(get_node_value(val, 'tist')) / 2
             except ValueError:
                 pass
 
-            self.target_temperature = int(get_node_value(val, 'tsoll')) / 2
-            self.eco_temperature = int(get_node_value(val, 'absenk')) / 2
-            self.comfort_temperature = int(get_node_value(val, 'komfort')) / 2
+            self.target_temperature = float(get_node_value(val, 'tsoll')) / 2
+            self.eco_temperature = float(get_node_value(val, 'absenk')) / 2
+            self.comfort_temperature = float(get_node_value(val, 'komfort')) / 2
 
             # optional value
             try:
@@ -333,7 +333,7 @@ class FritzhomeDevice(object):
                 self.temperature = int(get_node_value(val, 'celsius')) / 10
             except ValueError:
                 pass
-        
+
         if self.has_alarm:
             val = node.getElementsByTagName('alert')[0]
             try:
@@ -343,8 +343,12 @@ class FritzhomeDevice(object):
 
     def __repr__(self):
         """Return a string."""
-        return '{} {} {} {}'.format(self.ain, self._id,
-                                    self.manufacturer, self.productname)
+        return '{ain} {id} {manuf} {prod} {name}'.format(
+                ain=self.ain,
+                id=self._id,
+                manuf=self.manufacturer,
+                prod=self.productname,
+                name=self.name)
 
     def update(self):
         """Update the device values."""
@@ -428,3 +432,16 @@ class FritzhomeDevice(object):
     def get_eco_temperature(self):
         """Get the thermostate eco temperature."""
         return self._fritz.get_eco_temperature(self.ain)
+
+    def get_hkr_state(self):
+        """Get the thermostate state."""
+        self.update()
+        if self.target_temperature == 126.5:
+            return 'off'
+        elif self.target_temperature == 127.0:
+            return 'on'
+        elif self.target_temperature == self.eco_temperature:
+            return 'eco'
+        elif self.target_temperature == self.comfort_temperature:
+            return 'comfort'
+        return 'manual'

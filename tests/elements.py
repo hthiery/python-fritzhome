@@ -310,3 +310,93 @@ device_with_umlaut_in_name_xml = """<?xml version="1.0" ?>
     </device>
 
 </devicelist>"""
+
+device_hkr_state_on_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.50" id="17" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Comet DECT #2</name>
+        <temperature>
+            <celsius>230</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>46</tist>
+            <tsoll>254</tsoll>
+            <absenk>32</absenk>
+            <komfort>45</komfort>
+        </hkr>
+    </device>
+</devicelist>"""
+
+device_hkr_state_off_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.50" id="17" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Comet DECT #2</name>
+        <temperature>
+            <celsius>230</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>46</tist>
+            <tsoll>253</tsoll>
+            <absenk>32</absenk>
+            <komfort>45</komfort>
+        </hkr>
+    </device>
+</devicelist>"""
+
+device_hkr_state_eco_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.50" id="17" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Comet DECT #2</name>
+        <temperature>
+            <celsius>230</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>46</tist>
+            <tsoll>45</tsoll>
+            <absenk>45</absenk>
+            <komfort>48</komfort>
+        </hkr>
+    </device>
+</devicelist>"""
+
+device_hkr_state_comfort_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.50" id="17" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Comet DECT #2</name>
+        <temperature>
+            <celsius>230</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>46</tist>
+            <tsoll>48</tsoll>
+            <absenk>45</absenk>
+            <komfort>48</komfort>
+        </hkr>
+    </device>
+</devicelist>"""
+
+device_hkr_state_manual_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.50" id="17" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Comet DECT #2</name>
+        <temperature>
+            <celsius>230</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>46</tist>
+            <tsoll>40</tsoll>
+            <absenk>45</absenk>
+            <komfort>48</komfort>
+        </hkr>
+    </device>
+</devicelist>"""
