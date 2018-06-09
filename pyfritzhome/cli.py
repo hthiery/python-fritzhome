@@ -23,10 +23,12 @@ def list_all(fritz, args):
         print('#' * 30)
         print('name=%s' % device.name)
         print('  ain=%s' % device.ain)
-        print('  id=%s' % device.id)
+        print('  id=%s' % device.identifier)
         print('  productname=%s' % device.productname)
         print('  manufacturer=%s' % device.manufacturer)
         print("  present=%s" % device.present)
+        print("  lock=%s" % device.lock)
+        print("  devicelock=%s" % device.device_lock)
 
         if device.present is False:
             continue

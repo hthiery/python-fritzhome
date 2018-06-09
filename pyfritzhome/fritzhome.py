@@ -232,7 +232,7 @@ class FritzhomeDevice(object):
     UNKNOWN2_MASK = 0x800
 
     ain = None
-    _id = None
+    identifier = None
     manufacturer = None
     productname = None
     actual_temperature = None
@@ -257,10 +257,14 @@ class FritzhomeDevice(object):
         if node is not None:
             self._update_from_node(node)
 
+    @staticmethod
+    def _get_temp_from_node(val, name):
+        return float(get_node_value(val, name)) / 2
+
     def _update_from_node(self, node):
         _LOGGER.debug(node.toprettyxml())
         self.ain = node.getAttribute("identifier")
-        self.id = node.getAttribute("id")
+        self.identifier = node.getAttribute("id")
         self._functionsbitmask = int(node.getAttribute("functionbitmask"))
         self.fw_version = node.getAttribute("fwversion")
         self.manufacturer = node.getAttribute("manufacturer")
@@ -343,12 +347,12 @@ class FritzhomeDevice(object):
 
     def __repr__(self):
         """Return a string."""
-        return '{ain} {id} {manuf} {prod} {name}'.format(
-                ain=self.ain,
-                id=self._id,
-                manuf=self.manufacturer,
-                prod=self.productname,
-                name=self.name)
+        return '{ain} {identifier} {manuf} {prod} {name}'.format(
+            ain=self.ain,
+            identifier=self.identifier,
+            manuf=self.manufacturer,
+            prod=self.productname,
+            name=self.name)
 
     def update(self):
         """Update the device values."""
