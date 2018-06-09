@@ -279,72 +279,87 @@ class FritzhomeDevice(object):
             return
 
         if self.has_thermostat:
-            val = node.getElementsByTagName('hkr')[0]
-
-            try:
-                self.actual_temperature = self._get_temp_from_node(val, 'tist')
-            except ValueError:
-                pass
-
-            self.target_temperature = self._get_temp_from_node(val, 'tsoll')
-            self.eco_temperature = self._get_temp_from_node(val, 'absenk')
-            self.comfort_temperature = self._get_temp_from_node(val, 'komfort')
-
-            # optional value
-            try:
-                self.device_lock = bool(int(get_node_value(val, 'devicelock')))
-            except IndexError:
-                pass
-
-            try:
-                self.lock = bool(int(get_node_value(val, 'lock')))
-            except IndexError:
-                pass
-
-            try:
-                self.error_code = int(get_node_value(val, 'errorcode'))
-            except IndexError:
-                pass
-
-            try:
-                self.battery_low = bool(int(get_node_value(val, 'batterylow')))
-            except IndexError:
-                pass
+            self._update_hkr_form_node(node)
 
         if self.has_switch:
-            val = node.getElementsByTagName('switch')[0]
-            self.switch_state = bool(int(get_node_value(val, 'state')))
-            self.switch_mode = get_node_value(val, 'mode')
-            self.lock = bool(get_node_value(val, 'lock'))
-            # optional value
-            try:
-                self.device_lock = bool(int(get_node_value(val, 'devicelock')))
-            except IndexError:
-                pass
+            self._update_switch_from_node(node)
 
         if self.has_powermeter:
-            val = node.getElementsByTagName('powermeter')[0]
-            self.power = int(get_node_value(val, 'power'))
-            self.energy = int(get_node_value(val, 'energy'))
+            self._update_powermeter_from_node(node)
 
         if self.has_temperature_sensor:
-            val = node.getElementsByTagName('temperature')[0]
-            try:
-                self.offset = int(get_node_value(val, 'offset')) / 10
-            except ValueError:
-                pass
-
-            try:
-                self.temperature = int(get_node_value(val, 'celsius')) / 10
-            except ValueError:
-                pass
+            self._update_temperature_from_node(node)
 
         if self.has_alarm:
-            val = node.getElementsByTagName('alert')[0]
-            try:
-                self.alert_state = bool(int(get_node_value(val, 'state')))
-            except IndexError:
-                pass
+            self._update_alarm_from_node(node)
+
+    def _update_hkr_form_node(self, node):
+        val = node.getElementsByTagName('hkr')[0]
+
+        try:
+            self.actual_temperature = self._get_temp_from_node(val, 'tist')
+        except ValueError:
+            pass
+
+        self.target_temperature = self._get_temp_from_node(val, 'tsoll')
+        self.eco_temperature = self._get_temp_from_node(val, 'absenk')
+        self.comfort_temperature = self._get_temp_from_node(val, 'komfort')
+
+        # optional value
+        try:
+            self.device_lock = bool(int(get_node_value(val, 'devicelock')))
+        except IndexError:
+            pass
+
+        try:
+            self.lock = bool(int(get_node_value(val, 'lock')))
+        except IndexError:
+            pass
+
+        try:
+            self.error_code = int(get_node_value(val, 'errorcode'))
+        except IndexError:
+            pass
+
+        try:
+            self.battery_low = bool(int(get_node_value(val, 'batterylow')))
+        except IndexError:
+            pass
+
+    def _update_switch_from_node(self, node):
+        val = node.getElementsByTagName('switch')[0]
+        self.switch_state = bool(int(get_node_value(val, 'state')))
+        self.switch_mode = get_node_value(val, 'mode')
+        self.lock = bool(get_node_value(val, 'lock'))
+        # optional value
+        try:
+            self.device_lock = bool(int(get_node_value(val, 'devicelock')))
+        except IndexError:
+            pass
+
+    def _update_powermeter_from_node(self, node):
+        val = node.getElementsByTagName('powermeter')[0]
+        self.power = int(get_node_value(val, 'power'))
+        self.energy = int(get_node_value(val, 'energy'))
+
+    def _update_temperature_from_node(self, node):
+        val = node.getElementsByTagName('temperature')[0]
+        try:
+            self.offset = int(get_node_value(val, 'offset')) / 10
+        except ValueError:
+            pass
+
+        try:
+            self.temperature = int(get_node_value(val, 'celsius')) / 10
+        except ValueError:
+            pass
+
+    def _update_alarm_from_node(self, node):
+        val = node.getElementsByTagName('alert')[0]
+        try:
+            self.alert_state = bool(int(get_node_value(val, 'state')))
+        except IndexError:
+            pass
 
     def __repr__(self):
         """Return a string."""
