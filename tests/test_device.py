@@ -344,3 +344,31 @@ class TestDevice(object):
 
         device = self.fritz.get_device_by_ain('12345')
         eq_(device.get_hkr_state(), 'manual')
+
+    def test_hkr_set_state_on(self):
+        self.mock.side_effect = [
+            device_hkr_state_manual_xml,
+            device_hkr_state_manual_xml,
+        ]
+
+        device = self.fritz.get_device_by_ain('12345')
+
+        device.set_hkr_state('on')
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'ain': u'12345', 'switchcmd':
+             'sethkrtsoll', 'param': 254, 'sid': None})
+
+    def test_hkr_set_state_off(self):
+        self.mock.side_effect = [
+            device_hkr_state_manual_xml,
+            device_hkr_state_manual_xml,
+        ]
+
+        device = self.fritz.get_device_by_ain('12345')
+
+        device.set_hkr_state('off')
+        device._fritz._request.assert_called_with(
+            'http://10.0.0.1/webservices/homeautoswitch.lua',
+            {'ain': u'12345', 'switchcmd':
+             'sethkrtsoll', 'param': 253, 'sid': None})

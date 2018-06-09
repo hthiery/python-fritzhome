@@ -190,14 +190,17 @@ class Fritzhome(object):
         plain = self._aha_request('gettemperature', ain=ain)
         return float(int(plain) / 10.0)
 
+    def _get_tempearture(self, ain, name):
+        plain = self._aha_request(name, ain=ain)
+        return (float(plain) - 16) / 2 + 8
+
     def get_target_temperature(self, ain):
         """Get the thermostate target temperature."""
-        plain = self._aha_request('gethkrtsoll', ain=ain)
-        return (float(plain) - 16) / 2 + 8
+        return self._get_tempearture(ain, 'gethkrtsoll')
 
     def set_target_temperature(self, ain, temperature):
         """Set the thermostate target temperature."""
-        param = 16 + ((temperature - 8) * 2)
+        param = 16 + ((float(temperature) - 8) * 2)
 
         if param < min(range(16, 56)):
             param = 253
@@ -207,18 +210,17 @@ class Fritzhome(object):
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
-        plain = self._aha_request('gethkrkomfort', ain=ain)
-        return (float(plain) - 16) / 2 + 8
+        return self._get_tempearture(ain, 'gethkrkomfort')
 
     def get_eco_temperature(self, ain):
         """Get the thermostate eco temperature."""
-        plain = self._aha_request('gethkrabsenk', ain=ain)
-        return (float(plain) - 16) / 2 + 8
+        return self._get_tempearture(ain, 'gethkrabsenk')
 
     def get_alert_state(self, ain):
         """Get the alert state."""
         device = self.get_device_by_ain(ain)
         return device.alert_state
+
 
 class FritzhomeDevice(object):
     """The Fritzhome Device class."""
@@ -279,15 +281,14 @@ class FritzhomeDevice(object):
         if self.has_thermostat:
             val = node.getElementsByTagName('hkr')[0]
 
-            # pass if get_node_value is empty to prevent ValueError exception if device is not responding
             try:
-                self.actual_temperature = float(get_node_value(val, 'tist')) / 2
+                self.actual_temperature = self._get_temp_from_node(val, 'tist')
             except ValueError:
                 pass
 
-            self.target_temperature = float(get_node_value(val, 'tsoll')) / 2
-            self.eco_temperature = float(get_node_value(val, 'absenk')) / 2
-            self.comfort_temperature = float(get_node_value(val, 'komfort')) / 2
+            self.target_temperature = self._get_temp_from_node(val, 'tsoll')
+            self.eco_temperature = self._get_temp_from_node(val, 'absenk')
+            self.comfort_temperature = self._get_temp_from_node(val, 'komfort')
 
             # optional value
             try:
@@ -440,12 +441,29 @@ class FritzhomeDevice(object):
     def get_hkr_state(self):
         """Get the thermostate state."""
         self.update()
-        if self.target_temperature == 126.5:
-            return 'off'
-        elif self.target_temperature == 127.0:
-            return 'on'
-        elif self.target_temperature == self.eco_temperature:
-            return 'eco'
-        elif self.target_temperature == self.comfort_temperature:
-            return 'comfort'
-        return 'manual'
+        try:
+            return {
+                126.5: 'off',
+                127.0: 'on',
+                self.eco_temperature: 'eco',
+                self.comfort_temperature: 'comfort'
+            }[self.target_temperature]
+        except KeyError:
+            return 'manual'
+
+    def set_hkr_state(self, state):
+        """Set the state of the thermostat.
+
+        Possible values for state are: 'on', 'off', 'comfort', 'eco'.
+        """
+        try:
+            value = {
+                'off': 0,
+                'on': 100,
+                'eco': self.eco_temperature,
+                'comfort': self.comfort_temperature
+            }[state]
+        except KeyError:
+            return
+
+        self.set_target_temperature(value)
