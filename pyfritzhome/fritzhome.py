@@ -78,7 +78,7 @@ class Fritzhome(object):
         hashed = hashlib.md5(to_hash).hexdigest()
         return '{0}-{1}'.format(challenge, hashed)
 
-    def _aha_request(self, cmd, ain=None, param=None):
+    def _aha_request(self, cmd, ain=None, param=None, rf=str):
         """Send an AHA request."""
         url = 'http://' + self._host + '/webservices/homeautoswitch.lua'
         params = {
@@ -93,6 +93,13 @@ class Fritzhome(object):
         plain = self._request(url, params)
         if plain == 'inval':
             raise InvalidError
+
+        if rf == int:
+            return int(plain)
+        elif rf == bool:
+            return bool(int(plain))
+        elif rf == float:
+            return float(plain)
         return plain
 
     def login(self):
@@ -147,52 +154,43 @@ class Fritzhome(object):
 
     def get_device_present(self, ain):
         """Get the device presence."""
-        plain = self._aha_request('getswitchpresent', ain=ain)
-        return bool(int(plain))
+        return self._aha_request('getswitchpresent', ain=ain, rf=bool)
 
     def get_device_name(self, ain):
         """Get the device name."""
-        plain = self._aha_request('getswitchname', ain=ain)
-        return plain
+        return self._aha_request('getswitchname', ain=ain)
 
     def get_switch_state(self, ain):
         """Get the switch state."""
-        plain = self._aha_request('getswitchstate', ain=ain)
-        return bool(int(plain))
+        return self._aha_request('getswitchstate', ain=ain, rf=bool)
 
     def set_switch_state_on(self, ain):
         """Set the switch to on state."""
-        plain = self._aha_request('setswitchon', ain=ain)
-        return bool(int(plain))
+        return self._aha_request('setswitchon', ain=ain, rf=bool)
 
     def set_switch_state_off(self, ain):
         """Set the switch to off state."""
-        plain = self._aha_request('setswitchoff', ain=ain)
-        return bool(int(plain))
+        return self._aha_request('setswitchoff', ain=ain, rf=bool)
 
     def set_switch_state_toggle(self, ain):
         """Toglle the switch state."""
-        plain = self._aha_request('setswitchtoggle', ain=ain)
-        return bool(int(plain))
+        return self._aha_request('setswitchtoggle', ain=ain, rf=bool)
 
     def get_switch_power(self, ain):
         """Get the switch power consumption."""
-        plain = self._aha_request('getswitchpower', ain=ain)
-        return int(plain)
+        return self._aha_request('getswitchpower', ain=ain, rf=int)
 
     def get_switch_energy(self, ain):
         """Get the switch energy."""
-        plain = self._aha_request('getswitchenergy', ain=ain)
-        return int(plain)
+        return self._aha_request('getswitchenergy', ain=ain, rf=int)
 
     def get_temperature(self, ain):
         """Get the device temperature sensor value."""
-        plain = self._aha_request('gettemperature', ain=ain)
-        return float(int(plain) / 10.0)
+        return self._aha_request('gettemperature', ain=ain, rf=float) / 10.0
 
     def _get_tempearture(self, ain, name):
-        plain = self._aha_request(name, ain=ain)
-        return (float(plain) - 16) / 2 + 8
+        plain = self._aha_request(name, ain=ain, rf=float)
+        return (plain - 16) / 2 + 8
 
     def get_target_temperature(self, ain):
         """Get the thermostate target temperature."""
