@@ -25,6 +25,13 @@ def get_node_value(node, name):
     return get_text(node.getElementsByTagName(name)[0].childNodes)
 
 
+def bits(value):
+    while value:
+        bit = value & (~value+1)
+        yield bit
+        value ^= bit
+
+
 class Fritzhome(object):
     """Fritzhome object to communicate with the device."""
 
@@ -94,13 +101,9 @@ class Fritzhome(object):
         if plain == 'inval':
             raise InvalidError
 
-        if rf == int:
-            return int(plain)
-        elif rf == bool:
+        if rf == bool:
             return bool(int(plain))
-        elif rf == float:
-            return float(plain)
-        return plain
+        return rf(plain)
 
     def login(self):
         """Login and get a valid session ID."""
@@ -276,22 +279,20 @@ class FritzhomeDevice(object):
         if self.present is False:
             return
 
-        if self.has_thermostat:
-            self._update_hkr_form_node(node)
+        for bit in bits(self._functionsbitmask):
+            try:
+                fct = {
+                    self.ALARM_MASK: self._update_alarm_from_node,
+                    self.POWER_METER_MASK: self._update_powermeter_from_node,
+                    self.SWITCH_MASK: self._update_switch_from_node,
+                    self.TEMPERATURE_MASK: self._update_temperature_from_node,
+                    self.THERMOSTAT_MASK: self._update_hkr_from_node,
+                }[bit]
+                fct(node)
+            except KeyError:
+                pass
 
-        if self.has_switch:
-            self._update_switch_from_node(node)
-
-        if self.has_powermeter:
-            self._update_powermeter_from_node(node)
-
-        if self.has_temperature_sensor:
-            self._update_temperature_from_node(node)
-
-        if self.has_alarm:
-            self._update_alarm_from_node(node)
-
-    def _update_hkr_form_node(self, node):
+    def _update_hkr_from_node(self, node):
         val = node.getElementsByTagName('hkr')[0]
 
         try:
