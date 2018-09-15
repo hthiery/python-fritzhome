@@ -45,6 +45,11 @@ add a new user.
     switch_energy=88863
     temperature=21.000000
 
+Fritzbox User
+-------------
+
+	.. image:: https://raw.githubusercontent.com/hthiery/python-fritzhome/readme/doc/fritzbox_user_overview.png
+
 References
 ----------
 
