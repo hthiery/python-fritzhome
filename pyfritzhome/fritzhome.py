@@ -232,7 +232,8 @@ class FritzhomeDevice(object):
     TEMPERATURE_MASK = 0x100
     SWITCH_MASK = 0x200
     DECT_REPEATER_MASK = 0x400
-    UNKNOWN2_MASK = 0x800
+    MICROPHONE_UNIT = 0x800
+    HANFUN_UNIT = 0x2000
 
     ain = None
     identifier = None
@@ -250,6 +251,7 @@ class FritzhomeDevice(object):
     switch_mode = None
     power = None
     energy = None
+    voltage = None
     offset = None
     temperature = None
     alert_state = None
@@ -340,6 +342,10 @@ class FritzhomeDevice(object):
         val = node.getElementsByTagName('powermeter')[0]
         self.power = int(get_node_value(val, 'power'))
         self.energy = int(get_node_value(val, 'energy'))
+        try:
+            self.voltage = float(int(get_node_value(val, 'voltage')) / 1000)
+        except IndexError:
+            pass
 
     def _update_temperature_from_node(self, node):
         val = node.getElementsByTagName('temperature')[0]
