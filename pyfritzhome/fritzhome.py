@@ -222,6 +222,11 @@ class Fritzhome(object):
         device = self.get_device_by_ain(ain)
         return device.alert_state
 
+    def get_device_statistic(self, ain):
+        """Get device statistics."""
+        plain = self._aha_request('getbasicdevicestats', ain=ain)
+        return plain
+
 
 class FritzhomeDevice(object):
     """The Fritzhome Device class."""
