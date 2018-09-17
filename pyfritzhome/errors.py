@@ -7,6 +7,3 @@ class LoginError(Exception):
 
 class InvalidError(Exception):
     pass
-
-class NotImplemented(Exception):
-    pass
