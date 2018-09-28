@@ -5,11 +5,8 @@ Python Library to access AVM Fritz!Box homeautomation
 
 Tested Devices
 --------------
-* `FRITZ!Box 6490 Cable`_
-
- * with FRITZ!OS 06.85
- * with FRITZ!OS 07.00
-
+* `FRITZ!Box 6490 Cable`_ with FRITZ!OS 06.85
+* `FRITZ!Box 6490 Cable`_ with FRITZ!OS 07.00
 * `FRITZ!DECT 200`_ with firmware 03.87
 * `Comet DECT`_ with firmware 03.54
 * `Panasonic KX-HNS101`
@@ -61,8 +58,8 @@ Add a new user: System -> FRITZ!Box-Benutzer
 References
 ----------
 
- - https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AHA-HTTP-Interface.pdf
- - https://github.com/DerMitch/fritzbox-smarthome
+- https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AHA-HTTP-Interface.pdf
+- https://github.com/DerMitch/fritzbox-smarthome
 
 
 .. |BuildStatus| image:: https://travis-ci.org/hthiery/python-fritzhome.png?branch=master
@@ -72,8 +69,8 @@ References
 .. |Coveralls|   image:: https://coveralls.io/repos/github/hthiery/python-fritzhome/badge.svg?branch=master
                  :target: https://coveralls.io/github/hthiery/python-fritzhome?branch=master
 .. |CodeClimate| image:: https://api.codeclimate.com/v1/badges/fc83491ef0ae81080882/maintainability
-				 :target: https://codeclimate.com/github/hthiery/python-fritzhome/maintainability
-				 :alt: Maintainability
+                 :target: https://codeclimate.com/github/hthiery/python-fritzhome/maintainability
+                 :alt: Maintainability
 .. |Codacy|      image:: https://api.codacy.com/project/badge/Grade/0929296afb8c45c6af673524fe232d9e
                  :target: https://www.codacy.com/app/hthiery/python-fritzhome?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hthiery/python-fritzhome&amp;utm_campaign=Badge_Grade
 
