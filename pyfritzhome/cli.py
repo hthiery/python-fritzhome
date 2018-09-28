@@ -38,8 +38,9 @@ def list_all(fritz, args):
             print("  switch_state=%s" % device.switch_state)
         if device.has_switch:
             print(" Powermeter:")
-            print("  switch_power=%s" % device.power)
-            print("  switch_energy=%s" % device.energy)
+            print("  power=%s" % device.power)
+            print("  energy=%s" % device.energy)
+            print("  voltage=%s" % device.voltage)
         if device.has_temperature_sensor:
             print(" Temperature:")
             print("  temperature=%s" % device.temperature)
@@ -47,10 +48,14 @@ def list_all(fritz, args):
         if device.has_thermostat:
             print(" Thermostat:")
             print("  battery_low=%s" % device.battery_low)
+            print("  battery_level=%s" % device.battery_level)
             print("  actual=%s" % device.actual_temperature)
             print("  target=%s" % device.target_temperature)
             print("  comfort=%s" % device.comfort_temperature)
             print("  eco=%s" % device.eco_temperature)
+            print("  window=%s" % device.window_open)
+            print("  summer=%s" % device.summer_active)
+            print("  holiday=%s" % device.holiday_active)
         if device.has_alarm:
             print(" Alert:")
             print("  alert=%s" % device.alert_state)

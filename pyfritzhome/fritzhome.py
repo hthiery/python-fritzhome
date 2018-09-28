@@ -248,6 +248,10 @@ class FritzhomeDevice(object):
     target_temperature = None
     eco_temperature = None
     comfort_temperature = None
+    battery_level = None
+    window_open = None
+    summer_active = None
+    holiday_active = None
     lock = None
     device_lock = None
     error_code = None
@@ -329,6 +333,28 @@ class FritzhomeDevice(object):
 
         try:
             self.battery_low = bool(int(get_node_value(val, 'batterylow')))
+        except IndexError:
+            pass
+
+        try:
+            self.battery_level = int(int(get_node_value(val, 'battery')))
+        except IndexError:
+            pass
+
+        try:
+            self.window_open = bool(int(get_node_value(val,
+                                                       'windowopenactiv')))
+        except IndexError:
+            pass
+
+        try:
+            self.summer_active = bool(int(get_node_value(val, 'summeractive')))
+        except IndexError:
+            pass
+
+        try:
+            self.holiday_active = bool(int(get_node_value(val,
+                                                          'holidayactive')))
         except IndexError:
             pass
 

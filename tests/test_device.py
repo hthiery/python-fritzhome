@@ -15,7 +15,7 @@ from .elements import (device_list_xml, device_list_battery_ok_xml,
                        device_alert_off_xml, device_alert_no_alertstate_xml,
                        device_hkr_state_on_xml, device_hkr_state_off_xml,
                        device_hkr_state_eco_xml, device_hkr_state_comfort_xml,
-                       device_hkr_state_manual_xml)
+                       device_hkr_state_manual_xml, device_hkr_fritzos_7_xml)
 
 
 def get_switch_test_device():
@@ -363,3 +363,35 @@ class TestDevice(object):
             'http://10.0.0.1/webservices/homeautoswitch.lua',
             {'ain': u'12345', 'switchcmd':
              'sethkrtsoll', 'param': 253, 'sid': None})
+
+    def test_hkr_battery_level(self):
+        self.mock.side_effect = [
+            device_hkr_fritzos_7_xml
+        ]
+
+        device = self.fritz.get_device_by_ain('12345')
+        eq_(device.battery_level, 70)
+
+    def test_hkr_window_open(self):
+        self.mock.side_effect = [
+            device_hkr_fritzos_7_xml
+        ]
+
+        device = self.fritz.get_device_by_ain('12345')
+        eq_(device.window_open, False)
+
+    def test_hkr_summer_active(self):
+        self.mock.side_effect = [
+            device_hkr_fritzos_7_xml
+        ]
+
+        device = self.fritz.get_device_by_ain('12345')
+        eq_(device.summer_active, True)
+
+    def test_hkr_holiday_active(self):
+        self.mock.side_effect = [
+            device_hkr_fritzos_7_xml
+        ]
+
+        device = self.fritz.get_device_by_ain('12345')
+        eq_(device.holiday_active, False)
