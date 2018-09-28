@@ -158,14 +158,13 @@ class TestDevice(object):
              'getswitchpresent', 'sid': None})
 
     def test_get_switch_state(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '1',
             '0'
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         assert_true(device.get_switch_state())
         assert_false(device.get_switch_state())
@@ -175,10 +174,8 @@ class TestDevice(object):
              'getswitchstate', 'sid': None})
 
     def test_set_switch_state(self):
-        mock = MagicMock()
-
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         device.set_switch_state_on()
         device._fritz._request.assert_called_with(
@@ -199,13 +196,12 @@ class TestDevice(object):
              'setswitchtoggle', 'sid': None})
 
     def test_get_switch_power(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '18000',
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         eq_(device.get_switch_power(), 18000)
         device._fritz._request.assert_called_with(
@@ -214,13 +210,12 @@ class TestDevice(object):
              'getswitchpower', 'sid': None})
 
     def test_get_switch_energy(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '2000',
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         eq_(device.get_switch_energy(), 2000)
         device._fritz._request.assert_called_with(
@@ -229,13 +224,12 @@ class TestDevice(object):
              'getswitchenergy', 'sid': None})
 
     def test_get_temperature(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '245',
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         eq_(device.get_temperature(), 24.5)
         device._fritz._request.assert_called_with(
@@ -244,13 +238,12 @@ class TestDevice(object):
              'gettemperature', 'sid': None})
 
     def test_get_target_temperature(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '38',
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         eq_(device.get_target_temperature(), 19.0)
         device._fritz._request.assert_called_with(
@@ -259,13 +252,12 @@ class TestDevice(object):
              'gethkrtsoll', 'sid': None})
 
     def test_get_eco_temperature(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '40',
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         eq_(device.get_eco_temperature(), 20.0)
         device._fritz._request.assert_called_with(
@@ -274,13 +266,12 @@ class TestDevice(object):
              'gethkrabsenk', 'sid': None})
 
     def test_get_comfort_temperature(self):
-        mock = MagicMock()
-        mock.side_effect = [
+        self.mock.side_effect = [
             '41',
         ]
 
         device = get_switch_test_device()
-        device._fritz._request = mock
+        device._fritz._request = self.mock
 
         eq_(device.get_comfort_temperature(), 20.5)
         device._fritz._request.assert_called_with(
