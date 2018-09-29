@@ -63,12 +63,12 @@ def list_all(fritz, args):
 
 def device_name(fritz, args):
     """Command that prints the device name."""
-    print(fritz.get_actor_name(args.ain))
+    print(fritz.get_device_name(args.ain))
 
 
 def device_presence(fritz, args):
     """Command that prints the device presence."""
-    print(int(fritz.get_actor_present(args.ain)))
+    print(int(fritz.get_device_present(args.ain)))
 
 
 def device_statistic(fritz, args):
