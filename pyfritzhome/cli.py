@@ -73,7 +73,8 @@ def device_presence(fritz, args):
 
 def device_statistic(fritz, args):
     """Command that prints the device presence."""
-    fritz.get_device_statistic(args.ain)
+    stats = fritz.get_device_statistic(args.ain)
+    print(stats)
 
 
 def switch_get(fritz, args):
