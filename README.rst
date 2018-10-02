@@ -10,6 +10,7 @@ Tested Devices
 * `FRITZ!DECT 200`_ with firmware 03.87
 * `Comet DECT`_ with firmware 03.54
 * `Panasonic KX-HNS101`
+* `Magenta Smarthome Tür-/Fensterkontakt optisch`_
 
 
 fritzhome CLI tool
@@ -77,3 +78,4 @@ References
 .. _Comet DECT: https://www.eurotronic.org/produkte/comet-dect.html
 .. _FRITZ!DECT 200: https://avm.de/produkte/fritzdect/fritzdect-200/
 .. _FRITZ!Box 6490 Cable: https://avm.de/produkte/fritzbox/fritzbox-6490-cable/
+.. _Magenta Smarthome Tür-/Fensterkontakt optisch: https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-optisch-weiss
