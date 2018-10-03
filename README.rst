@@ -1,7 +1,7 @@
 Python Library to access AVM Fritz!Box homeautomation
 =====================================================
 
-|BuildStatus| |PypiVersion| |Coveralls| |CodeClimate| |Codacy|
+|BuildStatus| |PypiVersion| |PyPiPythonVersions| |Coveralls| |CodeClimate| |Codacy|
 
 Tested Devices
 --------------
@@ -67,6 +67,10 @@ References
                  :target: https://travis-ci.org/hthiery/python-fritzhome
 .. |PyPiVersion| image:: https://badge.fury.io/py/pyfritzhome.svg
                  :target: http://badge.fury.io/py/pyfritzhome
+.. |PyPiPythonVersions| image:: https://badge.fury.io/py/pyfritzhome.svg
+                        .. image:: https://img.shields.io/pypi/pyversions/pyfritzhome.svg
+                        :alt: Python versions
+                        :target: http://badge.fury.io/py/pyfritzhome
 .. |Coveralls|   image:: https://coveralls.io/repos/github/hthiery/python-fritzhome/badge.svg?branch=master
                  :target: https://coveralls.io/github/hthiery/python-fritzhome?branch=master
 .. |CodeClimate| image:: https://api.codeclimate.com/v1/badges/fc83491ef0ae81080882/maintainability
