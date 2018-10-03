@@ -67,8 +67,7 @@ References
                  :target: https://travis-ci.org/hthiery/python-fritzhome
 .. |PyPiVersion| image:: https://badge.fury.io/py/pyfritzhome.svg
                  :target: http://badge.fury.io/py/pyfritzhome
-.. |PyPiPythonVersions| image:: https://badge.fury.io/py/pyfritzhome.svg
-                        .. image:: https://img.shields.io/pypi/pyversions/pyfritzhome.svg
+.. |PyPiPythonVersions| image:: https://img.shields.io/pypi/pyversions/pyfritzhome.svg
                         :alt: Python versions
                         :target: http://badge.fury.io/py/pyfritzhome
 .. |Coveralls|   image:: https://coveralls.io/repos/github/hthiery/python-fritzhome/badge.svg?branch=master
