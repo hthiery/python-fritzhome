@@ -24,28 +24,58 @@ add a new user.
 .. code:: shell
 
     $ fritzhome -f fritz.box  -u smarthome -p smarthome  list
-    #############
-    ain=11959 0171328
-    id=16
-    name=Badezimmer
-    productname=Comet DECT
-    manufacturer=AVM
-    present=True
-    temperature=21.000000
-    soll=22.0
-    komfort=22.0
-    absenk=19.0
-    #############
-    ain=08761 0045657
-    id=17
-    name=FRITZ!DECT 200 #2
-    productname=FRITZ!DECT 200
-    manufacturer=AVM
-    present=True
-    switch_state=True
-    switch_power=0
-    switch_energy=88863
-    temperature=21.000000
+    ##############################
+    name=Fenster Badezimmer
+      ain=11934 0154799-1
+      id=2000
+      productname=HAN-FUN
+      manufacturer=0x0feb
+      present=True
+      lock=None
+      devicelock=None
+     Alert:
+      alert=True
+    ##############################
+    name=Thermostat Badezimmer
+      ain=11959 0171328
+      id=16
+      productname=Comet DECT
+      manufacturer=AVM
+      present=True
+      lock=False
+      devicelock=False
+     Temperature:
+      temperature=19
+      offset=-3
+     Thermostat:
+      battery_low=False
+      battery_level=80
+      actual=19.0
+      target=19.0
+      comfort=22.0
+      eco=19.0
+      window=False
+      summer=False
+      holiday=False
+    ##############################
+    name=Schalter WC Heizung
+      ain=08761 0402392
+      id=21
+      productname=FRITZ!DECT 200
+      manufacturer=AVM
+      present=True
+      lock=True
+      devicelock=False
+     Switch:
+      switch_state=False
+     Powermeter:
+      power=0
+      energy=436529
+      voltage=231.0
+     Temperature:
+      temperature=22
+      offset=3
+
 
 Fritzbox User
 -------------
