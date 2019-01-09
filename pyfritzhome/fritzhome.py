@@ -176,7 +176,7 @@ class Fritzhome(object):
         return self._aha_request('setswitchoff', ain=ain, rf=bool)
 
     def set_switch_state_toggle(self, ain):
-        """Toglle the switch state."""
+        """Toggle the switch state."""
         return self._aha_request('setswitchtoggle', ain=ain, rf=bool)
 
     def get_switch_power(self, ain):
@@ -191,13 +191,13 @@ class Fritzhome(object):
         """Get the device temperature sensor value."""
         return self._aha_request('gettemperature', ain=ain, rf=float) / 10.0
 
-    def _get_tempearture(self, ain, name):
+    def _get_temperature(self, ain, name):
         plain = self._aha_request(name, ain=ain, rf=float)
         return (plain - 16) / 2 + 8
 
     def get_target_temperature(self, ain):
         """Get the thermostate target temperature."""
-        return self._get_tempearture(ain, 'gethkrtsoll')
+        return self._get_temperature(ain, 'gethkrtsoll')
 
     def set_target_temperature(self, ain, temperature):
         """Set the thermostate target temperature."""
@@ -211,11 +211,11 @@ class Fritzhome(object):
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
-        return self._get_tempearture(ain, 'gethkrkomfort')
+        return self._get_temperature(ain, 'gethkrkomfort')
 
     def get_eco_temperature(self, ain):
         """Get the thermostate eco temperature."""
-        return self._get_tempearture(ain, 'gethkrabsenk')
+        return self._get_temperature(ain, 'gethkrabsenk')
 
     def get_alert_state(self, ain):
         """Get the alert state."""
