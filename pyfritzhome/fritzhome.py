@@ -45,7 +45,7 @@ class Fritzhome(object):
         self._session = Session()
 
     def _request(self, url, params=None, timeout=10):
-        """Send a request with paramerters."""
+        """Send a request with parameters."""
         rsp = self._session.get(url, params=params, timeout=timeout)
         rsp.raise_for_status()
         return rsp.text.strip()
@@ -126,14 +126,14 @@ class Fritzhome(object):
         self._sid = None
 
     def get_device_elements(self):
-        """Get the DOM elments for the device list."""
+        """Get the DOM elements for the device list."""
         plain = self._aha_request('getdevicelistinfos')
         dom = xml.dom.minidom.parseString(plain)
         _LOGGER.info(dom)
         return dom.getElementsByTagName("device")
 
     def get_device_element(self, ain):
-        """Get the DOM elment for the specified device."""
+        """Get the DOM element for the specified device."""
         elements = self.get_device_elements()
         for element in elements:
             if element.getAttribute('identifier') == ain:
@@ -222,7 +222,7 @@ class Fritzhome(object):
         device = self.get_device_by_ain(ain)
         return device.alert_state
 
-    def get_device_statistic(self, ain):
+    def get_device_statistics(self, ain):
         """Get device statistics."""
         plain = self._aha_request('getbasicdevicestats', ain=ain)
         return plain

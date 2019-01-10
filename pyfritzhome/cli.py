@@ -71,9 +71,9 @@ def device_presence(fritz, args):
     print(int(fritz.get_device_present(args.ain)))
 
 
-def device_statistic(fritz, args):
-    """Command that prints the device presence."""
-    stats = fritz.get_device_statistic(args.ain)
+def device_statistics(fritz, args):
+    """Command that prints the device statistics."""
+    stats = fritz.get_device_statistics(args.ain)
     print(stats)
 
 
@@ -140,10 +140,10 @@ def main(args=None):
 
     # device stats
     subparser = _sub_switch.add_parser('stats',
-                                       help='get the device statistic')
+                                       help='get the device statistics')
     subparser.add_argument('ain', type=str, metavar="AIN",
                            help='Actor Identification')
-    subparser.set_defaults(func=device_statistic)
+    subparser.set_defaults(func=device_statistics)
 
     # switch
     subparser = _sub.add_parser('switch', help='Switch commands')
