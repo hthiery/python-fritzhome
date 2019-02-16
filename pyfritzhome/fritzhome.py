@@ -69,7 +69,7 @@ class Fritzhome(object):
 
     def _logout_request(self):
         """Send a logout request."""
-        _LOGGER.info('logout')
+        _LOGGER.debug('logout')
         url = 'http://' + self._host + '/login_sid.lua'
         params = {
             'security:command/logout': '1',
@@ -129,7 +129,7 @@ class Fritzhome(object):
         """Get the DOM elements for the device list."""
         plain = self._aha_request('getdevicelistinfos')
         dom = xml.dom.minidom.parseString(plain)
-        _LOGGER.info(dom)
+        _LOGGER.debug(dom)
         return dom.getElementsByTagName("device")
 
     def get_device_element(self, ain):
