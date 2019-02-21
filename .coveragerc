@@ -5,3 +5,4 @@ omit =
 	*/tests/*
 	*/pyasn1/*
 	*/ndg/*
+	*/doc/*
