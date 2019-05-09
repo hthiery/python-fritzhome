@@ -381,12 +381,12 @@ class FritzhomeDevice(object):
     def _update_temperature_from_node(self, node):
         val = node.getElementsByTagName('temperature')[0]
         try:
-            self.offset = int(get_node_value(val, 'offset')) / 10
+            self.offset = int(get_node_value(val, 'offset')) / 10.0
         except ValueError:
             pass
 
         try:
-            self.temperature = int(get_node_value(val, 'celsius')) / 10
+            self.temperature = int(get_node_value(val, 'celsius')) / 10.0
         except ValueError:
             pass
 
