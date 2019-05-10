@@ -103,7 +103,7 @@ class Fritzhome(object):
 
         if rf == bool:
             return bool(int(plain))
-        return rf(plain)
+        return rf(plain.encode('utf-8', 'error'))
 
     def login(self):
         """Login and get a valid session ID."""
