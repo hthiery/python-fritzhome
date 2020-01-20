@@ -431,3 +431,19 @@ device_hkr_fritzos_7_xml = """<?xml version="1.0" ?>
         </hkr>
     </device>
 </devicelist>"""
+
+device_magenta_smoke_alarm_xml = """<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="8208" fwversion="0.0" id="2000" identifier="11324 0244498-1" manufacturer="0x2c3c" productname="HAN-FUN">
+        <present>1</present>
+        <name>Rauchmelder</name>
+        <etsiunitinfo>
+            <etsideviceid>406</etsideviceid>
+            <unittype>516</unittype>
+            <interfaces>256</interfaces>
+        </etsiunitinfo>
+        <alert>
+            <state/>
+        </alert>
+    </device>
+</devicelist>"""

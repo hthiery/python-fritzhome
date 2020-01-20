@@ -15,7 +15,8 @@ from .elements import (device_list_xml, device_list_battery_ok_xml,
                        device_alert_off_xml, device_alert_no_alertstate_xml,
                        device_hkr_state_on_xml, device_hkr_state_off_xml,
                        device_hkr_state_eco_xml, device_hkr_state_comfort_xml,
-                       device_hkr_state_manual_xml, device_hkr_fritzos_7_xml)
+                       device_hkr_state_manual_xml, device_hkr_fritzos_7_xml,
+                       device_magenta_smoke_alarm_xml)
 
 
 def get_switch_test_device():
@@ -395,3 +396,11 @@ class TestDevice(object):
 
         device = self.fritz.get_device_by_ain('12345')
         eq_(device.holiday_active, False)
+
+    def test_magenta_smoke_alarm(self):
+        self.mock.side_effect = [
+            device_magenta_smoke_alarm_xml,
+        ]
+        device = self.fritz.get_device_by_ain('11324 0244498-1')
+        assert_true(device.present)
+        eq_(device.alert_state, None)
