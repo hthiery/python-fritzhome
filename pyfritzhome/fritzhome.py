@@ -394,7 +394,7 @@ class FritzhomeDevice(object):
         val = node.getElementsByTagName('alert')[0]
         try:
             self.alert_state = bool(int(get_node_value(val, 'state')))
-        except IndexError:
+        except(IndexError, ValueError):
             pass
 
     def __repr__(self):
