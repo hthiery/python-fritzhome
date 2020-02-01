@@ -4,3 +4,9 @@
 build/
 dist/
 *.egg-info/
+/.coverage
+/coverage.xml
+
+# VS Code
+/.devcontainer
+/.vscode
