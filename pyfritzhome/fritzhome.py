@@ -87,7 +87,8 @@ class Fritzhome(object):
 
     def _aha_request(self, cmd, ain=None, param=None, rf=str):
         """Send an AHA request."""
-        url = self.get_prefixed_url(self._host) + '/webservices/homeautoswitch.lua'
+        path = '/webservices/homeautoswitch.lua'
+        url = self.get_prefixed_url(self._host) + path
         params = {
             'switchcmd': cmd,
             'sid': self._sid
