@@ -52,7 +52,7 @@ class Fritzhome(object):
 
     def _login_request(self, username=None, secret=None):
         """Send a login request with paramerters."""
-        url = 'http://' + self._host + '/login_sid.lua'
+        url = self.get_prefixed_url(self._host) + '/login_sid.lua'
         params = {}
         if username:
             params['username'] = username
@@ -70,7 +70,7 @@ class Fritzhome(object):
     def _logout_request(self):
         """Send a logout request."""
         _LOGGER.debug('logout')
-        url = 'http://' + self._host + '/login_sid.lua'
+        url = self.get_prefixed_url(self._host) + '/login_sid.lua'
         params = {
             'security:command/logout': '1',
             'sid': self._sid
@@ -87,7 +87,7 @@ class Fritzhome(object):
 
     def _aha_request(self, cmd, ain=None, param=None, rf=str):
         """Send an AHA request."""
-        url = 'http://' + self._host + '/webservices/homeautoswitch.lua'
+        url = self.get_prefixed_url(self._host) + '/webservices/homeautoswitch.lua'
         params = {
             'switchcmd': cmd,
             'sid': self._sid
@@ -124,6 +124,19 @@ class Fritzhome(object):
         """Logout."""
         self._logout_request()
         self._sid = None
+
+    def get_prefixed_url(self, host):
+        """Choose the correct protocol prefix for the host. 
+        Supports three input formats:
+        - https://<host> (requests use strict certificate validation by default)
+        - http://<host> (unecrypted)
+        - <host> (unencrypted)
+        """
+        protocol_url = host
+        if host.startswith('https://') or host.startswith('http://'):
+            return host
+        else:
+            return 'http://' + host
 
     def get_device_elements(self):
         """Get the DOM elements for the device list."""
