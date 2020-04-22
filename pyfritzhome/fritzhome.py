@@ -255,6 +255,7 @@ class FritzhomeDevice(object):
 
     ain = None
     identifier = None
+    fw_version = None
     manufacturer = None
     productname = None
     actual_temperature = None
