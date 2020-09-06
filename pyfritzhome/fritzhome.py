@@ -6,7 +6,7 @@ import logging
 import xml.dom.minidom
 from requests import Session
 
-from .errors import (InvalidError, LoginError)
+from .errors import InvalidError, LoginError
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def get_text(nodelist):
     for node in nodelist:
         if node.nodeType == node.TEXT_NODE:
             value.append(node.data)
-    return ''.join(value)
+    return "".join(value)
 
 
 def get_node_value(node, name):
@@ -27,7 +27,7 @@ def get_node_value(node, name):
 
 def bits(value):
     while value:
-        bit = value & (~value+1)
+        bit = value & (~value + 1)
         yield bit
         value ^= bit
 
@@ -52,53 +52,46 @@ class Fritzhome(object):
 
     def _login_request(self, username=None, secret=None):
         """Send a login request with paramerters."""
-        url = self.get_prefixed_host() + '/login_sid.lua'
+        url = self.get_prefixed_host() + "/login_sid.lua"
         params = {}
         if username:
-            params['username'] = username
+            params["username"] = username
         if secret:
-            params['response'] = secret
+            params["response"] = secret
 
         plain = self._request(url, params)
         dom = xml.dom.minidom.parseString(plain)
-        sid = get_text(dom.getElementsByTagName('SID')[0].childNodes)
-        challenge = get_text(
-            dom.getElementsByTagName('Challenge')[0].childNodes)
+        sid = get_text(dom.getElementsByTagName("SID")[0].childNodes)
+        challenge = get_text(dom.getElementsByTagName("Challenge")[0].childNodes)
 
         return (sid, challenge)
 
     def _logout_request(self):
         """Send a logout request."""
-        _LOGGER.debug('logout')
-        url = self.get_prefixed_host() + '/login_sid.lua'
-        params = {
-            'security:command/logout': '1',
-            'sid': self._sid
-        }
+        _LOGGER.debug("logout")
+        url = self.get_prefixed_host() + "/login_sid.lua"
+        params = {"security:command/logout": "1", "sid": self._sid}
 
         self._request(url, params)
 
     @staticmethod
     def _create_login_secret(challenge, password):
         """Create a login secret."""
-        to_hash = (challenge + '-' + password).encode('UTF-16LE')
+        to_hash = (challenge + "-" + password).encode("UTF-16LE")
         hashed = hashlib.md5(to_hash).hexdigest()
-        return '{0}-{1}'.format(challenge, hashed)
+        return "{0}-{1}".format(challenge, hashed)
 
     def _aha_request(self, cmd, ain=None, param=None, rf=str):
         """Send an AHA request."""
-        url = self.get_prefixed_host() + '/webservices/homeautoswitch.lua'
-        params = {
-            'switchcmd': cmd,
-            'sid': self._sid
-        }
+        url = self.get_prefixed_host() + "/webservices/homeautoswitch.lua"
+        params = {"switchcmd": cmd, "sid": self._sid}
         if param:
-            params['param'] = param
+            params["param"] = param
         if ain:
-            params['ain'] = ain
+            params["ain"] = ain
 
         plain = self._request(url, params)
-        if plain == 'inval':
+        if plain == "inval":
             raise InvalidError
 
         if rf == bool:
@@ -109,11 +102,12 @@ class Fritzhome(object):
         """Login and get a valid session ID."""
         try:
             (sid, challenge) = self._login_request()
-            if sid == '0000000000000000':
+            if sid == "0000000000000000":
                 secret = self._create_login_secret(challenge, self._password)
-                (sid2, challenge) = self._login_request(username=self._user,
-                                                        secret=secret)
-                if sid2 == '0000000000000000':
+                (sid2, challenge) = self._login_request(
+                    username=self._user, secret=secret
+                )
+                if sid2 == "0000000000000000":
                     _LOGGER.warning("login failed %s", sid2)
                     raise LoginError(self._user)
                 self._sid = sid2
@@ -133,14 +127,14 @@ class Fritzhome(object):
         - <host> (unencrypted)
         """
         host = self._host
-        if host.startswith('https://') or host.startswith('http://'):
+        if host.startswith("https://") or host.startswith("http://"):
             return host
         else:
-            return 'http://' + host
+            return "http://" + host
 
     def get_device_elements(self):
         """Get the DOM elements for the device list."""
-        plain = self._aha_request('getdevicelistinfos')
+        plain = self._aha_request("getdevicelistinfos")
         dom = xml.dom.minidom.parseString(plain)
         _LOGGER.debug(dom)
         return dom.getElementsByTagName("device")
@@ -149,7 +143,7 @@ class Fritzhome(object):
         """Get the DOM element for the specified device."""
         elements = self.get_device_elements()
         for element in elements:
-            if element.getAttribute('identifier') == ain:
+            if element.getAttribute("identifier") == ain:
                 return element
         return None
 
@@ -170,39 +164,39 @@ class Fritzhome(object):
 
     def get_device_present(self, ain):
         """Get the device presence."""
-        return self._aha_request('getswitchpresent', ain=ain, rf=bool)
+        return self._aha_request("getswitchpresent", ain=ain, rf=bool)
 
     def get_device_name(self, ain):
         """Get the device name."""
-        return self._aha_request('getswitchname', ain=ain)
+        return self._aha_request("getswitchname", ain=ain)
 
     def get_switch_state(self, ain):
         """Get the switch state."""
-        return self._aha_request('getswitchstate', ain=ain, rf=bool)
+        return self._aha_request("getswitchstate", ain=ain, rf=bool)
 
     def set_switch_state_on(self, ain):
         """Set the switch to on state."""
-        return self._aha_request('setswitchon', ain=ain, rf=bool)
+        return self._aha_request("setswitchon", ain=ain, rf=bool)
 
     def set_switch_state_off(self, ain):
         """Set the switch to off state."""
-        return self._aha_request('setswitchoff', ain=ain, rf=bool)
+        return self._aha_request("setswitchoff", ain=ain, rf=bool)
 
     def set_switch_state_toggle(self, ain):
         """Toggle the switch state."""
-        return self._aha_request('setswitchtoggle', ain=ain, rf=bool)
+        return self._aha_request("setswitchtoggle", ain=ain, rf=bool)
 
     def get_switch_power(self, ain):
         """Get the switch power consumption."""
-        return self._aha_request('getswitchpower', ain=ain, rf=int)
+        return self._aha_request("getswitchpower", ain=ain, rf=int)
 
     def get_switch_energy(self, ain):
         """Get the switch energy."""
-        return self._aha_request('getswitchenergy', ain=ain, rf=int)
+        return self._aha_request("getswitchenergy", ain=ain, rf=int)
 
     def get_temperature(self, ain):
         """Get the device temperature sensor value."""
-        return self._aha_request('gettemperature', ain=ain, rf=float) / 10.0
+        return self._aha_request("gettemperature", ain=ain, rf=float) / 10.0
 
     def _get_temperature(self, ain, name):
         plain = self._aha_request(name, ain=ain, rf=float)
@@ -210,7 +204,7 @@ class Fritzhome(object):
 
     def get_target_temperature(self, ain):
         """Get the thermostate target temperature."""
-        return self._get_temperature(ain, 'gethkrtsoll')
+        return self._get_temperature(ain, "gethkrtsoll")
 
     def set_target_temperature(self, ain, temperature):
         """Set the thermostate target temperature."""
@@ -220,15 +214,15 @@ class Fritzhome(object):
             param = 253
         elif param > max(range(16, 56)):
             param = 254
-        self._aha_request('sethkrtsoll', ain=ain, param=int(param))
+        self._aha_request("sethkrtsoll", ain=ain, param=int(param))
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
-        return self._get_temperature(ain, 'gethkrkomfort')
+        return self._get_temperature(ain, "gethkrkomfort")
 
     def get_eco_temperature(self, ain):
         """Get the thermostate eco temperature."""
-        return self._get_temperature(ain, 'gethkrabsenk')
+        return self._get_temperature(ain, "gethkrabsenk")
 
     def get_alert_state(self, ain):
         """Get the alert state."""
@@ -237,12 +231,13 @@ class Fritzhome(object):
 
     def get_device_statistics(self, ain):
         """Get device statistics."""
-        plain = self._aha_request('getbasicdevicestats', ain=ain)
+        plain = self._aha_request("getbasicdevicestats", ain=ain)
         return plain
 
 
 class FritzhomeDevice(object):
     """The Fritzhome Device class."""
+
     ALARM_MASK = 0x010
     UNKNOWN_MASK = 0x020
     THERMOSTAT_MASK = 0x040
@@ -298,8 +293,8 @@ class FritzhomeDevice(object):
         self.manufacturer = node.getAttribute("manufacturer")
         self.productname = node.getAttribute("productname")
 
-        self.name = get_node_value(node, 'name')
-        self.present = bool(int(get_node_value(node, 'present')))
+        self.name = get_node_value(node, "name")
+        self.present = bool(int(get_node_value(node, "present")))
 
         if self.present is False:
             return
@@ -318,107 +313,106 @@ class FritzhomeDevice(object):
                 pass
 
     def _update_hkr_from_node(self, node):
-        val = node.getElementsByTagName('hkr')[0]
+        val = node.getElementsByTagName("hkr")[0]
 
         try:
-            self.actual_temperature = self._get_temp_from_node(val, 'tist')
+            self.actual_temperature = self._get_temp_from_node(val, "tist")
         except ValueError:
             pass
 
-        self.target_temperature = self._get_temp_from_node(val, 'tsoll')
-        self.eco_temperature = self._get_temp_from_node(val, 'absenk')
-        self.comfort_temperature = self._get_temp_from_node(val, 'komfort')
+        self.target_temperature = self._get_temp_from_node(val, "tsoll")
+        self.eco_temperature = self._get_temp_from_node(val, "absenk")
+        self.comfort_temperature = self._get_temp_from_node(val, "komfort")
 
         # optional value
         try:
-            self.device_lock = bool(int(get_node_value(val, 'devicelock')))
+            self.device_lock = bool(int(get_node_value(val, "devicelock")))
         except IndexError:
             pass
 
         try:
-            self.lock = bool(int(get_node_value(val, 'lock')))
+            self.lock = bool(int(get_node_value(val, "lock")))
         except IndexError:
             pass
 
         try:
-            self.error_code = int(get_node_value(val, 'errorcode'))
+            self.error_code = int(get_node_value(val, "errorcode"))
         except IndexError:
             pass
 
         try:
-            self.battery_low = bool(int(get_node_value(val, 'batterylow')))
+            self.battery_low = bool(int(get_node_value(val, "batterylow")))
         except IndexError:
             pass
 
         try:
-            self.battery_level = int(int(get_node_value(val, 'battery')))
+            self.battery_level = int(int(get_node_value(val, "battery")))
         except IndexError:
             pass
 
         try:
-            self.window_open = bool(int(get_node_value(val,
-                                                       'windowopenactiv')))
+            self.window_open = bool(int(get_node_value(val, "windowopenactiv")))
         except IndexError:
             pass
 
         try:
-            self.summer_active = bool(int(get_node_value(val, 'summeractive')))
+            self.summer_active = bool(int(get_node_value(val, "summeractive")))
         except IndexError:
             pass
 
         try:
-            self.holiday_active = bool(int(get_node_value(val,
-                                                          'holidayactive')))
+            self.holiday_active = bool(int(get_node_value(val, "holidayactive")))
         except IndexError:
             pass
 
     def _update_switch_from_node(self, node):
-        val = node.getElementsByTagName('switch')[0]
-        self.switch_state = bool(int(get_node_value(val, 'state')))
-        self.switch_mode = get_node_value(val, 'mode')
-        self.lock = bool(get_node_value(val, 'lock'))
+        val = node.getElementsByTagName("switch")[0]
+        self.switch_state = bool(int(get_node_value(val, "state")))
+        self.switch_mode = get_node_value(val, "mode")
+        self.lock = bool(get_node_value(val, "lock"))
         # optional value
         try:
-            self.device_lock = bool(int(get_node_value(val, 'devicelock')))
+            self.device_lock = bool(int(get_node_value(val, "devicelock")))
         except IndexError:
             pass
 
     def _update_powermeter_from_node(self, node):
-        val = node.getElementsByTagName('powermeter')[0]
-        self.power = int(get_node_value(val, 'power'))
-        self.energy = int(get_node_value(val, 'energy'))
+        val = node.getElementsByTagName("powermeter")[0]
+        self.power = int(get_node_value(val, "power"))
+        self.energy = int(get_node_value(val, "energy"))
         try:
-            self.voltage = float(int(get_node_value(val, 'voltage')) / 1000)
+            self.voltage = float(int(get_node_value(val, "voltage")) / 1000)
         except IndexError:
             pass
 
     def _update_temperature_from_node(self, node):
-        val = node.getElementsByTagName('temperature')[0]
+        val = node.getElementsByTagName("temperature")[0]
         try:
-            self.offset = int(get_node_value(val, 'offset')) / 10.0
+            self.offset = int(get_node_value(val, "offset")) / 10.0
         except ValueError:
             pass
 
         try:
-            self.temperature = int(get_node_value(val, 'celsius')) / 10.0
+            self.temperature = int(get_node_value(val, "celsius")) / 10.0
         except ValueError:
             pass
 
     def _update_alarm_from_node(self, node):
-        val = node.getElementsByTagName('alert')[0]
+        val = node.getElementsByTagName("alert")[0]
         try:
-            self.alert_state = bool(int(get_node_value(val, 'state')))
-        except(IndexError, ValueError):
+            self.alert_state = bool(int(get_node_value(val, "state")))
+        except (IndexError, ValueError):
             pass
 
     def __repr__(self):
         """Return a string."""
-        return '{ain} {identifier} {manuf} {prod} {name}'.format(
+        return "{ain} {identifier} {manuf} {prod} {name}".format(
             ain=self.ain,
             identifier=self.identifier,
             manuf=self.manufacturer,
             prod=self.productname,
-            name=self.name)
+            name=self.name,
+        )
 
     def update(self):
         """Update the device values."""
@@ -508,13 +502,13 @@ class FritzhomeDevice(object):
         self.update()
         try:
             return {
-                126.5: 'off',
-                127.0: 'on',
-                self.eco_temperature: 'eco',
-                self.comfort_temperature: 'comfort'
+                126.5: "off",
+                127.0: "on",
+                self.eco_temperature: "eco",
+                self.comfort_temperature: "comfort",
             }[self.target_temperature]
         except KeyError:
-            return 'manual'
+            return "manual"
 
     def set_hkr_state(self, state):
         """Set the state of the thermostat.
@@ -523,10 +517,10 @@ class FritzhomeDevice(object):
         """
         try:
             value = {
-                'off': 0,
-                'on': 100,
-                'eco': self.eco_temperature,
-                'comfort': self.comfort_temperature
+                "off": 0,
+                "on": 100,
+                "eco": self.eco_temperature,
+                "comfort": self.comfort_temperature,
             }[state]
         except KeyError:
             return

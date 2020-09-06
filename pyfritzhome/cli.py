@@ -8,7 +8,7 @@ import argparse
 try:
     from version import __version__
 except ImportError:
-    __version__ = 'dev'
+    __version__ = "dev"
 
 from pyfritzhome import Fritzhome
 
@@ -20,12 +20,12 @@ def list_all(fritz, args):
     devices = fritz.get_devices()
 
     for device in devices:
-        print('#' * 30)
-        print('name=%s' % device.name)
-        print('  ain=%s' % device.ain)
-        print('  id=%s' % device.identifier)
-        print('  productname=%s' % device.productname)
-        print('  manufacturer=%s' % device.manufacturer)
+        print("#" * 30)
+        print("name=%s" % device.name)
+        print("  ain=%s" % device.ain)
+        print("  id=%s" % device.identifier)
+        print("  productname=%s" % device.productname)
+        print("  manufacturer=%s" % device.manufacturer)
         print("  present=%s" % device.present)
         print("  lock=%s" % device.lock)
         print("  devicelock=%s" % device.device_lock)
@@ -99,90 +99,89 @@ def switch_toggle(fritz, args):
 
 def main(args=None):
     """The main function."""
-    parser = argparse.ArgumentParser(
-        description='Fritz!Box Smarthome CLI tool.')
-    parser.add_argument('-v', action='store_true', dest='verbose',
-                        help='be more verbose')
-    parser.add_argument('-f', '--fritzbox', type=str, dest='host',
-                        help='Fritz!Box IP address', default='fritz.box')
-    parser.add_argument('-u', '--user', type=str, dest='user',
-                        help='Username')
-    parser.add_argument('-p', '--password', type=str, dest='password',
-                        help='Username')
-    parser.add_argument('-a', '--ain', type=str, dest='ain',
-                        help='Actor Identification', default=None)
-    parser.add_argument('-V', '--version', action='version',
-                        version='{version}'.format(version=__version__),
-                        help='Print version')
+    parser = argparse.ArgumentParser(description="Fritz!Box Smarthome CLI tool.")
+    parser.add_argument(
+        "-v", action="store_true", dest="verbose", help="be more verbose"
+    )
+    parser.add_argument(
+        "-f",
+        "--fritzbox",
+        type=str,
+        dest="host",
+        help="Fritz!Box IP address",
+        default="fritz.box",
+    )
+    parser.add_argument("-u", "--user", type=str, dest="user", help="Username")
+    parser.add_argument("-p", "--password", type=str, dest="password", help="Username")
+    parser.add_argument(
+        "-a", "--ain", type=str, dest="ain", help="Actor Identification", default=None
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="{version}".format(version=__version__),
+        help="Print version",
+    )
 
-    _sub = parser.add_subparsers(title='Commands')
+    _sub = parser.add_subparsers(title="Commands")
 
     # list all devices
-    subparser = _sub.add_parser('list', help='List all available devices')
+    subparser = _sub.add_parser("list", help="List all available devices")
     subparser.set_defaults(func=list_all)
 
     # device
-    subparser = _sub.add_parser('device', help='Device/Actor commands')
+    subparser = _sub.add_parser("device", help="Device/Actor commands")
     _sub_switch = subparser.add_subparsers()
 
     # device name
-    subparser = _sub_switch.add_parser('name', help='get the device name')
-    subparser.add_argument('ain', type=str, metavar="AIN",
-                           help='Actor Identification')
+    subparser = _sub_switch.add_parser("name", help="get the device name")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=device_name)
 
     # device presence
-    subparser = _sub_switch.add_parser('present',
-                                       help='get the device presence')
-    subparser.add_argument('ain', type=str, metavar="AIN",
-                           help='Actor Identification')
+    subparser = _sub_switch.add_parser("present", help="get the device presence")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=device_presence)
 
     # device stats
-    subparser = _sub_switch.add_parser('stats',
-                                       help='get the device statistics')
-    subparser.add_argument('ain', type=str, metavar="AIN",
-                           help='Actor Identification')
+    subparser = _sub_switch.add_parser("stats", help="get the device statistics")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=device_statistics)
 
     # switch
-    subparser = _sub.add_parser('switch', help='Switch commands')
+    subparser = _sub.add_parser("switch", help="Switch commands")
     _sub_switch = subparser.add_subparsers()
 
     # switch get
-    subparser = _sub_switch.add_parser('get', help='get state')
-    subparser.add_argument('ain', type=str, metavar="AIN",
-                           help='Actor Identification')
+    subparser = _sub_switch.add_parser("get", help="get state")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=switch_get)
 
     # switch on
-    subparser = _sub_switch.add_parser('on', help='set on state')
-    subparser.add_argument('ain', type=str, metavar="AIN",
-                           help='Actor Identification')
+    subparser = _sub_switch.add_parser("on", help="set on state")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=switch_on)
 
     # switch off
-    subparser = _sub_switch.add_parser('off', help='set off state')
-    subparser.add_argument('ain', type=str, metavar="AIN",
-                           help='Actor Identification')
+    subparser = _sub_switch.add_parser("off", help="set off state")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=switch_off)
 
     # switch toggle
-    subparser = _sub_switch.add_parser('toggle', help='set off state')
-    subparser.add_argument('ain', type=str, metavar="AIN",
-                           help='Actor Identification')
+    subparser = _sub_switch.add_parser("toggle", help="set off state")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=switch_toggle)
 
     args = parser.parse_args(args)
 
     logging.basicConfig()
     if args.verbose:
-        logging.getLogger('pyfritzhome').setLevel(logging.DEBUG)
+        logging.getLogger("pyfritzhome").setLevel(logging.DEBUG)
 
     fritzbox = None
     try:
-        fritzbox = Fritzhome(host=args.host, user=args.user,
-                             password=args.password)
+        fritzbox = Fritzhome(host=args.host, user=args.user, password=args.password)
         fritzbox.login()
         args.func(fritzbox, args)
     finally:
@@ -190,5 +189,5 @@ def main(args=None):
             fritzbox.logout()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
