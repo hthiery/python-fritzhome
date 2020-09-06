@@ -5,5 +5,6 @@ class LoginError(Exception):
     def __str__(self):
         return 'login for user="{}" failed'.format(self.user)
 
+
 class InvalidError(Exception):
     pass
