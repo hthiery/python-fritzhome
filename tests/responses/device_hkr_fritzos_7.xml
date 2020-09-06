@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.54" id="22" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Thermostat Wohnzimmer Seite</name>
+        <temperature>
+            <celsius>205</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>41</tist>
+            <tsoll>253</tsoll>
+            <absenk>36</absenk>
+            <komfort>42</komfort>
+            <lock>1</lock>
+            <devicelock>1</devicelock>
+            <errorcode>0</errorcode>
+            <batterylow>0</batterylow>
+            <windowopenactiv>0</windowopenactiv>
+            <battery>70</battery>
+            <nextchange>
+                <endperiod>1538341200</endperiod>
+                <tchange>42</tchange>
+            </nextchange>
+            <summeractive>1</summeractive>
+            <holidayactive>0</holidayactive>
+        </hkr>
+    </device>
+</devicelist>

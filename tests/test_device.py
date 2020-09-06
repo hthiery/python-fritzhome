@@ -6,32 +6,19 @@ from mock import MagicMock
 
 from pyfritzhome import FritzhomeDevice, Fritzhome
 
-from .elements import (
-    device_list_xml,
-    device_list_battery_ok_xml,
-    device_list_battery_low_xml,
-    device_not_present_xml,
-    device_no_devicelock_element_xml,
-    device_with_umlaut_in_name_xml,
-    device_hkr_fw_03_50_xml,
-    device_hkr_fw_03_54_xml,
-    device_hkr_no_temp_values_xml,
-    device_alert_on_xml,
-    device_alert_off_xml,
-    device_alert_no_alertstate_xml,
-    device_hkr_state_on_xml,
-    device_hkr_state_off_xml,
-    device_hkr_state_eco_xml,
-    device_hkr_state_comfort_xml,
-    device_hkr_state_manual_xml,
-    device_hkr_fritzos_7_xml,
-    device_magenta_smoke_alarm_xml,
-)
+__responses = {}
+
+
+def response(file: str):
+    if file not in __responses:
+        with open("tests/responses/" + file + ".xml", "r") as file:
+            __responses[file] = file.read()
+    return __responses[file]
 
 
 def get_switch_test_device():
     mock = MagicMock()
-    mock.side_effect = [device_list_xml, "1"]
+    mock.side_effect = [response("device_list"), "1"]
 
     fritz = Fritzhome("10.0.0.1", "user", "pass")
     fritz._request = mock
@@ -47,9 +34,7 @@ class TestDevice(object):
         self.fritz._request = self.mock
 
     def test_device_init(self):
-        self.mock.side_effect = [
-            device_list_xml,
-        ]
+        self.mock.side_effect = [response("device_list")]
 
         device = self.fritz.get_device_by_ain("08761 0000434")
 
@@ -62,7 +47,7 @@ class TestDevice(object):
 
     def test_device_init_present_false(self):
         self.mock.side_effect = [
-            device_not_present_xml,
+            response("device_not_present"),
         ]
 
         device = self.fritz.get_device_by_ain("11960 0089208")
@@ -72,7 +57,7 @@ class TestDevice(object):
 
     def test_device_init_no_devicelock_element(self):
         self.mock.side_effect = [
-            device_no_devicelock_element_xml,
+            response("device_no_devicelock_element"),
         ]
 
         device = self.fritz.get_device_by_ain("08761 0373130")
@@ -82,7 +67,7 @@ class TestDevice(object):
 
     def test_device_umlaut(self):
         self.mock.side_effect = [
-            device_with_umlaut_in_name_xml,
+            response("device_with_umlaut_in_name"),
         ]
 
         device = self.fritz.get_device_by_ain("08761 0373130")
@@ -92,7 +77,7 @@ class TestDevice(object):
 
     def test_device_hkr_fw_03_50(self):
         self.mock.side_effect = [
-            device_hkr_fw_03_50_xml,
+            response("device_hkr_fw_03_50"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -104,7 +89,7 @@ class TestDevice(object):
 
     def test_device_hkr_fw_03_54(self):
         self.mock.side_effect = [
-            device_hkr_fw_03_54_xml,
+            response("device_hkr_fw_03_54"),
         ]
 
         device = self.fritz.get_device_by_ain("23456")
@@ -112,7 +97,7 @@ class TestDevice(object):
 
     def test_device_alert_on(self):
         self.mock.side_effect = [
-            device_alert_on_xml,
+            response("device_alert_on"),
         ]
 
         device = self.fritz.get_device_by_ain("05333 0077045-1")
@@ -121,7 +106,7 @@ class TestDevice(object):
 
     def test_device_alert_off(self):
         self.mock.side_effect = [
-            device_alert_off_xml,
+            response("device_alert_off"),
         ]
 
         device = self.fritz.get_device_by_ain("05333 0077045-2")
@@ -130,7 +115,7 @@ class TestDevice(object):
 
     def test_device_alert_no_alertstate(self):
         self.mock.side_effect = [
-            device_alert_no_alertstate_xml,
+            response("device_alert_no_alertstate"),
         ]
 
         device = self.fritz.get_device_by_ain("05333 0077045-3")
@@ -139,8 +124,8 @@ class TestDevice(object):
 
     def test_device_update(self):
         self.mock.side_effect = [
-            device_list_battery_ok_xml,
-            device_list_battery_low_xml,
+            response("device_list_battery_ok"),
+            response("device_list_battery_low"),
         ]
 
         device = self.fritz.get_device_by_ain("11959 0171328")
@@ -282,7 +267,7 @@ class TestDevice(object):
 
     def test_hkr_without_temperature_values(self):
         self.mock.side_effect = [
-            device_hkr_no_temp_values_xml,
+            response("device_hkr_no_temp_values"),
         ]
 
         element = self.fritz.get_device_element("11960 0071472")
@@ -294,8 +279,8 @@ class TestDevice(object):
 
     def test_hkr_get_state_on(self):
         self.mock.side_effect = [
-            device_hkr_state_on_xml,
-            device_hkr_state_on_xml,
+            response("device_hkr_state_on"),
+            response("device_hkr_state_on"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -303,8 +288,8 @@ class TestDevice(object):
 
     def test_hkr_get_state_off(self):
         self.mock.side_effect = [
-            device_hkr_state_off_xml,
-            device_hkr_state_off_xml,
+            response("device_hkr_state_off"),
+            response("device_hkr_state_off"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -312,8 +297,8 @@ class TestDevice(object):
 
     def test_hkr_get_state_eco(self):
         self.mock.side_effect = [
-            device_hkr_state_eco_xml,
-            device_hkr_state_eco_xml,
+            response("device_hkr_state_eco"),
+            response("device_hkr_state_eco"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -321,8 +306,8 @@ class TestDevice(object):
 
     def test_hkr_get_state_comfort(self):
         self.mock.side_effect = [
-            device_hkr_state_comfort_xml,
-            device_hkr_state_comfort_xml,
+            response("device_hkr_state_comfort"),
+            response("device_hkr_state_comfort"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -330,8 +315,8 @@ class TestDevice(object):
 
     def test_hkr_get_state_manual(self):
         self.mock.side_effect = [
-            device_hkr_state_manual_xml,
-            device_hkr_state_manual_xml,
+            response("device_hkr_state_manual"),
+            response("device_hkr_state_manual"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -339,8 +324,8 @@ class TestDevice(object):
 
     def test_hkr_set_state_on(self):
         self.mock.side_effect = [
-            device_hkr_state_manual_xml,
-            device_hkr_state_manual_xml,
+            response("device_hkr_state_manual"),
+            response("device_hkr_state_manual"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -353,8 +338,8 @@ class TestDevice(object):
 
     def test_hkr_set_state_off(self):
         self.mock.side_effect = [
-            device_hkr_state_manual_xml,
-            device_hkr_state_manual_xml,
+            response("device_hkr_state_manual"),
+            response("device_hkr_state_manual"),
         ]
 
         device = self.fritz.get_device_by_ain("12345")
@@ -366,32 +351,32 @@ class TestDevice(object):
         )
 
     def test_hkr_battery_level(self):
-        self.mock.side_effect = [device_hkr_fritzos_7_xml]
+        self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.battery_level, 70)
 
     def test_hkr_window_open(self):
-        self.mock.side_effect = [device_hkr_fritzos_7_xml]
+        self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.window_open, False)
 
     def test_hkr_summer_active(self):
-        self.mock.side_effect = [device_hkr_fritzos_7_xml]
+        self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.summer_active, True)
 
     def test_hkr_holiday_active(self):
-        self.mock.side_effect = [device_hkr_fritzos_7_xml]
+        self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.holiday_active, False)
 
     def test_magenta_smoke_alarm(self):
         self.mock.side_effect = [
-            device_magenta_smoke_alarm_xml,
+            response("device_magenta_smoke_alarm"),
         ]
         device = self.fritz.get_device_by_ain("11324 0244498-1")
         assert_true(device.present)
