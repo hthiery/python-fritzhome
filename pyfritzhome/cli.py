@@ -114,7 +114,12 @@ def main(args=None):
     parser.add_argument("-u", "--user", type=str, dest="user", help="Username")
     parser.add_argument("-p", "--password", type=str, dest="password", help="Username")
     parser.add_argument(
-        "-a", "--ain", type=str, dest="ain", help="Actor Identification", default=None
+        "-a",
+        "--ain",
+        type=str,
+        dest="ain",
+        help="Actor Identification",
+        default=None,
     )
     parser.add_argument(
         "-V",

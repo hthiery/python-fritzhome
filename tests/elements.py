@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 login_rsp_without_valid_sid = '<?xml version="1.0" encoding="utf-8"?><SessionInfo><SID>0000000000000000</SID><Challenge>44b750c0</Challenge><BlockTime>0</BlockTime><Rights></Rights></SessionInfo>'
 
@@ -55,7 +56,7 @@ device_list_xml = """<devicelist version="1">
             </nextchange>
         </hkr>
     </device>
-    <device functionbitmask="8208" fwversion="0.0" id="2000" 
+    <device functionbitmask="8208" fwversion="0.0" id="2000"
      identifier="05333 0077045-1" manufacturer="0x0512" productname="HAN-FUN">
         <present>1</present>
         <name>Fenster</name>
