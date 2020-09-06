@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<devicelist version="1">
+    <device functionbitmask="320" fwversion="03.50" id="17" identifier="12345" manufacturer="AVM" productname="Comet DECT">
+        <present>1</present>
+        <name>Comet DECT #2</name>
+        <temperature>
+            <celsius>230</celsius>
+            <offset>-10</offset>
+        </temperature>
+        <hkr>
+            <tist>46</tist>
+            <tsoll>253</tsoll>
+            <absenk>32</absenk>
+            <komfort>45</komfort>
+        </hkr>
+    </device>
+</devicelist>

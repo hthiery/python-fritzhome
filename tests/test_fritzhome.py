@@ -5,11 +5,14 @@ from mock import MagicMock
 
 from pyfritzhome import Fritzhome, InvalidError, LoginError
 
-from .elements import (
-    device_list_xml,
-    login_rsp_without_valid_sid,
-    login_rsp_with_valid_sid,
-)
+__responses = {}
+
+
+def response(file: str):
+    if file not in __responses:
+        with open("tests/responses/" + file + ".xml", "r") as file:
+            __responses[file] = file.read()
+    return __responses[file]
 
 
 class TestFritzhome(object):
@@ -21,16 +24,16 @@ class TestFritzhome(object):
     @raises(LoginError)
     def test_login_fail(self):
         self.mock.side_effect = [
-            login_rsp_without_valid_sid,
-            login_rsp_without_valid_sid,
+            response("login_rsp_without_valid_sid"),
+            response("login_rsp_without_valid_sid"),
         ]
 
         self.fritz.login()
 
     def test_login(self):
         self.mock.side_effect = [
-            login_rsp_without_valid_sid,
-            login_rsp_with_valid_sid,
+            response("login_rsp_without_valid_sid"),
+            response("login_rsp_with_valid_sid"),
         ]
 
         self.fritz.login()
@@ -76,9 +79,9 @@ class TestFritzhome(object):
 
     def test_get_device_element(self):
         self.mock.side_effect = [
-            device_list_xml,
-            device_list_xml,
-            device_list_xml,
+            response("device_list"),
+            response("device_list"),
+            response("device_list"),
         ]
 
         element = self.fritz.get_device_element("08761 0000434")
@@ -94,8 +97,8 @@ class TestFritzhome(object):
 
     def test_get_device_by_ain(self):
         self.mock.side_effect = [
-            device_list_xml,
-            device_list_xml,
+            response("device_list"),
+            response("device_list"),
         ]
 
         device = self.fritz.get_device_by_ain("08761 0000434")
@@ -103,7 +106,7 @@ class TestFritzhome(object):
 
     def test_aha_get_devices(self):
         self.mock.side_effect = [
-            device_list_xml,
+            response("device_list"),
         ]
 
         devices = self.fritz.get_devices()
@@ -141,7 +144,7 @@ class TestFritzhome(object):
 
     def test_get_alert_state(self):
         self.mock.side_effect = [
-            device_list_xml,
+            response("device_list"),
         ]
 
         eq_(self.fritz.get_alert_state("05333 0077045-1"), True)
