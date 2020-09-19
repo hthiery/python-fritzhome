@@ -85,12 +85,12 @@ class TestFritzhome(object):
         ]
 
         element = self.fritz.get_device_element("08761 0000434")
-        eq_(element.getAttribute("identifier"), "08761 0000434")
-        eq_(element.getAttribute("fwversion"), "03.33")
+        eq_(element.attrib["identifier"], "08761 0000434")
+        eq_(element.attrib["fwversion"], "03.33")
 
         element = self.fritz.get_device_element("08761 1048079")
-        eq_(element.getAttribute("identifier"), "08761 1048079")
-        eq_(element.getAttribute("fwversion"), "03.44")
+        eq_(element.attrib["identifier"], "08761 1048079")
+        eq_(element.attrib["fwversion"], "03.44")
 
         element = self.fritz.get_device_element("unknown")
         eq_(element, None)

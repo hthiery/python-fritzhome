@@ -3,26 +3,16 @@
 from __future__ import print_function
 import hashlib
 import logging
-import xml.dom.minidom
 from requests import Session
 
+from xml.etree import ElementTree
 from .errors import InvalidError, LoginError
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def get_text(nodelist):
-    """Get the value from a text node."""
-    value = []
-    for node in nodelist:
-        if node.nodeType == node.TEXT_NODE:
-            value.append(node.data)
-    return "".join(value)
-
-
-def get_node_value(node, name):
-    """Get the value from a node."""
-    return get_text(node.getElementsByTagName(name)[0].childNodes)
+def get_node_value(elem, node):
+    return elem.findtext(node)
 
 
 def bits(value):
@@ -60,9 +50,9 @@ class Fritzhome(object):
             params["response"] = secret
 
         plain = self._request(url, params)
-        dom = xml.dom.minidom.parseString(plain)
-        sid = get_text(dom.getElementsByTagName("SID")[0].childNodes)
-        challenge = get_text(dom.getElementsByTagName("Challenge")[0].childNodes)
+        dom = ElementTree.fromstring(plain)
+        sid = dom.findtext("SID")
+        challenge = dom.findtext("Challenge")
 
         return (sid, challenge)
 
@@ -111,7 +101,7 @@ class Fritzhome(object):
                     _LOGGER.warning("login failed %s", sid2)
                     raise LoginError(self._user)
                 self._sid = sid2
-        except xml.parsers.expat.ExpatError:
+        except Exception:
             raise LoginError(self._user)
 
     def logout(self):
@@ -135,15 +125,15 @@ class Fritzhome(object):
     def get_device_elements(self):
         """Get the DOM elements for the device list."""
         plain = self._aha_request("getdevicelistinfos")
-        dom = xml.dom.minidom.parseString(plain)
+        dom = ElementTree.fromstring(plain)
         _LOGGER.debug(dom)
-        return dom.getElementsByTagName("device")
+        return dom.findall("device")
 
     def get_device_element(self, ain):
         """Get the DOM element for the specified device."""
         elements = self.get_device_elements()
         for element in elements:
-            if element.getAttribute("identifier") == ain:
+            if element.attrib["identifier"] == ain:
                 return element
         return None
 
@@ -280,21 +270,17 @@ class FritzhomeDevice(object):
         if node is not None:
             self._update_from_node(node)
 
-    @staticmethod
-    def _get_temp_from_node(val, name):
-        return float(get_node_value(val, name)) / 2
-
     def _update_from_node(self, node):
-        _LOGGER.debug(node.toprettyxml())
-        self.ain = node.getAttribute("identifier")
-        self.identifier = node.getAttribute("id")
-        self._functionsbitmask = int(node.getAttribute("functionbitmask"))
-        self.fw_version = node.getAttribute("fwversion")
-        self.manufacturer = node.getAttribute("manufacturer")
-        self.productname = node.getAttribute("productname")
+        _LOGGER.debug(ElementTree.tostring(node))
+        self.ain = node.attrib["identifier"]
+        self.identifier = node.attrib["id"]
+        self._functionsbitmask = int(node.attrib["functionbitmask"])
+        self.fw_version = node.attrib["fwversion"]
+        self.manufacturer = node.attrib["manufacturer"]
+        self.productname = node.attrib["productname"]
 
-        self.name = get_node_value(node, "name")
-        self.present = bool(int(get_node_value(node, "present")))
+        self.name = node.findtext("name")
+        self.present = bool(int(node.findtext("present")))
 
         if self.present is False:
             return
@@ -312,8 +298,11 @@ class FritzhomeDevice(object):
             except KeyError:
                 pass
 
+    def _get_temp_from_node(self, elem, node):
+        return float(get_node_value(elem, node)) / 2
+
     def _update_hkr_from_node(self, node):
-        val = node.getElementsByTagName("hkr")[0]
+        val = node.find("hkr")
 
         try:
             self.actual_temperature = self._get_temp_from_node(val, "tist")
@@ -327,66 +316,66 @@ class FritzhomeDevice(object):
         # optional value
         try:
             self.device_lock = bool(int(get_node_value(val, "devicelock")))
-        except IndexError:
+        except Exception:
             pass
 
         try:
             self.lock = bool(int(get_node_value(val, "lock")))
-        except IndexError:
+        except Exception:
             pass
 
         try:
             self.error_code = int(get_node_value(val, "errorcode"))
-        except IndexError:
+        except Exception:
             pass
 
         try:
             self.battery_low = bool(int(get_node_value(val, "batterylow")))
-        except IndexError:
+        except Exception:
             pass
 
         try:
             self.battery_level = int(int(get_node_value(val, "battery")))
-        except IndexError:
+        except Exception:
             pass
 
         try:
             self.window_open = bool(int(get_node_value(val, "windowopenactiv")))
-        except IndexError:
+        except Exception:
             pass
 
         try:
             self.summer_active = bool(int(get_node_value(val, "summeractive")))
-        except IndexError:
+        except Exception:
             pass
 
         try:
             self.holiday_active = bool(int(get_node_value(val, "holidayactive")))
-        except IndexError:
+        except Exception:
             pass
 
     def _update_switch_from_node(self, node):
-        val = node.getElementsByTagName("switch")[0]
+        val = node.find("switch")
         self.switch_state = bool(int(get_node_value(val, "state")))
         self.switch_mode = get_node_value(val, "mode")
         self.lock = bool(get_node_value(val, "lock"))
         # optional value
         try:
             self.device_lock = bool(int(get_node_value(val, "devicelock")))
-        except IndexError:
+        except Exception:
             pass
 
     def _update_powermeter_from_node(self, node):
-        val = node.getElementsByTagName("powermeter")[0]
-        self.power = int(get_node_value(val, "power"))
-        self.energy = int(get_node_value(val, "energy"))
+        val = node.find("powermeter")
+        self.power = int(val.findtext("power"))
+        self.energy = int(val.findtext("energy"))
         try:
-            self.voltage = float(int(get_node_value(val, "voltage")) / 1000)
-        except IndexError:
+            self.voltage = float(int(val.findtext("voltage")) / 1000)
+        except Exception:
             pass
 
     def _update_temperature_from_node(self, node):
-        val = node.getElementsByTagName("temperature")[0]
+        val = node.find("temperature")
         try:
             self.offset = int(get_node_value(val, "offset")) / 10.0
         except ValueError:
@@ -398,10 +387,10 @@ class FritzhomeDevice(object):
             pass
 
     def _update_alarm_from_node(self, node):
-        val = node.getElementsByTagName("alert")[0]
+        val = node.find("alert")
         try:
             self.alert_state = bool(int(get_node_value(val, "state")))
-        except (IndexError, ValueError):
+        except (Exception, ValueError):
             pass
 
     def __repr__(self):
