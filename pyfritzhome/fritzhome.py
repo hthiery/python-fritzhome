@@ -137,7 +137,7 @@ class Fritzhome(object):
             devices.append(device)
         return devices
 
-    def get_device_by_ain(self, ain):
+    def get_device_by_ain(self, ain) -> FritzhomeDevice:
         """Returns a device specified by the AIN."""
         devices = self.get_devices()
         for device in devices:
