@@ -39,7 +39,7 @@ setup(
     long_description=readme,
     author="Heiko Thiery",
     author_email="heiko.thiery@gmail.com",
-    packages=find_packages(),
+    packages=find_packages(exclude=("tests*",)),
     url="http://github.com/hthiery/python-fritzhome",
     license="LGPLv2+",
     classifiers=[
