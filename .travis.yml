@@ -30,3 +30,6 @@ jobs:
           secure: kYpBY2oQ4IyYO+sqrMqhlprqO83VEwWeG3fJm54LKhCtA0sZPT4Puq0VZzeLgnDX808Ym7I+zBL98YEZArEs6s6tkrQ8EODhV5nAoPIwLRE70deJrpPel2XFpYTTdcMuvrJog7LypYtE7TQkzZwIXFSEKUT5TBR7dTwKJa4qd7FQDQKvbl409B7uVesMGFZdAtA5lvKQvna8Q2Oobq3UmmE2GfvSwJ5BsdZ0w3iRsioxQBJ5aCJYAJvP2fKUROE0ScEw1zbFWIxaD78c99d843ncMGaUo87hpVF8nWv0QvPgW4wt+RDbO41KRefckUjrJl2lGpzsKhNgME9V8GngM0iCTR+0uTnZswafdmoXTPsTfrYJcDen44fLrpaCl8jOmvjDInukM/WmqGNKK3zoL18j9pps9XBiNlhj2EIDdEJJmP6xua9ER5mc69rYw234NFk4tgQmYxGzuKOlSHbbmun0jlwTf82wUwvhRXcaPSIRg9p1pZsopnNWKaQOynbIG6l8AEf1S45WJvRj5Z71i4fX0eNzV6yYYAOp9ZuO5oiWbt1P7muLRQOtrQBEizda1j4f+7FDHHftHLGvvhBawtla5C4uv1418NxcftoEK2+52HrhrZVr1wRwgIAij5Ri994GRrab3pRRVhOpVOXMjBMG/WkwRHyOaJYl+Ytavds=
         on:
           tags: true
+        edge:
+          source: 'native-api/dpl'
+          branch: 'pip_fix_upgrade_deps'
