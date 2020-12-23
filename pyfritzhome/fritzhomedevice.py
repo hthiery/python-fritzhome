@@ -3,7 +3,11 @@
 from __future__ import print_function
 
 import logging
+from array import array
 from xml.etree import ElementTree
+
+from pyfritzhome.fritzhomebutton import FritzhomeButton
+
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,6 +51,7 @@ class FritzhomeDevice(object):
     battery_low = None
     switch_state = None
     switch_mode = None
+    buttons = None
     power = None
     energy = None
     voltage = None
@@ -99,17 +104,20 @@ class FritzhomeDevice(object):
             self._update_powermeter_from_node(node)
         if self.has_switch:
             self._update_switch_from_node(node)
+        if self.has_button:
+            self._update_button_from_node(node)
         if self.has_temperature_sensor:
             self._update_temperature_from_node(node)
         if self.has_thermostat:
             self._update_hkr_from_node(node)
 
-    # General
+    # region General
     def get_present(self):
         """Check if the device is present."""
         return self._fritz.get_device_present(self.ain)
+    # endregion General
 
-    # Thermostat
+    # region Thermostat
     @property
     def has_thermostat(self):
         """Check if the device has thermostat function."""
@@ -195,8 +203,22 @@ class FritzhomeDevice(object):
             return
 
         self.set_target_temperature(value)
+    # endregion Thermostat
 
-    # Switch
+    # region Buttons
+    @property
+    def has_button(self):
+        """Check if the device has button(s) function."""
+        return self._has_feature(FritzhomeDeviceFeatures.BUTTON)
+
+    def _update_button_from_node(self, mainNode):
+        self.buttons = []
+        for element in mainNode.findall("button"):
+            button = FritzhomeButton(node=element)
+            self.buttons.append(button)
+    # endregion Buttons
+
+    # region Switch
     @property
     def has_switch(self):
         """Check if the device has switch function."""
@@ -228,8 +250,9 @@ class FritzhomeDevice(object):
     def set_switch_state_toggle(self):
         """Toggle the switch state."""
         return self._fritz.set_switch_state_toggle(self.ain)
+    # endregion Switch
 
-    # Power Meter
+    # region Power Meter
     @property
     def has_powermeter(self):
         """Check if the device has powermeter function."""
@@ -251,8 +274,9 @@ class FritzhomeDevice(object):
     def get_switch_energy(self):
         """Get the switch energy."""
         return self._fritz.get_switch_energy(self.ain)
+    # endregion Power Meter
 
-    # Temperature
+    # region Temperature
     @property
     def has_temperature_sensor(self):
         """Check if the device has temperature function."""
@@ -271,8 +295,9 @@ class FritzhomeDevice(object):
             )
         except ValueError:
             pass
+    # endregion Temperature
 
-    # Alarm
+    # region Alarm
     @property
     def has_alarm(self):
         """Check if the device has alarm function."""
@@ -284,9 +309,11 @@ class FritzhomeDevice(object):
             self.alert_state = get_node_value_as_int_as_bool(val, "state")
         except (Exception, ValueError):
             pass
+    # endregion Alarm
 
-    # Repeater
+    # region Repeater
     @property
     def has_repeater(self):
         """Check if the device has repeater function."""
         return self._has_feature(FritzhomeDeviceFeatures.DECT_REPEATER)
+    # endregion Repeater
