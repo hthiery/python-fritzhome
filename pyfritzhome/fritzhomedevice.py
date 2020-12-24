@@ -47,6 +47,7 @@ class FritzhomeDevice(object):
     battery_low = None
     switch_state = None
     switch_mode = None
+    buttons = None
     power = None
     energy = None
     voltage = None
@@ -103,11 +104,36 @@ class FritzhomeDevice(object):
             self._update_temperature_from_node(node)
         if self.has_thermostat:
             self._update_hkr_from_node(node)
+        if self.has_button:
+            self._update_button_from_node(node)
 
     # General
     def get_present(self):
         """Check if the device is present."""
         return self._fritz.get_device_present(self.ain)
+
+    # Button
+    @property
+    def has_button(self):
+        """Check if the device has button function."""
+        return self._has_feature(FritzhomeDeviceFeatures.BUTTON)
+
+    def _update_button_from_node(self, node):
+        self.buttons = {}
+
+        for element in node.findall("button"):
+            button = FritzhomeButton(element)
+            self.buttons[button.ain] = button
+
+        try:
+            self.tx_busy = get_node_value_as_int_as_bool(node, "txbusy")
+            self.battery_low = get_node_value_as_int_as_bool(node, "batterylow")
+            self.battery_level = int(get_node_value_as_int(node, "battery"))
+        except Exception:
+            pass
+
+    def get_button_by_ain(self, ain):
+        return self.buttons[ain]
 
     # Thermostat
     @property
@@ -290,3 +316,28 @@ class FritzhomeDevice(object):
     def has_repeater(self):
         """Check if the device has repeater function."""
         return self._has_feature(FritzhomeDeviceFeatures.DECT_REPEATER)
+
+
+class FritzhomeButton(object):
+    """The Fritzhome Button Device class."""
+
+    ain = None
+    identifier = None
+    name = None
+    last_pressed = None
+
+    def __init__(self, node=None):
+        if node is not None:
+            self._update_from_node(node)
+
+    def _update_from_node(self, node):
+        _LOGGER.debug(ElementTree.tostring(node))
+        self.ain = node.attrib["identifier"]
+        self.identifier = node.attrib["id"]
+        self.name = node.findtext("name")
+        try:
+            self.last_pressed = (
+                get_node_value_as_int(node, "lastpressedtimestamp")
+            )
+        except ValueError:
+            pass

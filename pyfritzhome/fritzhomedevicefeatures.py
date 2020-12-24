@@ -4,6 +4,7 @@ from enum import IntFlag
 class FritzhomeDeviceFeatures(IntFlag):
     ALARM = 0x0010
     UNKNOWN = 0x0020
+    BUTTON = 0x0020
     THERMOSTAT = 0x0040
     POWER_METER = 0x0080
     TEMPERATURE = 0x0100

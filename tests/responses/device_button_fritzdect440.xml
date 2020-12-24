@@ -1,0 +1,56 @@
+<devicelist version="1" fwversion="7.21">
+    <device identifier="12345 0000001" id="17" functionbitmask="288" fwversion="05.07" manufacturer="AVM" productname="FRITZ!DECT 440">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Taster Wohnzimmer</name>
+        <battery>100</battery>
+        <batterylow>0</batterylow>
+        <temperature>
+            <celsius>215</celsius>
+            <offset>0</offset>
+        </temperature>
+        <button identifier="12345 0000001-1" id="5004">
+            <name>Taster Wohnzimmer: Oben rechts</name>
+            <lastpressedtimestamp>1608557681</lastpressedtimestamp>
+        </button>
+        <button identifier="12345 0000001-2" id="5005">
+            <name>Taster Wohnzimmer: Unten rechts</name>
+            <lastpressedtimestamp>1608557682</lastpressedtimestamp>
+        </button>
+        <button identifier="12345 0000001-3" id="5006">
+            <name>Taster Wohnzimmer: Unten links</name>
+            <lastpressedtimestamp></lastpressedtimestamp>
+        </button>
+        <button identifier="12345 0000001-4" id="5007">
+            <name>Taster Wohnzimmer: Oben links</name>
+            <lastpressedtimestamp></lastpressedtimestamp>
+        </button>
+    </device>
+    <device identifier="12345 0000002" id="16" functionbitmask="288" fwversion="05.07" manufacturer="AVM" productname="FRITZ!DECT 440">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Taster Schlafzimmer</name>
+        <battery>100</battery>
+        <batterylow>0</batterylow>
+        <temperature>
+            <celsius>220</celsius>
+            <offset>0</offset>
+        </temperature>
+        <button identifier="nnnnn nnnnnnn-5" id="5000">
+            <name>Taster Schlafzimmer: Oben rechts</name>
+            <lastpressedtimestamp>1608557681</lastpressedtimestamp>
+        </button>
+        <button identifier="nnnnn nnnnnnn-6" id="5001">
+            <name>Taster Schlafzimmer: Unten rechts</name>
+            <lastpressedtimestamp>1608557682</lastpressedtimestamp>
+        </button>
+        <button identifier="nnnnn nnnnnnn-7" id="5002">
+            <name>Taster Schlafzimmer: Unten links</name>
+            <lastpressedtimestamp>1608557683</lastpressedtimestamp>
+        </button>
+        <button identifier="nnnnn nnnnnnn-8" id="5003">
+            <name>Taster Schlafzimmer: Oben links</name>
+            <lastpressedtimestamp>1608557684</lastpressedtimestamp>
+        </button>
+    </device>
+</devicelist>

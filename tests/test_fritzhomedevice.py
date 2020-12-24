@@ -381,3 +381,25 @@ class TestDevice(object):
         device = self.fritz.get_device_by_ain("11324 0244498-1")
         assert_true(device.present)
         eq_(device.alert_state, None)
+
+    def test_button_fritzdect440(self):
+        self.mock.side_effect = [
+            response("device_button_fritzdect440"),
+            response("device_button_fritzdect440"),
+        ]
+        device = self.fritz.get_device_by_ain("12345 0000001")
+        assert_true(device.present)
+        eq_(device.alert_state, None)
+        assert_true(device.has_temperature_sensor)
+        assert_true(device.has_button)
+        assert_false(device.battery_low)
+        eq_(device.battery_level, 100)
+        assert_false(device.tx_busy)
+
+        button = device.get_button_by_ain("12345 0000001-1")
+        eq_(button.name, "Taster Wohnzimmer: Oben rechts")
+        eq_(button.last_pressed, 1608557681)
+
+        button = device.get_button_by_ain("12345 0000001-2")
+        eq_(button.name, "Taster Wohnzimmer: Unten rechts")
+        eq_(button.last_pressed, 1608557682)
