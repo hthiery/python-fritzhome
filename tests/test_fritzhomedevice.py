@@ -396,6 +396,20 @@ class TestDevice(object):
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.holiday_active, False)
 
+    def test_hkr_nextchange_endperiod(self):
+        self.mock.side_effect = [response("device_hkr_fritzos_7")]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345")
+        eq_(device.nextchange_endperiod, 1538341200)
+
+    def test_hkr_nextchange_temperature(self):
+        self.mock.side_effect = [response("device_hkr_fritzos_7")]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345")
+        eq_(device.nextchange_temperature, 21.0)
+
     def test_magenta_smoke_alarm(self):
         self.mock.side_effect = [
             response("device_magenta_smoke_alarm"),
