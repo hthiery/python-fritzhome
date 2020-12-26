@@ -54,6 +54,8 @@ class FritzhomeDevice(object):
     offset = None
     temperature = None
     alert_state = None
+    nextchange_endperiod = None
+    nextchange_temperature = None
 
     def __init__(self, fritz=None, node=None):
         if fritz is not None:
@@ -168,6 +170,13 @@ class FritzhomeDevice(object):
             )
             self.holiday_active = get_node_value_as_int_as_bool(
                 hkr_element, "holidayactive"
+            )
+            nextchange_element = hkr_element.find("nextchange")
+            self.nextchange_endperiod = int(
+                get_node_value_as_int(nextchange_element, "endperiod")
+            )
+            self.nextchange_temperature = get_temp_from_node(
+                nextchange_element, "tchange"
             )
         except Exception:
             pass
