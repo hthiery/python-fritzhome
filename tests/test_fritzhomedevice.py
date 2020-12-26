@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import eq_, assert_true, assert_false
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 from pyfritzhome import FritzhomeDevice, Fritzhome
 
@@ -32,10 +32,12 @@ class TestDevice(object):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
+        self.fritz._devices = {}
 
     def test_device_init(self):
         self.mock.side_effect = [response("device_list")]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("08761 0000434")
 
         eq_(device.ain, "08761 0000434")
@@ -50,6 +52,7 @@ class TestDevice(object):
             response("device_not_present"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("11960 0089208")
 
         eq_(device.ain, "11960 0089208")
@@ -60,6 +63,7 @@ class TestDevice(object):
             response("device_no_devicelock_element"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("08761 0373130")
 
         eq_(device.ain, "08761 0373130")
@@ -70,6 +74,7 @@ class TestDevice(object):
             response("device_with_umlaut_in_name"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("08761 0373130")
 
         eq_(device.ain, "08761 0373130")
@@ -80,6 +85,7 @@ class TestDevice(object):
             response("device_hkr_fw_03_50"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         assert_true(device.present)
         eq_(device.device_lock, None)
@@ -92,6 +98,7 @@ class TestDevice(object):
             response("device_hkr_fw_03_54"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("23456")
         assert_true(device.present)
 
@@ -100,6 +107,7 @@ class TestDevice(object):
             response("device_alert_on"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("05333 0077045-1")
         assert_true(device.present)
         eq_(device.alert_state, True)
@@ -109,6 +117,7 @@ class TestDevice(object):
             response("device_alert_off"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("05333 0077045-2")
         assert_true(device.present)
         eq_(device.alert_state, False)
@@ -118,6 +127,7 @@ class TestDevice(object):
             response("device_alert_no_alertstate"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("05333 0077045-3")
         assert_true(device.present)
         eq_(device.alert_state, None)
@@ -128,6 +138,7 @@ class TestDevice(object):
             response("device_list_battery_low"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("11959 0171328")
         assert_false(device.battery_low)
         device.update()
@@ -283,6 +294,7 @@ class TestDevice(object):
             response("device_hkr_state_on"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.get_hkr_state(), "on")
 
@@ -292,6 +304,7 @@ class TestDevice(object):
             response("device_hkr_state_off"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.get_hkr_state(), "off")
 
@@ -301,6 +314,7 @@ class TestDevice(object):
             response("device_hkr_state_eco"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.get_hkr_state(), "eco")
 
@@ -310,6 +324,7 @@ class TestDevice(object):
             response("device_hkr_state_comfort"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.get_hkr_state(), "comfort")
 
@@ -319,6 +334,7 @@ class TestDevice(object):
             response("device_hkr_state_manual"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.get_hkr_state(), "manual")
 
@@ -328,6 +344,7 @@ class TestDevice(object):
             response("device_hkr_state_manual"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
         device.set_hkr_state("on")
@@ -342,6 +359,7 @@ class TestDevice(object):
             response("device_hkr_state_manual"),
         ]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
         device.set_hkr_state("off")
@@ -353,24 +371,28 @@ class TestDevice(object):
     def test_hkr_battery_level(self):
         self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.battery_level, 70)
 
     def test_hkr_window_open(self):
         self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.window_open, False)
 
     def test_hkr_summer_active(self):
         self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.summer_active, True)
 
     def test_hkr_holiday_active(self):
         self.mock.side_effect = [response("device_hkr_fritzos_7")]
 
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         eq_(device.holiday_active, False)
 
@@ -378,6 +400,8 @@ class TestDevice(object):
         self.mock.side_effect = [
             response("device_magenta_smoke_alarm"),
         ]
+
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("11324 0244498-1")
         assert_true(device.present)
         eq_(device.alert_state, None)

@@ -10,6 +10,7 @@ from requests import Session
 
 from .errors import InvalidError, LoginError
 from .fritzhomedevice import FritzhomeDevice
+from typing import Dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ class Fritzhome(object):
 
     _sid = None
     _session = None
+    _devices: Dict[str, FritzhomeDevice] = {}
 
     def __init__(self, host, user, password):
         self._host = host
@@ -114,6 +116,20 @@ class Fritzhome(object):
         else:
             return "http://" + host
 
+    def update_devices(self):
+        _LOGGER.info("Updating Devices ...")
+        for element in self.get_device_elements():
+            if element.attrib["identifier"] in self._devices.keys():
+                _LOGGER.info(
+                    "Updating already existing Device " + element.attrib["identifier"]
+                )
+                self._devices[element.attrib["identifier"]]._update_from_node(element)
+            else:
+                _LOGGER.info("Adding new Device " + element.attrib["identifier"])
+                device = FritzhomeDevice(self, node=element)
+                self._devices[device.ain] = device
+        return True
+
     def get_device_elements(self):
         """Get the DOM elements for the device list."""
         plain = self._aha_request("getdevicelistinfos")
@@ -131,18 +147,15 @@ class Fritzhome(object):
 
     def get_devices(self):
         """Get the list of all known devices."""
-        devices = []
-        for element in self.get_device_elements():
-            device = FritzhomeDevice(self, node=element)
-            devices.append(device)
-        return devices
+        return list(self._devices.values())
+
+    def get_devices_as_dict(self):
+        """Get the list of all known devices."""
+        return self._devices
 
     def get_device_by_ain(self, ain):
         """Returns a device specified by the AIN."""
-        devices = self.get_devices()
-        for device in devices:
-            if device.ain == ain:
-                return device
+        return self._devices[ain]
 
     def get_device_present(self, ain):
         """Get the device presence."""

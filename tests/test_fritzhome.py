@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import eq_, raises
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome, InvalidError, LoginError
 
@@ -108,6 +108,7 @@ class TestFritzhome(object):
         self.mock.side_effect = [
             response("device_list"),
         ]
+        self.fritz.update_devices()
 
         devices = self.fritz.get_devices()
         eq_(devices[0].name, "Steckdose")
