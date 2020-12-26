@@ -28,7 +28,7 @@ def get_temp_from_node(elem, node):
 class FritzhomeDevice(object):
     """The Fritzhome Device class."""
 
-    ain = None
+    ain: str = None
     identifier = None
     fw_version = None
     manufacturer = None
@@ -75,8 +75,7 @@ class FritzhomeDevice(object):
 
     def update(self):
         """Update the device values."""
-        node = self._fritz.get_device_element(self.ain)
-        self._update_from_node(node)
+        self._fritz.update_devices()
 
     def _has_feature(self, feature: FritzhomeDeviceFeatures) -> bool:
         return feature in FritzhomeDeviceFeatures(self._functionsbitmask)
@@ -203,7 +202,6 @@ class FritzhomeDevice(object):
 
     def get_hkr_state(self):
         """Get the thermostate state."""
-        self.update()
         try:
             return {
                 126.5: "off",
