@@ -423,8 +423,9 @@ class TestDevice(object):
     def test_button_fritzdect440(self):
         self.mock.side_effect = [
             response("device_button_fritzdect440"),
-            response("device_button_fritzdect440"),
         ]
+
+        self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345 0000001")
         assert_true(device.present)
         eq_(device.alert_state, None)
