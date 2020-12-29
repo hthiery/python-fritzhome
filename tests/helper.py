@@ -1,7 +1,4 @@
 import logging
-from unittest.mock import MagicMock
-
-from pyfritzhome import Fritzhome, FritzhomeDevice
 
 _LOGGER = logging.getLogger(__name__)
 
