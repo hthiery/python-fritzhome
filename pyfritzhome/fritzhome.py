@@ -219,11 +219,6 @@ class Fritzhome(object):
         """Get the thermostate eco temperature."""
         return self._get_temperature(ain, "gethkrabsenk")
 
-    def get_alert_state(self, ain):
-        """Get the alert state."""
-        device = self.get_device_by_ain(ain)
-        return device.alert_state
-
     def get_device_statistics(self, ain):
         """Get device statistics."""
         plain = self._aha_request("getbasicdevicestats", ain=ain)
