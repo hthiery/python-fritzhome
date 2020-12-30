@@ -188,6 +188,7 @@ def main(args=None):
     try:
         fritzbox = Fritzhome(host=args.host, user=args.user, password=args.password)
         fritzbox.login()
+        fritzbox.update_devices()
         args.func(fritzbox, args)
     finally:
         if fritzbox is not None:
