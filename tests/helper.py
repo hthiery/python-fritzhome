@@ -7,10 +7,10 @@ class Helper(object):
     __responses = {}
 
     @staticmethod
-    def response(file: str) -> str:
-        if file not in Helper.__responses:
-            with open("tests/responses/" + file + ".xml", "r") as file:
-                _LOGGER.debug("{file} not cached yet. Adding to cache.")
-                Helper.__responses[file] = file.read()
-        _LOGGER.debug("Returning response for {file} ")
-        return Helper.__responses[file]
+    def response(filename: str) -> str:
+        if filename not in Helper.__responses:
+            with open("tests/responses/" + filename + ".xml", "r") as file:
+                _LOGGER.debug(f"{filename} not cached yet. Adding to cache.")
+                Helper.__responses[filename] = file.read()
+        _LOGGER.debug(f"Returning response for {filename} ")
+        return Helper.__responses[filename]
