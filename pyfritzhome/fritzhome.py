@@ -20,7 +20,7 @@ class Fritzhome(object):
 
     _sid = None
     _session = None
-    _devices: Dict[str, FritzhomeDevice] = {}
+    _devices: Dict[str, FritzhomeDevice] = None
 
     def __init__(self, host, user, password):
         self._host = host
@@ -118,6 +118,9 @@ class Fritzhome(object):
 
     def update_devices(self):
         _LOGGER.info("Updating Devices ...")
+        if self._devices is None:
+            self._devices = {}
+
         for element in self.get_device_elements():
             if element.attrib["identifier"] in self._devices.keys():
                 _LOGGER.info(
@@ -147,15 +150,17 @@ class Fritzhome(object):
 
     def get_devices(self):
         """Get the list of all known devices."""
-        return list(self._devices.values())
+        return list(self.get_devices_as_dict().values())
 
     def get_devices_as_dict(self):
         """Get the list of all known devices."""
+        if self._devices is None:
+            self.update_devices()
         return self._devices
 
     def get_device_by_ain(self, ain):
         """Returns a device specified by the AIN."""
-        return self._devices[ain]
+        return self.get_devices_as_dict()[ain]
 
     def get_device_present(self, ain):
         """Get the device presence."""
