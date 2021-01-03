@@ -37,3 +37,13 @@ class TestFritzhomeDeviceButton(object):
         button = device.get_button_by_ain("12345 0000001-2")
         eq_(button.name, "Taster Wohnzimmer: Unten rechts")
         eq_(button.last_pressed, 1608557682)
+
+    def test_button_fritzdect440_humidity(self):
+        self.mock.side_effect = [
+            Helper.response("button/device_button_fritzdect440_fw_05_10"),
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345 0000002")
+        assert_true(device.present)
+        eq_(device.rel_humidity, 44)
