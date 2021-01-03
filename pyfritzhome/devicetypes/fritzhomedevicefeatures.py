@@ -12,3 +12,6 @@ class FritzhomeDeviceFeatures(IntFlag):
     DECT_REPEATER = 0x0400
     MICROPHONE = 0x0800
     HANFUN = 0x2000
+    SWITCHABLE = 0x8000
+    DIMMABLE = 0x10000
+    LIGHTBULB = 0x20000

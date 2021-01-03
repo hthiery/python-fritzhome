@@ -70,7 +70,7 @@ class Fritzhome(object):
         url = self.get_prefixed_host() + "/webservices/homeautoswitch.lua"
         params = {"switchcmd": cmd, "sid": self._sid}
         if param:
-            params["param"] = param
+            params.update(param)
         if ain:
             params["ain"] = ain
 
@@ -208,13 +208,13 @@ class Fritzhome(object):
 
     def set_target_temperature(self, ain, temperature):
         """Set the thermostate target temperature."""
-        param = 16 + ((float(temperature) - 8) * 2)
+        temp = int(16 + ((float(temperature) - 8) * 2))
 
-        if param < min(range(16, 56)):
-            param = 253
-        elif param > max(range(16, 56)):
-            param = 254
-        self._aha_request("sethkrtsoll", ain=ain, param=int(param))
+        if temp < min(range(16, 56)):
+            temp = 253
+        elif temp > max(range(16, 56)):
+            temp = 254
+        self._aha_request("sethkrtsoll", ain=ain, param={'param': temp})
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
@@ -228,3 +228,73 @@ class Fritzhome(object):
         """Get device statistics."""
         plain = self._aha_request("getbasicdevicestats", ain=ain)
         return plain
+
+    # Lightbulb-related commands
+
+    def set_state_off(self, ain):
+        """Set the switch/actuator/lightbulb to on state."""
+        self._aha_request("setsimpleonoff", ain=ain, param={'onoff': 0})
+
+    def set_state_on(self, ain):
+        """Set the switch/actuator/lightbulb to on state."""
+        self._aha_request("setsimpleonoff", ain=ain, param={'onoff': 1})
+
+    def set_state_toggle(self, ain):
+        """Toggle the switch/actuator/lightbulb state."""
+        self._aha_request("setsimpleonoff", ain=ain, param={'onoff': 2})
+
+    def set_level(self, ain, level):
+        """Set level/brightness/height in interval [0,255] """
+
+        if level < 0:
+            level = 0      # 0%
+        elif level > 255:
+            level = 255    # 100 %
+
+        self._aha_request("setlevel", ain=ain, param={'level': int(level)})
+
+    def set_level_percentage(self, ain, level):
+        """Set level/brightness/height in interval [0,100] """
+
+        # Scale percentage to [0,255] interval
+        self.set_level(ain, int(level*2.55))
+
+    def _get_colordefaults(self, ain):
+        plain = self._aha_request("getcolordefaults", ain=ain)
+        return ElementTree.fromstring(plain)
+
+    def get_colors(self, ain):
+        """Get colors (HSV-space) supported by this lightbulb"""
+        colordefaults = self._get_colordefaults(ain)
+        colors = {}
+        for hs in colordefaults.iter('hs'):
+            name = hs.find("name").text
+            values = []
+            for st in hs.iter("color"):
+                values.append((st.get("hue"),st.get("sat"),st.get("val")))
+            colors[name] = values
+        return colors
+
+    def set_color(self, ain, hsv, duration=0):
+        """Set hue and saturation
+        hsv: HUE colorspace element obtained from get_colors()
+        duration: Speed of change in seconds, 0 = instant
+        """
+        params = {'hue': int(hsv[0]), 'saturation': int(hsv[1]), "duration": int(duration*10)}
+        self._aha_request("setcolor", ain=ain, param=params)
+
+    def get_temperatures(self, ain):
+        """Get temperatures supported by this lightbulb"""
+        colordefaults = self._get_colordefaults(ain)
+        temperatures = []
+        for temp in colordefaults.iter('temp'):
+            temperatures.append(temp.get("value"))
+        return temperatures
+
+    def set_temp(self, ain, temperature, duration=0):
+        """Set color temperature
+        temperature: temperature element obtained from get_temperatures()
+        duration: Speed of change in seconds, 0 = instant
+        """
+        params = {'temperature': int(temperature), "duration": int(duration*10)}
+        self._aha_request("setcolortemperature", ain=ain, param=params)

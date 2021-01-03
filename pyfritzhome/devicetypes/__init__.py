@@ -5,6 +5,7 @@ from .fritzhomedevicerepeater import FritzhomeDeviceRepeater
 from .fritzhomedeviceswitch import FritzhomeDeviceSwitch
 from .fritzhomedevicetemperature import FritzhomeDeviceTemperature
 from .fritzhomedevicethermostat import FritzhomeDeviceThermostat
+from .fritzhomedevicelightbulb import FritzhomeDeviceLightBulb
 
 __all__ = [
     "FritzhomeDeviceAlarm",
@@ -14,4 +15,5 @@ __all__ = [
     "FritzhomeDeviceSwitch",
     "FritzhomeDeviceTemperature",
     "FritzhomeDeviceThermostat",
+    "FritzhomeDeviceLightBulb",
 ]
