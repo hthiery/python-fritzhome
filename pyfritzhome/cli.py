@@ -59,6 +59,12 @@ def list_all(fritz, args):
         if device.has_alarm:
             print(" Alert:")
             print("  alert=%s" % device.alert_state)
+        if device.has_lightbulb:
+            print(" Light bulb:")
+            print("  state=%s" % ("Off" if device.state == 0 else "On"))
+            print("  level=%s" % device.level)
+            print("  hue=%s" % device.hue)
+            print("  saturation=%s" % device.saturation)
 
 
 def device_name(fritz, args):

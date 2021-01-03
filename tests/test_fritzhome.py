@@ -58,7 +58,7 @@ class TestFritzhome(object):
                 "sid": None,
                 "switchcmd": "testcmd",
                 "ain": "1",
-                "param": {"a": "1", "b": "2"},
+                "a": "1", "b": "2",
             },
         )
 
