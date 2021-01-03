@@ -214,6 +214,7 @@ class Fritzhome(object):
             temp = 253
         elif temp > max(range(16, 56)):
             temp = 254
+
         self._aha_request("sethkrtsoll", ain=ain, param={'param': temp})
 
     def get_comfort_temperature(self, ain):
@@ -271,7 +272,13 @@ class Fritzhome(object):
             name = hs.find("name").text.strip()
             values = []
             for st in hs.iter("color"):
-                values.append((st.get("hue"),st.get("sat"),st.get("val")))
+                values.append(
+                    (
+                        st.get("hue"),
+                        st.get("sat"),
+                        st.get("val")
+                    )
+                )
             colors[name] = values
         return colors
 
@@ -280,7 +287,11 @@ class Fritzhome(object):
         hsv: HUE colorspace element obtained from get_colors()
         duration: Speed of change in seconds, 0 = instant
         """
-        params = {'hue': int(hsv[0]), 'saturation': int(hsv[1]), "duration": int(duration*10)}
+        params = {
+            'hue': int(hsv[0]),
+            'saturation': int(hsv[1]),
+            "duration": int(duration)*10
+        }
         self._aha_request("setcolor", ain=ain, param=params)
 
     def get_color_temps(self, ain):
@@ -296,5 +307,8 @@ class Fritzhome(object):
         temperature: temperature element obtained from get_temperatures()
         duration: Speed of change in seconds, 0 = instant
         """
-        params = {'temperature': int(temperature), "duration": int(duration*10)}
+        params = {
+            'temperature': int(temperature),
+            "duration": int(duration)*10
+        }
         self._aha_request("setcolortemperature", ain=ain, param=params)

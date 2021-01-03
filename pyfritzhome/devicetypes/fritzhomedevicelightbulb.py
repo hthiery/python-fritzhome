@@ -16,7 +16,6 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     hue = None
     saturation = None
 
-
     def _update_from_node(self, node):
         super()._update_from_node(node)
         if self.present is False:
@@ -34,31 +33,47 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     def _update_lightbulb_from_node(self, node):
         state_element = node.find("simpleonoff")
         try:
-            self.state = (
-                self.get_node_value_as_int_as_bool(state_element, "state")
-            )
+            self.state = self.get_node_value_as_int_as_bool(state_element, "state")
+
         except ValueError:
             pass
 
         level_element = node.find("levelcontrol")
         try:
-            self.level = (
-                self.get_node_value_as_int(level_element, "level")
-            )
+            self.level = self.get_node_value_as_int(level_element, "level")
+
             self.level_percentage = int(self.level / 2.55)
         except ValueError:
             pass
 
         colorcontrol_element = node.find("colorcontrol")
         try:
-            self.hue = (
-                self.get_node_value_as_int(colorcontrol_element, "hue")
-            )
-            self.saturation = (
-                self.get_node_value_as_int(colorcontrol_element, "saturation")
-            )
+            self.hue = self.get_node_value_as_int(colorcontrol_element, "hue")
+
+            self.saturation = self.get_node_value_as_int(colorcontrol_element,
+                                                         "saturation")
+
         except ValueError:
             pass
+
+    def set_state_off(self):
+        """ Switch light bulb off """
+        self.state = True
+        self._fritz.set_state_off(self.ain)
+
+    def set_state_on(self):
+        """ Switch light bulb on """
+        self.state = True
+        self._fritz.set_state_on(self.ain)
+
+    def set_state_toggle(self):
+        """ Toogle light bulb state """
+        self.state = True
+        self._fritz.set_state_toggle(self.ain)
+
+    def set_level(self, level):
+        """ Set HSV color."""
+        self._fritz.set_level(self.ain, level)
 
     def get_colors(self):
         """ Get the supported colors."""
@@ -66,7 +81,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def set_color(self, hsv, duration=0):
         """ Set HSV color."""
-        return self._fritz.set_colors(self.ain, hsv, duration)
+        self._fritz.set_color(self.ain, hsv, duration)
 
     def get_color_temps(self):
         """Get the supported color temperatures energy."""
@@ -74,4 +89,4 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def set_color_temp(self, temperature, duration=0):
         """ Set white color temperature."""
-        return self._fritz.set_color_temp(self.ain, temperature, duration)
+        self._fritz.set_color_temp(self.ain, temperature, duration)
