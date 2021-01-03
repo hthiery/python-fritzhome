@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import eq_, assert_true, assert_false
+from nose.tools import eq_, assert_true
 from unittest.mock import MagicMock
 from .helper import Helper
 
@@ -25,12 +25,12 @@ class TestFritzhomeDeviceLightBulb(object):
 
         eq_(device.ain, "12345")
         eq_(device.fw_version, "34.10.16.16.009")
-        assert_true(device.present) # Lightbulb has power and is connected
-    
+        assert_true(device.present)  # Lightbulb has power and is connected
+
         # Get sub-device
         device = self.fritz.get_device_by_ain("12345-1")
         assert_true(device.has_lightbulb)
-        assert_true(device.state) # Lightbulb is switched on
+        assert_true(device.state)  # Lightbulb is switched on
         eq_(device.name, u"FRITZ!DECT 500 Büro")
 
     def test_get_colors(self):
@@ -51,7 +51,7 @@ class TestFritzhomeDeviceLightBulb(object):
                 ('358', '180', '230'),
                 ('358', '112', '237'),
                 ('358', '54', '245')
-                ], 
+                ],
             'Orange': [
                 ('35', '214', '255'),
                 ('35', '140', '255'),
