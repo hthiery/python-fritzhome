@@ -268,7 +268,7 @@ class Fritzhome(object):
         colordefaults = self._get_colordefaults(ain)
         colors = {}
         for hs in colordefaults.iter('hs'):
-            name = hs.find("name").text
+            name = hs.find("name").text.strip()
             values = []
             for st in hs.iter("color"):
                 values.append((st.get("hue"),st.get("sat"),st.get("val")))
@@ -283,7 +283,7 @@ class Fritzhome(object):
         params = {'hue': int(hsv[0]), 'saturation': int(hsv[1]), "duration": int(duration*10)}
         self._aha_request("setcolor", ain=ain, param=params)
 
-    def get_temperatures(self, ain):
+    def get_color_temps(self, ain):
         """Get temperatures supported by this lightbulb"""
         colordefaults = self._get_colordefaults(ain)
         temperatures = []
@@ -291,7 +291,7 @@ class Fritzhome(object):
             temperatures.append(temp.get("value"))
         return temperatures
 
-    def set_temp(self, ain, temperature, duration=0):
+    def set_color_temp(self, ain, temperature, duration=0):
         """Set color temperature
         temperature: temperature element obtained from get_temperatures()
         duration: Speed of change in seconds, 0 = instant
