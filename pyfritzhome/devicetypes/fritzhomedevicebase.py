@@ -55,7 +55,7 @@ class FritzhomeDeviceBase(ABC):
         self.manufacturer = node.attrib["manufacturer"]
         self.productname = node.attrib["productname"]
 
-        self.name = node.findtext("name")
+        self.name = node.findtext("name").strip()
         self.present = bool(int(node.findtext("present")))
 
     # General
