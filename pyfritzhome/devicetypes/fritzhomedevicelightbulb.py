@@ -59,3 +59,19 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
             )
         except ValueError:
             pass
+
+    def get_colors(self):
+        """ Get the supported colors."""
+        return self._fritz.get_colors(self.ain)
+
+    def set_color(self, hsv, duration=0):
+        """ Set HSV color."""
+        return self._fritz.set_colors(self.ain, hsv, duration)
+
+    def get_color_temps(self):
+        """Get the supported color temperatures energy."""
+        return self._fritz.get_color_temps(self.ain)
+
+    def set_color_temp(self, temperature, duration=0):
+        """ Set white color temperature."""
+        return self._fritz.set_color_temp(self.ain, temperature, duration)
