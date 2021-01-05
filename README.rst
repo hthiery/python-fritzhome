@@ -5,10 +5,11 @@ Python Library to access AVM Fritz!Box homeautomation
 
 Tested Devices
 --------------
-* `FRITZ!Box 6490 Cable`_ with FRITZ!OS 06.85
-* `FRITZ!Box 6490 Cable`_ with FRITZ!OS 07.00
-* `FRITZ!DECT 200`_ with firmware 03.87
-* `Comet DECT`_ with firmware 03.54
+* `FRITZ!Box 6490 Cable`_
+* `FRITZ!DECT 200`_
+* `FRITZ!DECT 440`_
+* `FRITZ!DECT 500`_
+* `Comet DECT`_
 * `Panasonic KX-HNS101`
 * `Magenta Smarthome Tür-/Fensterkontakt optisch`_
 
@@ -110,5 +111,7 @@ References
 
 .. _Comet DECT: https://www.eurotronic.org/produkte/comet-dect.html
 .. _FRITZ!DECT 200: https://avm.de/produkte/fritzdect/fritzdect-200/
+.. _FRITZ!DECT 440: https://avm.de/produkte/fritzdect/fritzdect-440/
+.. _FRITZ!DECT 500: https://avm.de/produkte/fritzdect/fritzdect-500/
 .. _FRITZ!Box 6490 Cable: https://avm.de/produkte/fritzbox/fritzbox-6490-cable/
 .. _Magenta Smarthome Tür-/Fensterkontakt optisch: https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-optisch-weiss
