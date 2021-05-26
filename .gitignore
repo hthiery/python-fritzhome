@@ -4,6 +4,7 @@
 build/
 dist/
 *.egg-info/
+.vscode/
 
 # Coverage Information
 .coverage
