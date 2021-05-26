@@ -15,6 +15,9 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     level = None
     hue = None
     saturation = None
+    color_temp = None
+    color_mode = None
+    supported_color_mode = None
 
     def _update_from_node(self, node):
         super()._update_from_node(node)
@@ -48,13 +51,32 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
         colorcontrol_element = node.find("colorcontrol")
         try:
+            self.color_mode = colorcontrol_element.attrib.get("current_mode")
+
+            self.supported_color_mode = colorcontrol_element.attrib.get(
+                "supported_modes")
+
+        except ValueError:
+            pass
+
+        try:
             self.hue = self.get_node_value_as_int(colorcontrol_element, "hue")
 
             self.saturation = self.get_node_value_as_int(colorcontrol_element,
                                                          "saturation")
 
         except ValueError:
-            pass
+            # reset values after color mode changed
+            self.hue = None
+            self.saturation = None
+
+        try:
+            self.color_temp = self.get_node_value_as_int(colorcontrol_element,
+                                                         "temperature")
+
+        except ValueError:
+            # reset values after color mode changed
+            self.color_temp = None
 
     def set_state_off(self):
         """ Switch light bulb off """
