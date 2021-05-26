@@ -53,7 +53,8 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         try:
             self.color_mode = colorcontrol_element.attrib.get("current_mode")
 
-            self.supported_color_mode = colorcontrol_element.attrib.get("supported_modes")
+            self.supported_color_mode = colorcontrol_element.attrib.get(
+                "supported_modes")
 
         except ValueError:
             pass
