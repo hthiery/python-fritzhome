@@ -66,14 +66,17 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
                                                          "saturation")
 
         except ValueError:
-            pass
+            # reset values after color mode changed
+            self.hue = None
+            self.saturation = None
 
         try:
             self.color_temp = self.get_node_value_as_int(colorcontrol_element,
                                                          "temperature")
 
         except ValueError:
-            pass
+            # reset values after color mode changed
+            self.color_temp = None
 
     def set_state_off(self):
         """ Switch light bulb off """
