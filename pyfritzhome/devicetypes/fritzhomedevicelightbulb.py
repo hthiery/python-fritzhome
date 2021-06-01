@@ -79,30 +79,30 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
             self.color_temp = None
 
     def set_state_off(self):
-        """ Switch light bulb off """
+        """Switch light bulb off."""
         self.state = True
         self._fritz.set_state_off(self.ain)
 
     def set_state_on(self):
-        """ Switch light bulb on """
+        """Switch light bulb on."""
         self.state = True
         self._fritz.set_state_on(self.ain)
 
     def set_state_toggle(self):
-        """ Toogle light bulb state """
+        """Toogle light bulb state."""
         self.state = True
         self._fritz.set_state_toggle(self.ain)
 
     def set_level(self, level):
-        """ Set HSV color."""
+        """Set HSV color."""
         self._fritz.set_level(self.ain, level)
 
     def get_colors(self):
-        """ Get the supported colors."""
+        """Get the supported colors."""
         return self._fritz.get_colors(self.ain)
 
     def set_color(self, hsv, duration=0):
-        """ Set HSV color."""
+        """Set HSV color."""
         self._fritz.set_color(self.ain, hsv, duration)
 
     def get_color_temps(self):
@@ -110,5 +110,5 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         return self._fritz.get_color_temps(self.ain)
 
     def set_color_temp(self, temperature, duration=0):
-        """ Set white color temperature."""
+        """Set white color temperature."""
         self._fritz.set_color_temp(self.ain, temperature, duration)

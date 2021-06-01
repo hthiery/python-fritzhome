@@ -38,7 +38,7 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
             pass
 
     def get_switch_power(self):
-        """ the switch state."""
+        """The switch state."""
         return self._fritz.get_switch_power(self.ain)
 
     def get_switch_energy(self):

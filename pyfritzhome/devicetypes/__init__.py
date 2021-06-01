@@ -7,7 +7,7 @@ from .fritzhomedevicetemperature import FritzhomeDeviceTemperature
 from .fritzhomedevicethermostat import FritzhomeDeviceThermostat
 from .fritzhomedevicelightbulb import FritzhomeDeviceLightBulb
 
-__all__ = [
+__all__ = (
     "FritzhomeDeviceAlarm",
     "FritzhomeDeviceButton",
     "FritzhomeDevicePowermeter",
@@ -16,4 +16,4 @@ __all__ = [
     "FritzhomeDeviceTemperature",
     "FritzhomeDeviceThermostat",
     "FritzhomeDeviceLightBulb",
-]
+)

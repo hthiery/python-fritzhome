@@ -105,6 +105,7 @@ class Fritzhome(object):
 
     def get_prefixed_host(self):
         """Choose the correct protocol prefix for the host.
+
         Supports three input formats:
         - https://<host>(requests use strict certificate validation by default)
         - http://<host> (unecrypted)
@@ -159,7 +160,7 @@ class Fritzhome(object):
         return self._devices
 
     def get_device_by_ain(self, ain):
-        """Returns a device specified by the AIN."""
+        """Return a device specified by the AIN."""
         return self.get_devices_as_dict()[ain]
 
     def get_device_present(self, ain):
@@ -245,8 +246,7 @@ class Fritzhome(object):
         self._aha_request("setsimpleonoff", ain=ain, param={'onoff': 2})
 
     def set_level(self, ain, level):
-        """Set level/brightness/height in interval [0,255] """
-
+        """Set level/brightness/height in interval [0,255]."""
         if level < 0:
             level = 0      # 0%
         elif level > 255:
@@ -255,8 +255,7 @@ class Fritzhome(object):
         self._aha_request("setlevel", ain=ain, param={'level': int(level)})
 
     def set_level_percentage(self, ain, level):
-        """Set level/brightness/height in interval [0,100] """
-
+        """Set level/brightness/height in interval [0,100]."""
         # Scale percentage to [0,255] interval
         self.set_level(ain, int(level*2.55))
 
@@ -265,7 +264,7 @@ class Fritzhome(object):
         return ElementTree.fromstring(plain)
 
     def get_colors(self, ain):
-        """Get colors (HSV-space) supported by this lightbulb"""
+        """Get colors (HSV-space) supported by this lightbulb."""
         colordefaults = self._get_colordefaults(ain)
         colors = {}
         for hs in colordefaults.iter('hs'):
@@ -283,7 +282,8 @@ class Fritzhome(object):
         return colors
 
     def set_color(self, ain, hsv, duration=0):
-        """Set hue and saturation
+        """Set hue and saturation.
+
         hsv: HUE colorspace element obtained from get_colors()
         duration: Speed of change in seconds, 0 = instant
         """
@@ -295,7 +295,7 @@ class Fritzhome(object):
         self._aha_request("setcolor", ain=ain, param=params)
 
     def get_color_temps(self, ain):
-        """Get temperatures supported by this lightbulb"""
+        """Get temperatures supported by this lightbulb."""
         colordefaults = self._get_colordefaults(ain)
         temperatures = []
         for temp in colordefaults.iter('temp'):
@@ -303,7 +303,8 @@ class Fritzhome(object):
         return temperatures
 
     def set_color_temp(self, ain, temperature, duration=0):
-        """Set color temperature
+        """Set color temperature.
+
         temperature: temperature element obtained from get_temperatures()
         duration: Speed of change in seconds, 0 = instant
         """
