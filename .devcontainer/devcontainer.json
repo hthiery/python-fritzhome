@@ -1,0 +1,33 @@
+{
+  "name": "Python Fritz!Smarthome Dev",
+  "context": "..",
+  "dockerFile": "Dockerfile.dev",
+  "postCreateCommand": "pre-commit install",
+  "containerEnv": {
+    "DEVCONTAINER": "1"
+  },
+  "runArgs": ["-e", "GIT_EDITOR=code --wait"],
+  "extensions": [
+    "ms-python.vscode-pylance",
+    "visualstudioexptteam.vscodeintellicode",
+    "esbenp.prettier-vscode"
+  ],
+  // Please keep this file in sync with settings in home-assistant/.vscode/settings.default.json
+  "settings": {
+    "python.pythonPath": "/usr/local/bin/python",
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black",
+    "python.testing.pytestEnabled": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "files.trimTrailingWhitespace": true,
+    "terminal.integrated.profiles.linux": {
+      "zsh": {
+        "path": "/usr/bin/zsh"
+      }
+    },
+    "terminal.integrated.defaultProfile.linux": "zsh"
+  }
+}
