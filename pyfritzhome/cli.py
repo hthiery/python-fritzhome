@@ -65,6 +65,12 @@ def list_all(fritz, args):
             print("  level=%s" % device.level)
             print("  hue=%s" % device.hue)
             print("  saturation=%s" % device.saturation)
+        if device.has_blind:
+            print(" Blind:")
+            print("  level=%s" % device.level)
+            print("  levelpercentage=%s" % device.levelpercentage)
+            print("  endpositionset=%s" % device.endpositionsset)
+            
 
 
 def device_name(fritz, args):

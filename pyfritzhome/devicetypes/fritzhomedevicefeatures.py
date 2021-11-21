@@ -15,3 +15,4 @@ class FritzhomeDeviceFeatures(IntFlag):
     SWITCHABLE = 0x8000
     DIMMABLE = 0x10000
     LIGHTBULB = 0x20000
+    BLIND = 0x40000

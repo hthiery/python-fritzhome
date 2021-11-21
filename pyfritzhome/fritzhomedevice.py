@@ -9,6 +9,7 @@ from .devicetypes import (
     FritzhomeDeviceTemperature,
     FritzhomeDeviceThermostat,
     FritzhomeDeviceLightBulb,
+    FritzhomeDeviceBlind,
     FritzhomeTemplate,
 )
 
@@ -22,6 +23,7 @@ class FritzhomeDevice(
     FritzhomeDeviceTemperature,
     FritzhomeDeviceThermostat,
     FritzhomeDeviceLightBulb,
+    FritzhomeDeviceBlind,
 ):
     """The Fritzhome Device class."""
 

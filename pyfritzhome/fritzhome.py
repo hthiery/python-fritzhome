@@ -330,6 +330,17 @@ class Fritzhome(object):
             "duration": int(duration)*10
         }
         self._aha_request("setcolortemperature", ain=ain, param=params)
+    
+    #blinds
+    # states: open, close, stop
+    def _set_blind_state(self, ain, state):
+        self._aha_request("setblind", ain=ain, param={"target": state})
+    def set_blind_open(self, ain):
+        self._set_blind_state(ain, "open")
+    def set_blind_close(self, ain):
+        self._set_blind_state(ain, "close")
+    def set_blind_stop(self, ain):
+        self._set_blind_state(ain, "stop")
 
     # Template-related commands
 
