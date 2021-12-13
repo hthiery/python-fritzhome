@@ -108,6 +108,11 @@ class TestFritzhome(object):
         eq_(devices[0].name, "Steckdose")
         eq_(devices[1].name, "FRITZ!DECT Rep 100 #1")
 
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"sid": None, "switchcmd": "getdevicelistinfos"},
+        )
+
     def test_get_device_name(self):
         self.mock.side_effect = ["testname"]
 
@@ -116,6 +121,39 @@ class TestFritzhome(object):
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"sid": None, "ain": "1234", "switchcmd": "getswitchname"},
+        )
+
+    def test_get_template_by_ain(self):
+        self.mock.side_effect = [
+            Helper.response("templates/template_list"),
+            Helper.response("templates/template_list"),
+        ]
+
+        self.fritz.update_templates()
+        device = self.fritz.get_template_by_ain("tmp0B32F7-1B0650682")
+        eq_(device.ain, "tmp0B32F7-1B0650682")
+
+    def test_aha_get_templates(self):
+        self.mock.side_effect = [
+            Helper.response("templates/template_list"),
+        ]
+        self.fritz.update_templates()
+
+        templates = self.fritz.get_templates()
+        eq_(templates[0].name, "Base Data")
+        eq_(templates[1].name, "One Device")
+
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"sid": None, "switchcmd": "gettemplatelistinfos"},
+        )
+
+    def test_aha_apply_template(self):
+        self.fritz.apply_template("1234")
+
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"sid": None, "ain": "1234", "switchcmd": "applytemplate"},
         )
 
     def test_set_target_temperature(self):

@@ -10,6 +10,7 @@ from requests import Session
 
 from .errors import InvalidError, LoginError
 from .fritzhomedevice import FritzhomeDevice
+from .fritzhomedevice import FritzhomeTemplate
 from typing import Dict
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ class Fritzhome(object):
     _sid = None
     _session = None
     _devices: Dict[str, FritzhomeDevice] = None
+    _templates: Dict[str, FritzhomeTemplate] = None
 
     def __init__(self, host, user, password):
         self._host = host
@@ -134,12 +136,16 @@ class Fritzhome(object):
                 self._devices[device.ain] = device
         return True
 
-    def get_device_elements(self):
-        """Get the DOM elements for the device list."""
-        plain = self._aha_request("getdevicelistinfos")
+    def _get_listinfo_elements(self, entity_type):
+        """Get the DOM elements for the entity list."""
+        plain = self._aha_request("get" + entity_type + "listinfos")
         dom = ElementTree.fromstring(plain)
         _LOGGER.debug(dom)
-        return dom.findall("device")
+        return dom.findall(entity_type)
+
+    def get_device_elements(self):
+        """Get the DOM elements for the device list."""
+        return self._get_listinfo_elements("device")
 
     def get_device_element(self, ain):
         """Get the DOM element for the specified device."""
@@ -313,3 +319,44 @@ class Fritzhome(object):
             "duration": int(duration)*10
         }
         self._aha_request("setcolortemperature", ain=ain, param=params)
+
+    # Template-related commands
+
+    def update_templates(self):
+        _LOGGER.info("Updating Templates ...")
+        if self._templates is None:
+            self._templates = {}
+
+        for element in self.get_template_elements():
+            if element.attrib["identifier"] in self._templates.keys():
+                _LOGGER.info(
+                    "Updating already existing Template " + element.attrib["identifier"]
+                )
+                self._templates[element.attrib["identifier"]]._update_from_node(element)
+            else:
+                _LOGGER.info("Adding new Template " + element.attrib["identifier"])
+                template = FritzhomeTemplate(self, node=element)
+                self._templates[template.ain] = template
+        return True
+
+    def get_template_elements(self):
+        """Get the DOM elements for the template list."""
+        return self._get_listinfo_elements("template")
+
+    def get_templates(self):
+        """Get the list of all known templates."""
+        return list(self.get_templates_as_dict().values())
+
+    def get_templates_as_dict(self):
+        """Get the list of all known templates."""
+        if self._templates is None:
+            self.update_templates()
+        return self._templates
+
+    def get_template_by_ain(self, ain):
+        """Return a template specified by the AIN."""
+        return self.get_templates_as_dict()[ain]
+
+    def apply_template(self, ain):
+        """Applies a template."""
+        self._aha_request("applytemplate", ain=ain)
