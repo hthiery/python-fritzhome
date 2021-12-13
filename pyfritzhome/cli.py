@@ -103,6 +103,37 @@ def switch_toggle(fritz, args):
     fritz.set_switch_state_toggle(args.ain)
 
 
+def list_templates(fritz, args):
+    """Command that prints all template information."""
+    templates = fritz.get_templates()
+    devices = fritz.get_devices_as_dict()
+
+    for template in templates:
+        print("#" * 30)
+        print("name=%s" % template.name)
+        print("  ain=%s" % template.ain)
+
+        print(" Apply:")
+        print("  hkr_summer=%s" % template.apply_hkr_summer)
+        print("  hkr_temperature=%s" % template.apply_hkr_temperature)
+        print("  hkr_holidays=%s" % template.apply_hkr_holidays)
+        print("  hkr_time_table=%s" % template.apply_hkr_time_table)
+        print("  relay_manual=%s" % template.apply_relay_manual)
+        print("  relay_automatic=%s" % template.apply_relay_automatic)
+        print("  level=%s" % template.apply_level)
+        print("  color=%s" % template.apply_color)
+        print("  dialhelper=%s" % template.apply_dialhelper)
+
+        print(" Devices:")
+        for device_id in template.devices:
+            print("  %s=%s" % (device_id, devices[device_id].name))
+
+
+def template_apply(fritz, args):
+    """Command that applies a template."""
+    fritz.apply_template(args.ain)
+
+
 def main(args=None):
     """The main function."""
     parser = argparse.ArgumentParser(description="Fritz!Box Smarthome CLI tool.")
@@ -124,7 +155,7 @@ def main(args=None):
         "--ain",
         type=str,
         dest="ain",
-        help="Actor Identification",
+        help="Actor/Template Identification",
         default=None,
     )
     parser.add_argument(
@@ -183,6 +214,18 @@ def main(args=None):
     subparser = _sub_switch.add_parser("toggle", help="set off state")
     subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=switch_toggle)
+
+    # templates
+    subparser = _sub.add_parser("template", help="Template commands")
+    _sub_switch = subparser.add_subparsers()
+
+    # list templates
+    subparser = _sub_switch.add_parser("list", help="List all available templates")
+    subparser.set_defaults(func=list_templates)
+
+    # apply templates
+    subparser = _sub_switch.add_parser("apply", help="Apply template")
+    subparser.set_defaults(func=template_apply)
 
     args = parser.parse_args(args)
 

@@ -9,6 +9,7 @@ from .devicetypes import (
     FritzhomeDeviceTemperature,
     FritzhomeDeviceThermostat,
     FritzhomeDeviceLightBulb,
+    FritzhomeTemplate,
 )
 
 
