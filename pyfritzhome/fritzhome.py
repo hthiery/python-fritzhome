@@ -281,7 +281,7 @@ class Fritzhome(object):
             colors[name] = values
         return colors
 
-    def set_color(self, ain, hsv, duration=0):
+    def set_color(self, ain, hsv, duration=0, mapped=True):
         """Set hue and saturation.
 
         hsv: HUE colorspace element obtained from get_colors()
@@ -292,7 +292,11 @@ class Fritzhome(object):
             'saturation': int(hsv[1]),
             "duration": int(duration)*10
         }
-        self._aha_request("setcolor", ain=ain, param=params)
+        if mapped:
+            self._aha_request("setcolor", ain=ain, param=params)
+        else:
+            # undocumented API method for free color selection
+            self._aha_request("setunmappedcolor", ain=ain, param=params)
 
     def get_color_temps(self, ain):
         """Get temperatures supported by this lightbulb."""
