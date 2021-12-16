@@ -15,6 +15,8 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     level = None
     hue = None
     saturation = None
+    unmapped_hue = None
+    unmapped_saturation = None
     color_temp = None
     color_mode = None
     supported_color_mode = None
@@ -65,10 +67,16 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
             self.saturation = self.get_node_value_as_int(colorcontrol_element,
                                                          "saturation")
 
+            self.unmapped_hue = self.get_node_value_as_int(colorcontrol_element, "unmapped_hue")
+
+            self.unmapped_saturation = self.get_node_value_as_int(colorcontrol_element,
+                                                         "unmapped_saturation")
         except ValueError:
             # reset values after color mode changed
             self.hue = None
             self.saturation = None
+            self.unmapped_hue = None
+            self.unmapped_saturation = None
 
         try:
             self.color_temp = self.get_node_value_as_int(colorcontrol_element,
@@ -103,7 +111,11 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def set_color(self, hsv, duration=0):
         """Set HSV color."""
-        self._fritz.set_color(self.ain, hsv, duration)
+        self._fritz.set_color(self.ain, hsv, duration, True)
+
+    def set_unmapped_color(self, hsv, duration=0):
+        """Set unmapped HSV color (Free color selection)."""
+        self._fritz.set_color(self.ain, hsv, duration, False)
 
     def get_color_temps(self):
         """Get the supported color temperatures energy."""
