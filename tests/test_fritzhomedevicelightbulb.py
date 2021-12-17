@@ -164,3 +164,35 @@ class TestFritzhomeDeviceLightBulb(object):
             '6500'
             ]
         eq_(temps, expected_temps)
+
+    def test_set_color(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_FritzDECT500_34_12_16"),
+            "1",
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345-1")
+
+        device.set_color(["180", "200"], 0)
+
+        device._fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setcolor", "sid": None, "hue": 180, "saturation": 200, "duration": 0, "ain": "12345-1"},
+        )
+
+    def test_set_unmapped_color(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_FritzDECT500_34_12_16"),
+            "1",
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345-1")
+
+        device.set_unmapped_color(["180", "200"], 0)
+
+        device._fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setunmappedcolor", "sid": None, "hue": 180, "saturation": 200, "duration": 0, "ain": "12345-1"},
+        )
