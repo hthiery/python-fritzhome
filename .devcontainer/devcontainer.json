@@ -10,7 +10,9 @@
   "extensions": [
     "ms-python.vscode-pylance",
     "visualstudioexptteam.vscodeintellicode",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "lextudio.restructuredtext",
+    "trond-snekvik.simple-rst"
   ],
   // Please keep this file in sync with settings in home-assistant/.vscode/settings.default.json
   "settings": {

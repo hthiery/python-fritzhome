@@ -13,13 +13,16 @@ RUN \
 WORKDIR /usr/src
 
 RUN pip3 install \
-      python-coveralls \
-      coverage \
-      nose \
-      future \
-      flake8 \
       black \
-      pre-commit
+      coverage \
+      docutils \
+      flake8 \
+      future \
+      nose \
+      pre-commit \
+      python-coveralls \
+      rstcheck \
+      snooty-lextudio
 
 WORKDIR /workspaces
 
