@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import eq_, raises
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from .helper import Helper
 
@@ -173,4 +173,12 @@ class TestFritzhome(object):
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"sid": None, "ain": "1", "switchcmd": "sethkrtsoll", "param": 254},
+        )
+
+    @patch('time.time', MagicMock(return_value=1000))
+    def test_set_window_open(self):
+        self.fritz.set_window_open("1", 25)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"sid": None, "ain": "1", "switchcmd": "sethkrwindowopen", "endtimestamp": 1000 + 25},
         )

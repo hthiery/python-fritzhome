@@ -82,6 +82,13 @@ def device_statistics(fritz, args):
     stats = fritz.get_device_statistics(args.ain)
     print(stats)
 
+def thermostat_set_target_temperature(fritz, args):
+    """Command that sets the thermostat temperature."""
+    fritz.set_target_temperature(args.ain, args.temperature)
+
+def thermostat_set_window_open(fritz, args):
+    """Command that sets the thermostats window state."""
+    fritz.set_window_open(args.ain, args.timespan)
 
 def switch_get(fritz, args):
     """Command that get the device switch state."""
@@ -190,6 +197,22 @@ def main(args=None):
     subparser = _sub_switch.add_parser("stats", help="get the device statistics")
     subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=device_statistics)
+
+    # thermostat
+    subparser = _sub.add_parser("thermostat", help="Thermostat commands")
+    _sub_switch = subparser.add_subparsers()
+
+    # thermostat target temperature
+    subparser = _sub_switch.add_parser("set_target_temperature", help="set target temperature")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.add_argument("temperature", type=float, metavar="TEMPERATURE", help="target temperature in (C)")
+    subparser.set_defaults(func=thermostat_set_target_temperature)
+
+    # thermostat window_open
+    subparser = _sub_switch.add_parser("set_window_open", help="set window state to open")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.add_argument("timespan", type=int, metavar="TIMESPAN", nargs='?', default=300, help="Open timespan in seconds (default=300s)")
+    subparser.set_defaults(func=thermostat_set_window_open)
 
     # switch
     subparser = _sub.add_parser("switch", help="Switch commands")
