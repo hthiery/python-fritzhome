@@ -4,6 +4,7 @@
 build/
 dist/
 *.egg-info/
+.vscode/settings.json
 
 # Coverage Information
 .coverage

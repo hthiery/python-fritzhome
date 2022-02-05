@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import hashlib
 import logging
+import time
 from xml.etree import ElementTree
 
 from requests import Session
@@ -223,6 +224,12 @@ class Fritzhome(object):
             temp = 254
 
         self._aha_request("sethkrtsoll", ain=ain, param={'param': temp})
+
+    def set_window_open(self, ain, seconds):
+        """Set the thermostate target temperature."""
+        endtimestamp =  int(time.time() + seconds)
+
+        self._aha_request("sethkrwindowopen", ain=ain, param={'endtimestamp': endtimestamp})
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""

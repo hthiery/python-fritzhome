@@ -94,6 +94,10 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         """Set the thermostate target temperature."""
         return self._fritz.set_target_temperature(self.ain, temperature)
 
+    def set_window_open(self, seconds):
+        """Set the thermostate to window open."""
+        return self._fritz.set_window_open(self.ain, seconds)
+
     def get_comfort_temperature(self):
         """Get the thermostate comfort temperature."""
         return self._fritz.get_comfort_temperature(self.ain)
