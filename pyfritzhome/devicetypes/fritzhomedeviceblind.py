@@ -32,7 +32,7 @@ class FritzhomeDeviceBlind(FritzhomeDeviceBase):
         return self._has_feature(FritzhomeDeviceFeatures.BLIND)
 
     def _update_blind_from_node(self, node):
-        print("update from blind")
+        #print("update from blind")
         try:
             self.tx_busy = self.get_node_value_as_int_as_bool(node, "txbusy")
         except Exception:
