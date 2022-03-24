@@ -88,6 +88,20 @@ def device_statistics(fritz, args):
     stats = fritz.get_device_statistics(args.ain)
     print(stats)
 
+
+def blind_set_open(fritz, args):
+    """Command to open the blinds."""
+    fritz.set_blind_open(args.ain)
+
+def blind_set_close(fritz, args):
+    """Command close the blinds."""
+    fritz.set_blind_close(args.ain)
+
+def blind_set_level_percentage(fritz, args):
+    """Command that sets the blind level as percentage."""
+    fritz.set_level_percentage(args.ain, args.level)
+
+
 def thermostat_set_target_temperature(fritz, args):
     """Command that sets the thermostat temperature."""
     fritz.set_target_temperature(args.ain, args.temperature)
@@ -203,6 +217,28 @@ def main(args=None):
     subparser = _sub_switch.add_parser("stats", help="get the device statistics")
     subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=device_statistics)
+
+
+    # blind
+    subparser = _sub.add_parser("blind", help="Blind commands")
+    _sub_switch = subparser.add_subparsers()
+
+    # blind open
+    subparser = _sub_switch.add_parser("open", help="open blinds")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.set_defaults(func=blind_set_open)
+
+    # blind close
+    subparser = _sub_switch.add_parser("close", help="close blinds")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.set_defaults(func=blind_set_close)
+
+    # blind set level in percentage
+    subparser = _sub_switch.add_parser("set_level", help="set level of blinds in percentage (0=open)")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.add_argument("level", type=float, metavar="LEVEL", help="blind level in percentage (0=open)")
+    subparser.set_defaults(func=blind_set_level_percentage)
+
 
     # thermostat
     subparser = _sub.add_parser("thermostat", help="Thermostat commands")
