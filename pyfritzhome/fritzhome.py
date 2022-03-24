@@ -269,8 +269,12 @@ class Fritzhome(object):
 
     def set_level_percentage(self, ain, level):
         """Set level/brightness/height in interval [0,100]."""
-        # Scale percentage to [0,255] interval
-        self.set_level(ain, int(level*2.55))
+        if level < 0:
+            level = 0
+        elif level > 100:
+            level = 100
+
+        self._aha_request("setlevelpercentage", ain=ain, param={'level': int(level)})
 
     def _get_colordefaults(self, ain):
         plain = self._aha_request("getcolordefaults", ain=ain)

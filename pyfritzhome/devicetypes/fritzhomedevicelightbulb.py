@@ -105,6 +105,10 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         """Set HSV color."""
         self._fritz.set_level(self.ain, level)
 
+    def set_level_percentage(self, level):
+        """Set HSV color in percent."""
+        self._fritz.set_level_percentage(self.ain, level)
+
     def get_colors(self):
         """Get the supported colors."""
         return self._fritz.get_colors(self.ain)
