@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<devicelist version="1">
+    <device identifier="14276 1234567" id="406" functionbitmask="1" fwversion="37.16.08#1.1R" manufacturer="0x37c4" productname="Rollotron 1213">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Wohnzimmer</name>
+    </device>
+    <device identifier="14276 1234567-1" id="2000" functionbitmask="335888" fwversion="0.0" manufacturer="0x37c4" productname="Rollotron 1213">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Wohnzimmer</name>
+        <blind>
+            <endpositionsset>1</endpositionsset>
+            <mode>manuell</mode>
+        </blind>
+        <levelcontrol>
+            <level>252</level>
+            <levelpercentage>99</levelpercentage>
+        </levelcontrol>
+        <etsiunitinfo>
+            <etsideviceid>406</etsideviceid>
+            <unittype>281</unittype>
+            <interfaces>256,513,516,517</interfaces>
+        </etsiunitinfo>
+        <alert>
+            <state>0</state>
+            <lastalertchgtimestamp>1645029180</lastalertchgtimestamp>
+        </alert>
+    </device>
+</devicelist>
