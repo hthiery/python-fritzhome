@@ -226,10 +226,15 @@ class Fritzhome(object):
         self._aha_request("sethkrtsoll", ain=ain, param={'param': temp})
 
     def set_window_open(self, ain, seconds):
-        """Set the thermostate target temperature."""
+        """Set the thermostate window open time."""
         endtimestamp =  int(time.time() + seconds)
 
         self._aha_request("sethkrwindowopen", ain=ain, param={'endtimestamp': endtimestamp})
+
+    def get_window_open_endtime(self, ain):
+        """Get the thermostate window open time."""
+        q=int(self._aha_request("windowopenactiveendtime", ain=ain, rf=int)-time.time())
+        return 0 if q<0 else q
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
