@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging
+import logging,time
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -21,6 +21,7 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     battery_low = None
     battery_level = None
     window_open = None
+    window_open_endtime = None
     summer_active = None
     holiday_active = None
     nextchange_endperiod = None
@@ -51,6 +52,8 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         self.target_temperature = self.get_temp_from_node(hkr_element, "tsoll")
         self.eco_temperature = self.get_temp_from_node(hkr_element, "absenk")
         self.comfort_temperature = self.get_temp_from_node(hkr_element, "komfort")
+        q=int(self.get_node_value_as_int(hkr_element, "windowopenactiveendtime")-time.time())
+        self.window_open_endtime = 0 if q<0 else q
 
         # optional value
         try:
@@ -97,6 +100,10 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     def set_window_open(self, seconds):
         """Set the thermostate to window open."""
         return self._fritz.set_window_open(self.ain, seconds)
+
+    def get_window_open_endtime(self):
+        """Get the thermostate to window open endtime."""
+        return self._fritz.get_window_open_endtime(self.ain)
 
     def get_comfort_temperature(self):
         """Get the thermostate comfort temperature."""
