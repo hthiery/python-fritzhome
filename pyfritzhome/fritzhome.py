@@ -231,11 +231,6 @@ class Fritzhome(object):
 
         self._aha_request("sethkrwindowopen", ain=ain, param={'endtimestamp': endtimestamp})
 
-    def get_window_open_endtime(self, ain):
-        """Get the thermostate window open time."""
-        q=int(self._aha_request("windowopenactiveendtime", ain=ain, rf=int)-time.time())
-        return 0 if q<0 else q
-
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
         return self._get_temperature(ain, "gethkrkomfort")
