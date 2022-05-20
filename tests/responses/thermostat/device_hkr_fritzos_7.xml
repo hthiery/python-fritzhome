@@ -17,6 +17,7 @@
             <errorcode>0</errorcode>
             <batterylow>0</batterylow>
             <windowopenactiv>0</windowopenactiv>
+            <windowopenactiveendtime>100</windowopenactiveendtime>
             <battery>70</battery>
             <nextchange>
                 <endperiod>1538341200</endperiod>
