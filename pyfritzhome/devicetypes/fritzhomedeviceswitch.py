@@ -31,9 +31,16 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
 
     def _update_switch_from_node(self, node):
         val = node.find("switch")
-        self.switch_state = self.get_node_value_as_int_as_bool(val, "state")
+        try:
+            self.switch_state = self.get_node_value_as_int_as_bool(val, "state")
+        except Exception:
+            self.switch_state = None
         self.switch_mode = self.get_node_value(val, "mode")
-        self.lock = bool(self.get_node_value(val, "lock"))
+        try:
+            self.lock = self.get_node_value_as_int_as_bool(val, "lock")
+        except Exception:
+            self.lock = None
+
         # optional value
         try:
             self.device_lock = self.get_node_value_as_int_as_bool(val, "devicelock")

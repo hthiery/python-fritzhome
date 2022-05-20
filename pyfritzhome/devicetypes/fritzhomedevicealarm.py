@@ -32,4 +32,4 @@ class FritzhomeDeviceAlarm(FritzhomeDeviceBase):
         try:
             self.alert_state = self.get_node_value_as_int_as_bool(val, "state")
         except (Exception, ValueError):
-            pass
+            self.alert_state = None
