@@ -13,6 +13,7 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
 
     power = None
     energy = None
+    voltage = None
 
     def _update_from_node(self, node):
         super()._update_from_node(node)
