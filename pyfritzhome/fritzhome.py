@@ -25,15 +25,16 @@ class Fritzhome(object):
     _devices: Dict[str, FritzhomeDevice] = None
     _templates: Dict[str, FritzhomeTemplate] = None
 
-    def __init__(self, host, user, password):
+    def __init__(self, host, user, password, ssl_verify=True):
         self._host = host
         self._user = user
         self._password = password
         self._session = Session()
+        self._ssl_verify = ssl_verify
 
     def _request(self, url, params=None, timeout=10):
         """Send a request with parameters."""
-        rsp = self._session.get(url, params=params, timeout=timeout)
+        rsp = self._session.get(url, params=params, timeout=timeout, verify=self._ssl_verify)
         rsp.raise_for_status()
         return rsp.text.strip()
 
@@ -334,7 +335,7 @@ class Fritzhome(object):
             "duration": int(duration)*10
         }
         self._aha_request("setcolortemperature", ain=ain, param=params)
-    
+
     #blinds
     # states: open, close, stop
     def _set_blind_state(self, ain, state):
