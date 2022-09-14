@@ -14,6 +14,7 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
     power = None
     energy = None
     voltage = None
+    current = None
 
     def _update_from_node(self, node):
         super()._update_from_node(node)
@@ -35,6 +36,7 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
         self.energy = int(val.findtext("energy"))
         try:
             self.voltage = int(val.findtext("voltage"))
+            self.current = self.power / self.voltage * 1000
         except Exception:
             pass
 
