@@ -36,9 +36,17 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
         self.energy = int(val.findtext("energy"))
         try:
             self.voltage = int(val.findtext("voltage"))
-            self.current = self.power / self.voltage * 1000
         except Exception:
             pass
+
+        if (
+            isinstance(self.power, int)
+            and isinstance(self.voltage, int)
+            and self.voltage > 0
+        ):
+            self.current = self.power / self.voltage * 1000
+        else:
+            self.current = None
 
     def get_switch_power(self):
         """The switch state."""
