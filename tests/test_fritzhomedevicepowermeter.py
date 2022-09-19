@@ -58,3 +58,16 @@ class TestFritzhomeDevicePowermeter(object):
         eq_(device.power, 1000)
         eq_(device.voltage, 230000)
         eq_(device.current, 4.3478260869565215)
+
+    def test_faulty_powermeter_properties(self):
+        self.mock.side_effect = [
+            Helper.response("powermeter/device_list_faulty"),
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("08761 0000434")
+
+        eq_(device.energy, 0)
+        eq_(device.power, 0)
+        eq_(device.voltage, 0)
+        eq_(device.current, None)
