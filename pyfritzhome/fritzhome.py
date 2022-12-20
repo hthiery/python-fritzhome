@@ -99,7 +99,8 @@ class Fritzhome(object):
                     _LOGGER.warning("login failed %s", sid2)
                     raise LoginError(self._user)
                 self._sid = sid2
-        except Exception:
+        except Exception as ex:
+            _LOGGER.error(ex)
             raise LoginError(self._user)
 
     def logout(self):
