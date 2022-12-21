@@ -27,5 +27,5 @@ class TestFritzhomeDeviceTemperature(object):
         eq_(device.get_temperature(), 24.5)
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"12345", "switchcmd": "gettemperature", "sid": None},
+            {"ain": "12345", "switchcmd": "gettemperature", "sid": None},
         )

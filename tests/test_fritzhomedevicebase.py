@@ -59,7 +59,7 @@ class TestFritzhomeDeviceBase(object):
         device = self.fritz.get_device_by_ain("08761 0373130")
 
         eq_(device.ain, "08761 0373130")
-        eq_(device.name, u"äöü")
+        eq_(device.name, "äöü")
 
     def test_device_update(self):
         self.mock.side_effect = [
@@ -87,5 +87,5 @@ class TestFritzhomeDeviceBase(object):
         assert_false(device.get_present())
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"08761 0000434", "switchcmd": "getswitchpresent", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "getswitchpresent", "sid": None},
         )

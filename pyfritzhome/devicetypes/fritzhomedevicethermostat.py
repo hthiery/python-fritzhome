@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import logging,time
+import logging
+import time
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -67,9 +68,10 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
             self.window_open = self.get_node_value_as_int_as_bool(
                 hkr_element, "windowopenactiv"
             )
-            self.window_open_endtime = self.get_node_value_as_int(
-                hkr_element, "windowopenactiveendtime"
-            ) - time.time()
+            self.window_open_endtime = (
+                self.get_node_value_as_int(hkr_element, "windowopenactiveendtime")
+                - time.time()
+            )
             if self.window_open_endtime < 0:
                 self.window_open_endtime = 0
             self.summer_active = self.get_node_value_as_int_as_bool(

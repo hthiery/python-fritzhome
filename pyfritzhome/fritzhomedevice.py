@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
+from .devicetypes import FritzhomeTemplate  # noqa: F401
 from .devicetypes import (
     FritzhomeDeviceAlarm,
+    FritzhomeDeviceBlind,
     FritzhomeDeviceButton,
+    FritzhomeDeviceLightBulb,
     FritzhomeDevicePowermeter,
     FritzhomeDeviceRepeater,
     FritzhomeDeviceSwitch,
     FritzhomeDeviceTemperature,
     FritzhomeDeviceThermostat,
-    FritzhomeDeviceLightBulb,
-    FritzhomeDeviceBlind,
-    FritzhomeTemplate,
 )
 
 

@@ -49,7 +49,7 @@ class TestFritzhomeDeviceThermostat(object):
         eq_(device.get_target_temperature(), 19.0)
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"12345", "switchcmd": "gethkrtsoll", "sid": None},
+            {"ain": "12345", "switchcmd": "gethkrtsoll", "sid": None},
         )
 
     def test_get_eco_temperature(self):
@@ -64,7 +64,7 @@ class TestFritzhomeDeviceThermostat(object):
         eq_(device.get_eco_temperature(), 20.0)
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"12345", "switchcmd": "gethkrabsenk", "sid": None},
+            {"ain": "12345", "switchcmd": "gethkrabsenk", "sid": None},
         )
 
     def test_get_comfort_temperature(self):
@@ -79,7 +79,7 @@ class TestFritzhomeDeviceThermostat(object):
         eq_(device.get_comfort_temperature(), 20.5)
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"12345", "switchcmd": "gethkrkomfort", "sid": None},
+            {"ain": "12345", "switchcmd": "gethkrkomfort", "sid": None},
         )
 
     def test_hkr_without_temperature_values(self):
@@ -156,7 +156,7 @@ class TestFritzhomeDeviceThermostat(object):
         device.set_hkr_state("on")
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"12345", "switchcmd": "sethkrtsoll", "param": 254, "sid": None},
+            {"ain": "12345", "switchcmd": "sethkrtsoll", "param": 254, "sid": None},
         )
 
     def test_hkr_set_state_off(self):
@@ -171,7 +171,7 @@ class TestFritzhomeDeviceThermostat(object):
         device.set_hkr_state("off")
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"12345", "switchcmd": "sethkrtsoll", "param": 253, "sid": None},
+            {"ain": "12345", "switchcmd": "sethkrtsoll", "param": 253, "sid": None},
         )
 
     def test_hkr_battery_level(self):
