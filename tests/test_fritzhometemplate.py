@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import eq_, assert_true, assert_false
 from unittest.mock import MagicMock
 
-from .helper import Helper
+from nose.tools import assert_false, assert_true, eq_
 
 from pyfritzhome import Fritzhome
+
+from .helper import Helper
 
 
 class TestFritzhomeTemplate(object):
@@ -43,10 +44,13 @@ class TestFritzhomeTemplate(object):
     def test_template_with_multiple_devices(self):
         template = self.fritz.get_template_by_ain("tmp0B32F7-1C40A2B8A")
 
+        # fmt: off
         expected_devices = set(["08735 0525249",
                                 "08735 0525249",
                                 "08735 0340143",
                                 "08735 0526125"])
+        # fmt: on
+
         eq_(len(expected_devices.intersection(template.devices)), len(expected_devices))
 
     def test_template_applies_hkr_summer(self):

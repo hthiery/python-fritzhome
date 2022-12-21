@@ -29,7 +29,7 @@ class TestFritzhomeDeviceSwitch(object):
         assert_false(device.get_switch_state())
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"08761 0000434", "switchcmd": "getswitchstate", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "getswitchstate", "sid": None},
         )
 
     def test_set_switch_state_toggle(self):
@@ -44,7 +44,7 @@ class TestFritzhomeDeviceSwitch(object):
         device.set_switch_state_toggle()
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"08761 0000434", "switchcmd": "setswitchtoggle", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "setswitchtoggle", "sid": None},
         )
 
     def test_set_switch_state_on(self):
@@ -59,7 +59,7 @@ class TestFritzhomeDeviceSwitch(object):
         device.set_switch_state_on()
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"08761 0000434", "switchcmd": "setswitchon", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "setswitchon", "sid": None},
         )
 
     def test_set_switch_state_off(self):
@@ -74,5 +74,5 @@ class TestFritzhomeDeviceSwitch(object):
         device.set_switch_state_off()
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": u"08761 0000434", "switchcmd": "setswitchoff", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "setswitchoff", "sid": None},
         )

@@ -56,7 +56,8 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
             self.color_mode = colorcontrol_element.attrib.get("current_mode")
 
             self.supported_color_mode = colorcontrol_element.attrib.get(
-                "supported_modes")
+                "supported_modes"
+            )
 
         except ValueError:
             pass
@@ -64,13 +65,17 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         try:
             self.hue = self.get_node_value_as_int(colorcontrol_element, "hue")
 
-            self.saturation = self.get_node_value_as_int(colorcontrol_element,
-                                                         "saturation")
+            self.saturation = self.get_node_value_as_int(
+                colorcontrol_element, "saturation"
+            )
 
-            self.unmapped_hue = self.get_node_value_as_int(colorcontrol_element, "unmapped_hue")
+            self.unmapped_hue = self.get_node_value_as_int(
+                colorcontrol_element, "unmapped_hue"
+            )
 
-            self.unmapped_saturation = self.get_node_value_as_int(colorcontrol_element,
-                                                         "unmapped_saturation")
+            self.unmapped_saturation = self.get_node_value_as_int(
+                colorcontrol_element, "unmapped_saturation"
+            )
         except ValueError:
             # reset values after color mode changed
             self.hue = None
@@ -79,8 +84,9 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
             self.unmapped_saturation = None
 
         try:
-            self.color_temp = self.get_node_value_as_int(colorcontrol_element,
-                                                         "temperature")
+            self.color_temp = self.get_node_value_as_int(
+                colorcontrol_element, "temperature"
+            )
 
         except ValueError:
             # reset values after color mode changed

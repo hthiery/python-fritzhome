@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import eq_, assert_true
 from unittest.mock import MagicMock
-from .helper import Helper
+
+from nose.tools import assert_true, eq_
 
 from pyfritzhome import Fritzhome
+
+from .helper import Helper
 
 
 class TestFritzhomeDeviceLightBulb(object):
@@ -36,7 +38,7 @@ class TestFritzhomeDeviceLightBulb(object):
         eq_(device.hue, 358)
         eq_(device.saturation, 180)
         eq_(device.color_temp, None)
-        eq_(device.name, u"FRITZ!DECT 500 Büro")
+        eq_(device.name, "FRITZ!DECT 500 Büro")
 
     def test_device_init_color_temp_mode(self):
         self.mock.side_effect = [
@@ -59,8 +61,7 @@ class TestFritzhomeDeviceLightBulb(object):
         eq_(device.hue, None)
         eq_(device.saturation, None)
         eq_(device.color_temp, 2800)
-        eq_(device.name, u"FRITZ!DECT 500 Büro")
-
+        eq_(device.name, "FRITZ!DECT 500 Büro")
 
     def test_get_colors(self):
         self.mock.side_effect = [
@@ -75,6 +76,7 @@ class TestFritzhomeDeviceLightBulb(object):
         ]
 
         colors = device.get_colors()
+        # fmt: off
         expected_colors = {
             'Rot': [
                 ('358', '180', '230'),
@@ -137,6 +139,7 @@ class TestFritzhomeDeviceLightBulb(object):
                 ('335', '51', '250')
                 ]
             }
+        # fmt: on
         eq_(colors, expected_colors)
 
     def test_get_color_temps(self):
@@ -153,16 +156,16 @@ class TestFritzhomeDeviceLightBulb(object):
 
         temps = device.get_color_temps()
         expected_temps = [
-            '2700',
-            '3000',
-            '3400',
-            '3800',
-            '4200',
-            '4700',
-            '5300',
-            '5900',
-            '6500'
-            ]
+            "2700",
+            "3000",
+            "3400",
+            "3800",
+            "4200",
+            "4700",
+            "5300",
+            "5900",
+            "6500",
+        ]
         eq_(temps, expected_temps)
 
     def test_set_color(self):
@@ -178,7 +181,14 @@ class TestFritzhomeDeviceLightBulb(object):
 
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"switchcmd": "setcolor", "sid": None, "hue": 180, "saturation": 200, "duration": 0, "ain": "12345-1"},
+            {
+                "switchcmd": "setcolor",
+                "sid": None,
+                "hue": 180,
+                "saturation": 200,
+                "duration": 0,
+                "ain": "12345-1",
+            },
         )
 
     def test_set_unmapped_color(self):
@@ -194,5 +204,12 @@ class TestFritzhomeDeviceLightBulb(object):
 
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"switchcmd": "setunmappedcolor", "sid": None, "hue": 180, "saturation": 200, "duration": 0, "ain": "12345-1"},
+            {
+                "switchcmd": "setunmappedcolor",
+                "sid": None,
+                "hue": 180,
+                "saturation": 200,
+                "duration": 0,
+                "ain": "12345-1",
+            },
         )
