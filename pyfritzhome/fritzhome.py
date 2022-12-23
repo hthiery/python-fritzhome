@@ -348,6 +348,15 @@ class Fritzhome(object):
 
     # Template-related commands
 
+    def has_templates(self):
+        """Check if the Fritz!Box supports smarthome templates"""
+        plain = self._aha_request("gettemplatelistinfos")
+        try:
+            ElementTree.fromstring(plain)
+        except ElementTree.ParseError:
+            return False
+        return True
+
     def update_templates(self):
         _LOGGER.info("Updating Templates ...")
         if self._templates is None:
