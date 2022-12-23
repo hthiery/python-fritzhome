@@ -169,3 +169,7 @@ class TestFritzhomeTemplate(object):
         assert_false(template.apply_level)
         assert_false(template.apply_color)
         assert_true(template.apply_dialhelper)
+
+    def test_has_template(self):
+        self.mock.side_effect = ["invalid_xml"]
+        assert_false(self.fritz.has_templates())
