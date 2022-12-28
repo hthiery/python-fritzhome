@@ -96,8 +96,8 @@ References
 - https://github.com/DerMitch/fritzbox-smarthome
 
 
-.. |BuildStatus| image:: https://travis-ci.org/hthiery/python-fritzhome.png?branch=master
-                 :target: https://travis-ci.org/hthiery/python-fritzhome
+.. |BuildStatus| image:: https://github.com/hthiery/python-fritzhome/actions/workflows/test.yml/badge.svg
+                 :target: https://github.com/hthiery/python-fritzhome/actions/workflows/test.yml
 .. |PyPiVersion| image:: https://badge.fury.io/py/pyfritzhome.svg
                  :target: http://badge.fury.io/py/pyfritzhome
 .. |PyPiPythonVersions| image:: https://img.shields.io/pypi/pyversions/pyfritzhome.svg
