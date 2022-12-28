@@ -3,15 +3,13 @@
 
 from unittest.mock import MagicMock
 
-from nose.tools import assert_false, assert_true, eq_
-
 from pyfritzhome import Fritzhome
 
 from .helper import Helper
 
 
 class TestFritzhomeDeviceBlind(object):
-    def setup(self):
+    def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
@@ -24,19 +22,19 @@ class TestFritzhomeDeviceBlind(object):
 
         self.fritz.update_devices()
         device1 = self.fritz.get_device_by_ain("14276 1234567")
-        assert_true(device1.present)
-        assert_false(device1.tx_busy)
+        assert device1.present
+        assert not device1.tx_busy
 
         device2 = self.fritz.get_device_by_ain("14276 1234567-1")
-        assert_true(device2.present)
-        assert_false(device2.tx_busy)
-        assert_true(device2.endpositionsset)
+        assert device2.present
+        assert not device2.tx_busy
+        assert device2.endpositionsset
 
-        eq_(device2.level, 252)
-        eq_(device2.levelpercentage, 99)
+        assert device2.level == 252
+        assert device2.levelpercentage == 99
 
-        eq_(device2.get_level(), 252)
-        eq_(device2.get_level_percentage(), 99)
+        assert device2.get_level() == 252
+        assert device2.get_level_percentage() == 99
 
     def test_set_level(self):
         self.mock.side_effect = [

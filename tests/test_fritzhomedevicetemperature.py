@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import eq_
 from unittest.mock import MagicMock
-from .helper import Helper
 
 from pyfritzhome import Fritzhome
 
+from .helper import Helper
+
 
 class TestFritzhomeDeviceTemperature(object):
-    def setup(self):
+    def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
@@ -24,7 +24,7 @@ class TestFritzhomeDeviceTemperature(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
-        eq_(device.get_temperature(), 24.5)
+        assert device.get_temperature() == 24.5
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"ain": "12345", "switchcmd": "gettemperature", "sid": None},

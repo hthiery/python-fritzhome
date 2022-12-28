@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import eq_, assert_true
 from unittest.mock import MagicMock
-from .helper import Helper
 
 from pyfritzhome import Fritzhome, FritzhomeDevice
 
+from .helper import Helper
+
 
 class TestFritzhomeDeviceThermostat(object):
-    def setup(self):
+    def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
@@ -22,11 +22,11 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        assert_true(device.present)
-        eq_(device.device_lock, None)
-        eq_(device.lock, None)
-        eq_(device.error_code, None)
-        eq_(device.battery_low, None)
+        assert device.present
+        assert device.device_lock is None
+        assert device.lock is None
+        assert device.error_code is None
+        assert device.battery_low is None
 
     def test_device_hkr_fw_03_54(self):
         self.mock.side_effect = [
@@ -35,7 +35,7 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("23456")
-        assert_true(device.present)
+        assert device.present
 
     def test_get_target_temperature(self):
         self.mock.side_effect = [
@@ -46,7 +46,7 @@ class TestFritzhomeDeviceThermostat(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
-        eq_(device.get_target_temperature(), 19.0)
+        assert device.get_target_temperature() == 19.0
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"ain": "12345", "switchcmd": "gethkrtsoll", "sid": None},
@@ -61,7 +61,7 @@ class TestFritzhomeDeviceThermostat(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
-        eq_(device.get_eco_temperature(), 20.0)
+        assert device.get_eco_temperature() == 20.0
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"ain": "12345", "switchcmd": "gethkrabsenk", "sid": None},
@@ -76,7 +76,7 @@ class TestFritzhomeDeviceThermostat(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
-        eq_(device.get_comfort_temperature(), 20.5)
+        assert device.get_comfort_temperature() == 20.5
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"ain": "12345", "switchcmd": "gethkrkomfort", "sid": None},
@@ -90,9 +90,9 @@ class TestFritzhomeDeviceThermostat(object):
         element = self.fritz.get_device_element("11960 0071472")
         device = FritzhomeDevice(node=element)
 
-        eq_(device.ain, "11960 0071472")
-        eq_(device.offset, None)
-        eq_(device.temperature, None)
+        assert device.ain == "11960 0071472"
+        assert device.offset is None
+        assert device.temperature is None
 
     def test_hkr_get_state_on(self):
         self.mock.side_effect = [
@@ -102,7 +102,7 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.get_hkr_state(), "on")
+        assert device.get_hkr_state() == "on"
 
     def test_hkr_get_state_off(self):
         self.mock.side_effect = [
@@ -112,7 +112,7 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.get_hkr_state(), "off")
+        assert device.get_hkr_state() == "off"
 
     def test_hkr_get_state_eco(self):
         self.mock.side_effect = [
@@ -122,7 +122,7 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.get_hkr_state(), "eco")
+        assert device.get_hkr_state() == "eco"
 
     def test_hkr_get_state_comfort(self):
         self.mock.side_effect = [
@@ -132,7 +132,7 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.get_hkr_state(), "comfort")
+        assert device.get_hkr_state() == "comfort"
 
     def test_hkr_get_state_manual(self):
         self.mock.side_effect = [
@@ -142,7 +142,7 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.get_hkr_state(), "manual")
+        assert device.get_hkr_state() == "manual"
 
     def test_hkr_set_state_on(self):
         self.mock.side_effect = [
@@ -179,39 +179,39 @@ class TestFritzhomeDeviceThermostat(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.battery_level, 70)
+        assert device.battery_level == 70
 
     def test_hkr_window_open(self):
         self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7")]
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.window_open, False)
+        assert not device.window_open
 
     def test_hkr_summer_active(self):
         self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7")]
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.summer_active, True)
+        assert device.summer_active
 
     def test_hkr_holiday_active(self):
         self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7")]
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.holiday_active, False)
+        assert not device.holiday_active
 
     def test_hkr_nextchange_endperiod(self):
         self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7")]
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.nextchange_endperiod, 1538341200)
+        assert device.nextchange_endperiod == 1538341200
 
     def test_hkr_nextchange_temperature(self):
         self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7")]
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
-        eq_(device.nextchange_temperature, 21.0)
+        assert device.nextchange_temperature == 21.0

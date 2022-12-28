@@ -3,15 +3,13 @@
 
 from unittest.mock import MagicMock
 
-from nose.tools import assert_true, eq_
-
 from pyfritzhome import Fritzhome
 
 from .helper import Helper
 
 
 class TestFritzhomeDeviceLightBulb(object):
-    def setup(self):
+    def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
@@ -25,20 +23,20 @@ class TestFritzhomeDeviceLightBulb(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
-        eq_(device.ain, "12345")
-        eq_(device.fw_version, "34.10.16.16.009")
-        assert_true(device.present)  # Lightbulb has power and is connected
+        assert device.ain == "12345"
+        assert device.fw_version == "34.10.16.16.009"
+        assert device.present  # Lightbulb has power and is connected
 
         # Get sub-device
         device = self.fritz.get_device_by_ain("12345-1")
-        assert_true(device.has_lightbulb)
-        assert_true(device.state)  # Lightbulb is switched on
-        eq_(device.color_mode, "1")
-        eq_(device.supported_color_mode, "5")
-        eq_(device.hue, 358)
-        eq_(device.saturation, 180)
-        eq_(device.color_temp, None)
-        eq_(device.name, "FRITZ!DECT 500 Büro")
+        assert device.has_lightbulb
+        assert device.state  # Lightbulb is switched on
+        assert device.color_mode == "1"
+        assert device.supported_color_mode == "5"
+        assert device.hue == 358
+        assert device.saturation == 180
+        assert device.color_temp is None
+        assert device.name == "FRITZ!DECT 500 Büro"
 
     def test_device_init_color_temp_mode(self):
         self.mock.side_effect = [
@@ -48,20 +46,20 @@ class TestFritzhomeDeviceLightBulb(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
 
-        eq_(device.ain, "12345")
-        eq_(device.fw_version, "34.10.16.16.009")
-        assert_true(device.present)  # Lightbulb has power and is connected
+        assert device.ain == "12345"
+        assert device.fw_version == "34.10.16.16.009"
+        assert device.present  # Lightbulb has power and is connected
 
         # Get sub-device
         device = self.fritz.get_device_by_ain("12345-1")
-        assert_true(device.has_lightbulb)
-        assert_true(device.state)  # Lightbulb is switched on
-        eq_(device.color_mode, "4")
-        eq_(device.supported_color_mode, "5")
-        eq_(device.hue, None)
-        eq_(device.saturation, None)
-        eq_(device.color_temp, 2800)
-        eq_(device.name, "FRITZ!DECT 500 Büro")
+        assert device.has_lightbulb
+        assert device.state  # Lightbulb is switched on
+        assert device.color_mode == "4"
+        assert device.supported_color_mode == "5"
+        assert device.hue is None
+        assert device.saturation is None
+        assert device.color_temp == 2800
+        assert device.name == "FRITZ!DECT 500 Büro"
 
     def test_get_colors(self):
         self.mock.side_effect = [
@@ -140,7 +138,7 @@ class TestFritzhomeDeviceLightBulb(object):
                 ]
             }
         # fmt: on
-        eq_(colors, expected_colors)
+        assert colors == expected_colors
 
     def test_get_color_temps(self):
         self.mock.side_effect = [
@@ -166,7 +164,7 @@ class TestFritzhomeDeviceLightBulb(object):
             "5900",
             "6500",
         ]
-        eq_(temps, expected_temps)
+        assert temps == expected_temps
 
     def test_set_color(self):
         self.mock.side_effect = [

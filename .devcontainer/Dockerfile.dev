@@ -18,8 +18,9 @@ RUN pip3 install \
       docutils \
       flake8 \
       future \
-      nose \
       pre-commit \
+      pytest \
+      pytest-cov \
       python-coveralls \
       rstcheck \
       snooty-lextudio
