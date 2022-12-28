@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import assert_true, assert_false
 from unittest.mock import MagicMock
-from .helper import Helper
 
 from pyfritzhome import Fritzhome
 
+from .helper import Helper
+
 
 class TestFritzhomeDeviceSwitch(object):
-    def setup(self):
+    def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
@@ -25,8 +25,8 @@ class TestFritzhomeDeviceSwitch(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("08761 0000434")
 
-        assert_true(device.get_switch_state())
-        assert_false(device.get_switch_state())
+        assert device.get_switch_state()
+        assert not device.get_switch_state()
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"ain": "08761 0000434", "switchcmd": "getswitchstate", "sid": None},

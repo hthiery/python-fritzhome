@@ -18,7 +18,7 @@
     {
       "label": "Run tests",
       "type": "shell",
-      "command": "nosetests --with-coverage",
+      "command": "pytest --cov=pyfritzhome",
       "group": {
         "kind": "test",
         "isDefault": true

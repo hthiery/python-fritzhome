@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
 
-from nose.tools import eq_, raises
 from unittest.mock import MagicMock, patch
 
-from .helper import Helper
+import pytest
 
 from pyfritzhome import Fritzhome, InvalidError, LoginError
 
+from .helper import Helper
+
 
 class TestFritzhome(object):
-    def setup(self):
+    def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
 
-    @raises(LoginError)
     def test_login_fail(self):
         self.mock.side_effect = [
             Helper.response("login_rsp_without_valid_sid"),
             Helper.response("login_rsp_without_valid_sid"),
         ]
 
-        self.fritz.login()
+        with pytest.raises(LoginError):
+            self.fritz.login()
 
     def test_login(self):
         self.mock.side_effect = [
@@ -63,13 +64,13 @@ class TestFritzhome(object):
             },
         )
 
-    @raises(InvalidError)
     def test_aha_request_invalid(self):
         self.mock.side_effect = [
             "inval",
         ]
 
-        self.fritz._aha_request(cmd="estcmd")
+        with pytest.raises(InvalidError):
+            self.fritz._aha_request(cmd="estcmd")
 
     def test_get_device_element(self):
         self.mock.side_effect = [
@@ -79,15 +80,15 @@ class TestFritzhome(object):
         ]
 
         element = self.fritz.get_device_element("08761 0000434")
-        eq_(element.attrib["identifier"], "08761 0000434")
-        eq_(element.attrib["fwversion"], "03.33")
+        assert element.attrib["identifier"] == "08761 0000434"
+        assert element.attrib["fwversion"] == "03.33"
 
         element = self.fritz.get_device_element("08761 1048079")
-        eq_(element.attrib["identifier"], "08761 1048079")
-        eq_(element.attrib["fwversion"], "03.44")
+        assert element.attrib["identifier"] == "08761 1048079"
+        assert element.attrib["fwversion"] == "03.44"
 
         element = self.fritz.get_device_element("unknown")
-        eq_(element, None)
+        assert element is None
 
     def test_get_device_by_ain(self):
         self.mock.side_effect = [
@@ -97,7 +98,7 @@ class TestFritzhome(object):
 
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("08761 0000434")
-        eq_(device.ain, "08761 0000434")
+        assert device.ain == "08761 0000434"
 
     def test_aha_get_devices(self):
         self.mock.side_effect = [
@@ -106,8 +107,8 @@ class TestFritzhome(object):
         self.fritz.update_devices()
 
         devices = self.fritz.get_devices()
-        eq_(devices[0].name, "Steckdose")
-        eq_(devices[1].name, "FRITZ!DECT Rep 100 #1")
+        assert devices[0].name == "Steckdose"
+        assert devices[1].name == "FRITZ!DECT Rep 100 #1"
 
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
@@ -117,7 +118,7 @@ class TestFritzhome(object):
     def test_get_device_name(self):
         self.mock.side_effect = ["testname"]
 
-        eq_(self.fritz.get_device_name(ain="1234"), "testname")
+        assert self.fritz.get_device_name(ain="1234") == "testname"
 
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
@@ -132,7 +133,7 @@ class TestFritzhome(object):
 
         self.fritz.update_templates()
         device = self.fritz.get_template_by_ain("tmp0B32F7-1B0650682")
-        eq_(device.ain, "tmp0B32F7-1B0650682")
+        assert device.ain == "tmp0B32F7-1B0650682"
 
     def test_aha_get_templates(self):
         self.mock.side_effect = [
@@ -141,8 +142,8 @@ class TestFritzhome(object):
         self.fritz.update_templates()
 
         templates = self.fritz.get_templates()
-        eq_(templates[0].name, "Base Data")
-        eq_(templates[1].name, "One Device")
+        assert templates[0].name == "Base Data"
+        assert templates[1].name == "One Device"
 
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
