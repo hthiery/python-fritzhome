@@ -26,4 +26,22 @@ jobs:
         run: python setup.py install
 
       - name: Test
-        run: pytest --cov=pyfritzhome
+        run: pytest --cov=pyfritzhome --cov-report=lcov
+
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: run-${{ matrix.test_number }}
+          parallel: true
+          path-to-lcov: coverage.lcov
+
+  finish:
+    needs: tests
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
