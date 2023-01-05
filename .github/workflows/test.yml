@@ -20,7 +20,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install pytest pytest-cov python-coveralls coverage
+        run: pip install pytest pytest-cov python-coveralls coverage flake8
+
+      - name: Lint with flake8
+        run: |
+          flake8 pyfritzhome --count --show-source --statistics
 
       - name: Setup
         run: python setup.py install
