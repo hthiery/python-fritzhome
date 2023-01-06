@@ -349,7 +349,7 @@ class Fritzhome(object):
     # Template-related commands
 
     def has_templates(self):
-        """Check if the Fritz!Box supports smarthome templates"""
+        """Check if the Fritz!Box supports smarthome templates."""
         plain = self._aha_request("gettemplatelistinfos")
         try:
             ElementTree.fromstring(plain)
