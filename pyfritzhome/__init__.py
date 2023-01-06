@@ -1,3 +1,5 @@
+"""Init file for pyfritzhome."""
+
 from .errors import InvalidError, LoginError
 from .fritzhome import Fritzhome
 from .fritzhomedevice import FritzhomeDevice
