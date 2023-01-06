@@ -1,3 +1,5 @@
+"""Init file for the device types."""
+
 from .fritzhomedevicealarm import FritzhomeDeviceAlarm
 from .fritzhomedevicebutton import FritzhomeDeviceButton
 from .fritzhomedevicepowermeter import FritzhomeDevicePowermeter
