@@ -1,3 +1,5 @@
+"""Project specific exceptions."""
+
 class LoginError(Exception):
     """The LoginError Exception."""
 
