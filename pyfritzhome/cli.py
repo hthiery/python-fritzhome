@@ -166,7 +166,7 @@ def template_apply(fritz, args):
 
 
 def main(args=None):
-    """The main function."""
+    """Enter the main function of the CLI tool."""
     parser = argparse.ArgumentParser(description="Fritz!Box Smarthome CLI tool.")
     parser.add_argument(
         "-v", action="store_true", dest="verbose", help="be more verbose"

@@ -1,3 +1,4 @@
+"""The light bulb device class."""
 # -*- coding: utf-8 -*-
 
 import logging
