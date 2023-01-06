@@ -1,3 +1,4 @@
+"""The repeater device class."""
 # -*- coding: utf-8 -*-
 
 import logging

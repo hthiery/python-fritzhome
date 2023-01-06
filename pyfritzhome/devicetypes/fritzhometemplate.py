@@ -1,3 +1,4 @@
+"""The template class."""
 # -*- coding: utf-8 -*-
 
 import logging

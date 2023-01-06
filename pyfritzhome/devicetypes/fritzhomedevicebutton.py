@@ -1,3 +1,4 @@
+"""The button device class."""
 # -*- coding: utf-8 -*-
 
 import logging

@@ -1,3 +1,4 @@
+"""The powermeter device class."""
 # -*- coding: utf-8 -*-
 
 import logging
@@ -49,7 +50,7 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
             self.current = None
 
     def get_switch_power(self):
-        """The switch state."""
+        """Get the switch state."""
         return self._fritz.get_switch_power(self.ain)
 
     def get_switch_energy(self):
