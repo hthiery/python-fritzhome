@@ -393,5 +393,5 @@ class Fritzhome(object):
         return self.get_templates_as_dict()[ain]
 
     def apply_template(self, ain):
-        """Applies a template."""
+        """Appliy a template."""
         self._aha_request("applytemplate", ain=ain)
