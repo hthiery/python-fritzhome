@@ -1,3 +1,5 @@
+"""Toplevel device for pyfritzhome."""
+
 # -*- coding: utf-8 -*-
 
 from .devicetypes import FritzhomeTemplate  # noqa: F401
