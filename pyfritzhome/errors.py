@@ -1,4 +1,6 @@
 class LoginError(Exception):
+    """The LoginError Exception."""
+
     def __init__(self, user):
         """Initialize the an loginError."""
         self.user = user
@@ -9,4 +11,6 @@ class LoginError(Exception):
 
 
 class InvalidError(Exception):
+    """The InvalidError Exception."""
+
     pass
