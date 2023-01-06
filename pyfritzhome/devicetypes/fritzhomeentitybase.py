@@ -19,6 +19,7 @@ class FritzhomeEntityBase(ABC):
     _functionsbitmask = None
 
     def __init__(self, fritz=None, node=None):
+        """Create an entity base object."""
         if fritz is not None:
             self._fritz = fritz
         if node is not None:
@@ -44,13 +45,17 @@ class FritzhomeEntityBase(ABC):
     # XML Helpers
 
     def get_node_value(self, elem, node):
+        """Get the node value."""
         return elem.findtext(node)
 
     def get_node_value_as_int(self, elem, node) -> int:
+        """Get the node value as integer."""
         return int(self.get_node_value(elem, node))
 
     def get_node_value_as_int_as_bool(self, elem, node) -> bool:
+        """Get the node value as boolean."""
         return bool(self.get_node_value_as_int(elem, node))
 
     def get_temp_from_node(self, elem, node):
+        """Get the node temp value as float."""
         return float(self.get_node_value(elem, node)) / 2

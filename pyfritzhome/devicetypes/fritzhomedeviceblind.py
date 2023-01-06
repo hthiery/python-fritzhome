@@ -53,22 +53,29 @@ class FritzhomeDeviceBlind(FritzhomeDeviceBase):
             pass
 
     def get_level(self):
+        """Get the blind level."""
         return self.level
 
     def get_level_percentage(self):
+        """Get the blind level in percentage."""
         return self.levelpercentage
 
     def set_level(self, level):
+        """Set the blind level."""
         self._fritz.set_level(self.ain, level)
 
     def set_level_percentage(self, levelpercentage):
+        """Set the blind level in percentage."""
         self._fritz.set_level_percentage(self.ain, levelpercentage)
 
     def set_blind_open(self):
+        """Open the blind."""
         self._fritz.set_blind_open(self.ain)
 
     def set_blind_close(self):
+        """Close the blind."""
         self._fritz.set_blind_close(self.ain)
 
     def set_blind_stop(self):
+        """Stop the blind."""
         self._fritz.set_blind_stop(self.ain)

@@ -41,6 +41,7 @@ class FritzhomeDeviceButton(FritzhomeDeviceBase):
             pass
 
     def get_button_by_ain(self, ain):
+        """Return the button by AIN."""
         return self.buttons[ain]
 
 
@@ -53,6 +54,7 @@ class FritzhomeButton(object):
     last_pressed = None
 
     def __init__(self, node=None):
+        """Create a button object."""
         if node is not None:
             self._update_from_node(node)
 
@@ -67,7 +69,9 @@ class FritzhomeButton(object):
             pass
 
     def get_node_value(self, elem, node):
+        """Get the node value."""
         return elem.findtext(node)
 
     def get_node_value_as_int(self, elem, node) -> int:
+        """Get the node value as integer."""
         return int(self.get_node_value(elem, node))

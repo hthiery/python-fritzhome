@@ -28,6 +28,7 @@ class FritzhomeDevice(
     """The Fritzhome Device class."""
 
     def __init__(self, fritz=None, node=None):
+        """Create a device object."""
         super().__init__(fritz, node)
 
     def _update_from_node(self, node):

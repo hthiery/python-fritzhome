@@ -26,6 +26,7 @@ class Fritzhome(object):
     _templates: Dict[str, FritzhomeTemplate] = None
 
     def __init__(self, host, user, password, ssl_verify=True):
+        """Create a fritzhome object."""
         self._host = host
         self._user = user
         self._password = password
@@ -125,6 +126,7 @@ class Fritzhome(object):
             return "http://" + host
 
     def update_devices(self):
+        """Update the device."""
         _LOGGER.info("Updating Devices ...")
         if self._devices is None:
             self._devices = {}
@@ -338,12 +340,15 @@ class Fritzhome(object):
         self._aha_request("setblind", ain=ain, param={"target": state})
 
     def set_blind_open(self, ain):
+        """Set the blind state to open."""
         self._set_blind_state(ain, "open")
 
     def set_blind_close(self, ain):
+        """Set the blind state to close."""
         self._set_blind_state(ain, "close")
 
     def set_blind_stop(self, ain):
+        """Set the blind state to stop."""
         self._set_blind_state(ain, "stop")
 
     # Template-related commands
@@ -358,6 +363,7 @@ class Fritzhome(object):
         return True
 
     def update_templates(self):
+        """Update the template."""
         _LOGGER.info("Updating Templates ...")
         if self._templates is None:
             self._templates = {}
