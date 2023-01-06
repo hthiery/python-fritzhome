@@ -20,11 +20,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install pytest pytest-cov python-coveralls coverage flake8
+        run: pip install pytest pytest-cov python-coveralls coverage flake8 pydocstyle
 
       - name: Lint with flake8
         run: |
           flake8 pyfritzhome --count --show-source --statistics
+
+      - name: Run pydocstyle for analysising with Python docstring conventions.
+        run: pydocstyle
 
       - name: Setup
         run: python setup.py install
