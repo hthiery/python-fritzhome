@@ -37,7 +37,7 @@ def list_all(fritz, args):
         if device.has_switch:
             print(" Switch:")
             print("  switch_state=%s" % device.switch_state)
-        if device.has_switch:
+        if device.has_powermeter:
             print(" Powermeter:")
             print("  power=%s" % device.power)
             print("  energy=%s" % device.energy)
