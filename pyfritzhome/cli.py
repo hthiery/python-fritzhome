@@ -63,9 +63,11 @@ def list_all(fritz, args):
         if device.has_lightbulb:
             print(" Light bulb:")
             print("  state=%s" % ("Off" if device.state == 0 else "On"))
-            print("  level=%s" % device.level)
-            print("  hue=%s" % device.hue)
-            print("  saturation=%s" % device.saturation)
+            if device.has_level:
+                print("  level=%s" % device.level)
+            if device.has_color:
+                print("  hue=%s" % device.hue)
+                print("  saturation=%s" % device.saturation)
         if device.has_blind:
             print(" Blind:")
             print("  level=%s" % device.level)
