@@ -36,6 +36,16 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         """Check if the device has LightBulb function."""
         return self._has_feature(FritzhomeDeviceFeatures.LIGHTBULB)
 
+    @property
+    def has_level(self):
+        """Check if the device has LightBulb function."""
+        return self._has_feature(FritzhomeDeviceFeatures.LEVEL)
+
+    @property
+    def has_color(self):
+        """Check if the device has LightBulb function."""
+        return self._has_feature(FritzhomeDeviceFeatures.COLOR)
+
     def _update_lightbulb_from_node(self, node):
         state_element = node.find("simpleonoff")
         try:
@@ -44,54 +54,56 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         except ValueError:
             pass
 
-        level_element = node.find("levelcontrol")
-        try:
-            self.level = self.get_node_value_as_int(level_element, "level")
+        if self.has_level:
+            level_element = node.find("levelcontrol")
+            try:
+                self.level = self.get_node_value_as_int(level_element, "level")
 
-            self.level_percentage = int(self.level / 2.55)
-        except ValueError:
-            pass
+                self.level_percentage = int(self.level / 2.55)
+            except ValueError:
+                pass
 
-        colorcontrol_element = node.find("colorcontrol")
-        try:
-            self.color_mode = colorcontrol_element.attrib.get("current_mode")
+        if self.has_color:
+            colorcontrol_element = node.find("colorcontrol")
+            try:
+                self.color_mode = colorcontrol_element.attrib.get("current_mode")
 
-            self.supported_color_mode = colorcontrol_element.attrib.get(
-                "supported_modes"
-            )
+                self.supported_color_mode = colorcontrol_element.attrib.get(
+                    "supported_modes"
+                )
 
-        except ValueError:
-            pass
+            except ValueError:
+                pass
 
-        try:
-            self.hue = self.get_node_value_as_int(colorcontrol_element, "hue")
+            try:
+                self.hue = self.get_node_value_as_int(colorcontrol_element, "hue")
 
-            self.saturation = self.get_node_value_as_int(
-                colorcontrol_element, "saturation"
-            )
+                self.saturation = self.get_node_value_as_int(
+                    colorcontrol_element, "saturation"
+                )
 
-            self.unmapped_hue = self.get_node_value_as_int(
-                colorcontrol_element, "unmapped_hue"
-            )
+                self.unmapped_hue = self.get_node_value_as_int(
+                    colorcontrol_element, "unmapped_hue"
+                )
 
-            self.unmapped_saturation = self.get_node_value_as_int(
-                colorcontrol_element, "unmapped_saturation"
-            )
-        except ValueError:
-            # reset values after color mode changed
-            self.hue = None
-            self.saturation = None
-            self.unmapped_hue = None
-            self.unmapped_saturation = None
+                self.unmapped_saturation = self.get_node_value_as_int(
+                    colorcontrol_element, "unmapped_saturation"
+                )
+            except ValueError:
+                # reset values after color mode changed
+                self.hue = None
+                self.saturation = None
+                self.unmapped_hue = None
+                self.unmapped_saturation = None
 
-        try:
-            self.color_temp = self.get_node_value_as_int(
-                colorcontrol_element, "temperature"
-            )
+            try:
+                self.color_temp = self.get_node_value_as_int(
+                    colorcontrol_element, "temperature"
+                )
 
-        except ValueError:
-            # reset values after color mode changed
-            self.color_temp = None
+            except ValueError:
+                # reset values after color mode changed
+                self.color_temp = None
 
     def set_state_off(self):
         """Switch light bulb off."""
@@ -109,29 +121,40 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         self._fritz.set_state_toggle(self.ain)
 
     def set_level(self, level):
-        """Set HSV color."""
-        self._fritz.set_level(self.ain, level)
+        """Set level."""
+        if self.has_level:
+            self._fritz.set_level(self.ain, level)
 
     def set_level_percentage(self, level):
         """Set HSV color in percent."""
-        self._fritz.set_level_percentage(self.ain, level)
+        if self.has_level:
+            self._fritz.set_level_percentage(self.ain, level)
 
     def get_colors(self):
         """Get the supported colors."""
-        return self._fritz.get_colors(self.ain)
+        if self.has_color:
+            return self._fritz.get_colors(self.ain)
+        else:
+            return {}
 
     def set_color(self, hsv, duration=0):
         """Set HSV color."""
-        self._fritz.set_color(self.ain, hsv, duration, True)
+        if self.has_color:
+            self._fritz.set_color(self.ain, hsv, duration, True)
 
     def set_unmapped_color(self, hsv, duration=0):
         """Set unmapped HSV color (Free color selection)."""
-        self._fritz.set_color(self.ain, hsv, duration, False)
+        if self.has_color:
+            self._fritz.set_color(self.ain, hsv, duration, False)
 
     def get_color_temps(self):
         """Get the supported color temperatures energy."""
-        return self._fritz.get_color_temps(self.ain)
+        if self.has_color:
+            return self._fritz.get_color_temps(self.ain)
+        else:
+            return []
 
     def set_color_temp(self, temperature, duration=0):
         """Set white color temperature."""
-        self._fritz.set_color_temp(self.ain, temperature, duration)
+        if self.has_color:
+            self._fritz.set_color_temp(self.ain, temperature, duration)

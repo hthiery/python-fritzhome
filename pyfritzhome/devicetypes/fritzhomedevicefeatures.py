@@ -5,6 +5,7 @@ from enum import IntFlag
 class FritzhomeDeviceFeatures(IntFlag):
     """The feature list class."""
 
+    LIGHTBULB = 0x0004
     ALARM = 0x0010
     UNKNOWN = 0x0020
     BUTTON = 0x0020
@@ -16,6 +17,6 @@ class FritzhomeDeviceFeatures(IntFlag):
     MICROPHONE = 0x0800
     HANFUN = 0x2000
     SWITCHABLE = 0x8000
-    DIMMABLE = 0x10000
-    LIGHTBULB = 0x20000
+    LEVEL = 0x10000
+    COLOR = 0x20000
     BLIND = 0x40000
