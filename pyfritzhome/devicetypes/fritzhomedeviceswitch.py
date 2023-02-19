@@ -28,25 +28,39 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
     @property
     def has_switch(self):
         """Check if the device has switch function."""
-        return self._has_feature(FritzhomeDeviceFeatures.SWITCH)
+        if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
+            # for AVM plugs like FRITZ!DECT 200 and FRITZ!DECT 210
+            return True
+        if self._has_feature(FritzhomeDeviceFeatures.SWITCHABLE) and not self._has_feature(
+                FritzhomeDeviceFeatures.LIGHTBULB):
+            # for HAN-FUN plugs
+            return True
+        return False
 
     def _update_switch_from_node(self, node):
-        val = node.find("switch")
-        try:
-            self.switch_state = self.get_node_value_as_int_as_bool(val, "state")
-        except Exception:
-            self.switch_state = None
-        self.switch_mode = self.get_node_value(val, "mode")
-        try:
-            self.lock = self.get_node_value_as_int_as_bool(val, "lock")
-        except Exception:
-            self.lock = None
+        if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
+            val = node.find("switch")
+            try:
+                self.switch_state = self.get_node_value_as_int_as_bool(val, "state")
+            except Exception:
+                self.switch_state = None
+            self.switch_mode = self.get_node_value(val, "mode")
+            try:
+                self.lock = self.get_node_value_as_int_as_bool(val, "lock")
+            except Exception:
+                self.lock = None
 
-        # optional value
-        try:
-            self.device_lock = self.get_node_value_as_int_as_bool(val, "devicelock")
-        except Exception:
-            pass
+            # optional value
+            try:
+                self.device_lock = self.get_node_value_as_int_as_bool(val, "devicelock")
+            except Exception:
+                pass
+        else:
+            val = node.find("simpleonoff")
+            try:
+                self.switch_state = self.get_node_value_as_int_as_bool(val, "state")
+            except Exception:
+                self.switch_state = None
 
     def get_switch_state(self):
         """Get the switch state."""
