@@ -38,6 +38,25 @@ class TestFritzhomeDeviceLightBulb(object):
         assert device.color_temp is None
         assert device.name == "FRITZ!DECT 500 Büro"
 
+    def test_device_init_non_color_bulb(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_Telekom_Magenta_NonColorBulb")
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12701 0072784")
+
+        assert device.ain == "12701 0072784"
+        assert device.fw_version == "34.09.15.16.018"
+        assert device.present  # Lightbulb has power and is connected
+
+        # Get sub-device
+        device = self.fritz.get_device_by_ain("12701 0072784-1")
+        assert device.has_lightbulb
+        assert device.has_level
+        assert device.state  # Lightbulb is switched on
+        assert device.name == "Telekom White Dimmable Bulb"
+
     def test_device_init_color_temp_mode(self):
         self.mock.side_effect = [
             Helper.response("lightbulb/device_FritzDECT500_34_12_16_color_temp_mode")
