@@ -18,4 +18,22 @@
             <offset>0</offset>
         </temperature>
     </device>
+     <device identifier="11324 0716524" id="402" functionbitmask="1" fwversion="30.17.04.02.018" manufacturer="0x2c3c" productname="HAN-FUN">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Telekom Steckdose</name>
+    </device>
+    <device identifier="11324 0716524-1" id="2002" functionbitmask="40960" fwversion="0.0" manufacturer="0x2c3c" productname="HAN-FUN">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Telekom Steckdose</name>
+        <simpleonoff>
+            <state>1</state>
+        </simpleonoff>
+        <etsiunitinfo>
+            <etsideviceid>402</etsideviceid>
+            <unittype>262</unittype>
+            <interfaces>512</interfaces>
+        </etsiunitinfo>
+    </device>
 </devicelist>
