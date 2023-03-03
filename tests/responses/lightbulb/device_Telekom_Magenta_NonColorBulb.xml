@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devicelist version="1" fwversion="7.51">
+    <device identifier="12701 0072784" id="401" functionbitmask="1" fwversion="34.09.15.16.018" manufacturer="0x319d" productname="HAN-FUN">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Telekom Lampe</name>
+    </device>
+    <device identifier="12701 0072784-1" id="2001" functionbitmask="106500" fwversion="0.0" manufacturer="0x319d" productname="HAN-FUN">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Telekom White Dimmable Bulb</name>
+        <simpleonoff>
+            <state>1</state>
+        </simpleonoff>
+        <levelcontrol>
+            <level>255</level>
+            <levelpercentage>100</levelpercentage>
+        </levelcontrol>
+        <etsiunitinfo>
+            <etsideviceid>401</etsideviceid>
+            <unittype>265</unittype>
+            <interfaces>512,513</interfaces>
+        </etsiunitinfo>
+    </device>
+</devicelist>

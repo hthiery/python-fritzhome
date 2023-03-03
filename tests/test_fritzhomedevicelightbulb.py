@@ -30,6 +30,8 @@ class TestFritzhomeDeviceLightBulb(object):
         # Get sub-device
         device = self.fritz.get_device_by_ain("12345-1")
         assert device.has_lightbulb
+        assert device.has_level
+        assert device.has_color
         assert device.state  # Lightbulb is switched on
         assert device.color_mode == "1"
         assert device.supported_color_mode == "5"
