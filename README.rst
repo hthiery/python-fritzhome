@@ -13,8 +13,10 @@ Tested Devices
 * `Panasonic KX-HNS101`
 * `Magenta Smarthome Tür-/Fensterkontakt optisch`_
 * `RADEMACHER RolloTron DECT 1213`_
-
-
+* `Magenta Smarthome Zwischenstecker außen`_
+* `Magenta SmartHome LED-Lampe E27 Warmweiß`
+* `Magenta SmartHome Zwischenstecker innen`
+* `Magenta Smarthome Tür-/Fensterkontakt magnetisch`
 
 fritzhome CLI tool
 ------------------
@@ -118,3 +120,4 @@ References
 .. _FRITZ!Box 6490 Cable: https://avm.de/produkte/fritzbox/fritzbox-6490-cable/
 .. _Magenta Smarthome Tür-/Fensterkontakt optisch: https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-optisch-weiss
 .. _RADEMACHER RolloTron DECT 1213: https://www.rademacher.de/shop/rollladen-sonnenschutz/elektrischer-gurtwickler/rollotron-dect-1213
+.. _Magenta Smarthome Zwischenstecker außen: https://www.smarthome.de/geraete/smarthome-zwischenstecker-aussen-schwarz
