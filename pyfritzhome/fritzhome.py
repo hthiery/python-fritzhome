@@ -8,6 +8,9 @@ import logging
 import time
 from xml.etree import ElementTree
 
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
 from requests import Session
 
 from .errors import InvalidError, LoginError
@@ -44,7 +47,7 @@ class Fritzhome(object):
 
     def _login_request(self, username=None, secret=None):
         """Send a login request with paramerters."""
-        url = self.get_prefixed_host() + "/login_sid.lua"
+        url = self.get_prefixed_host() + "/login_sid.lua?version=2"
         params = {}
         if username:
             params["username"] = username
@@ -54,9 +57,10 @@ class Fritzhome(object):
         plain = self._request(url, params)
         dom = ElementTree.fromstring(plain)
         sid = dom.findtext("SID")
+        blocktime = int(dom.findtext("BlockTime"))
         challenge = dom.findtext("Challenge")
 
-        return (sid, challenge)
+        return (sid, challenge, blocktime)
 
     def _logout_request(self):
         """Send a logout request."""
@@ -67,7 +71,27 @@ class Fritzhome(object):
         self._request(url, params)
 
     @staticmethod
-    def _create_login_secret(challenge, password):
+    def _create_login_secrete_pbkdf2(challenge, password):
+        challenge_parts = challenge.split("$")
+        # Extract all necessary values encoded into the challenge
+        iter1 = int(challenge_parts[1])
+        salt1 = bytes.fromhex(challenge_parts[2])
+        iter2 = int(challenge_parts[3])
+        salt2 = bytes.fromhex(challenge_parts[4])
+        # Hash twice, once with static salt...
+        # hash1 = hashlib.pbkdf2_hmac("sha256", password.encode(), salt1, iter1)
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt1,
+                         iterations=iter1)
+        hash1 = kdf.derive(password.encode())
+        # Once with dynamic salt.
+        # hash2 = hashlib.pbkdf2_hmac("sha256", hash1, salt2, iter2)
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt2,
+                         iterations=iter2)
+        hash2 = kdf.derive(hash1)
+        return f"{challenge_parts[4]}${hash2.hex()}"
+
+    @staticmethod
+    def _create_login_secret_md5(challenge, password):
         """Create a login secret."""
         to_hash = (challenge + "-" + password).encode("UTF-16LE")
         hashed = hashlib.md5(to_hash).hexdigest()
@@ -92,10 +116,20 @@ class Fritzhome(object):
 
     def login(self):
         """Login and get a valid session ID."""
-        (sid, challenge) = self._login_request()
+        (sid, challenge, blocktime) = self._login_request()
         if sid == "0000000000000000":
-            secret = self._create_login_secret(challenge, self._password)
-            (sid2, challenge) = self._login_request(username=self._user, secret=secret)
+            if blocktime > 0:
+                time.sleep(blocktime)
+            # PBKDF2 (FRITZ!OS 7.24 or later)
+            if challenge.startswith("2$"):
+                secret = self._create_login_secrete_pbkdf2(challenge,
+                                                           self._password)
+            # fallback to MD5
+            else:
+                secret = self._create_login_secret_md5(challenge, self._password)
+            (sid2, challenge, _) = self._login_request(
+                username=self._user, secret=secret
+            )
             if sid2 == "0000000000000000":
                 _LOGGER.warning("login failed %s", sid2)
                 raise LoginError(self._user)
