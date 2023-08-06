@@ -92,20 +92,14 @@ class Fritzhome(object):
 
     def login(self):
         """Login and get a valid session ID."""
-        try:
-            (sid, challenge) = self._login_request()
-            if sid == "0000000000000000":
-                secret = self._create_login_secret(challenge, self._password)
-                (sid2, challenge) = self._login_request(
-                    username=self._user, secret=secret
-                )
-                if sid2 == "0000000000000000":
-                    _LOGGER.warning("login failed %s", sid2)
-                    raise LoginError(self._user)
-                self._sid = sid2
-        except Exception as ex:
-            _LOGGER.error(ex)
-            raise LoginError(self._user)
+        (sid, challenge) = self._login_request()
+        if sid == "0000000000000000":
+            secret = self._create_login_secret(challenge, self._password)
+            (sid2, challenge) = self._login_request(username=self._user, secret=secret)
+            if sid2 == "0000000000000000":
+                _LOGGER.warning("login failed %s", sid2)
+                raise LoginError(self._user)
+            self._sid = sid2
 
     def logout(self):
         """Logout."""
