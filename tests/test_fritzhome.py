@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from requests.exceptions import ConnectionError
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -21,7 +22,14 @@ class TestFritzhome(object):
             Helper.response("login_rsp_without_valid_sid"),
         ]
 
-        with pytest.raises(LoginError):
+        with pytest.raises(LoginError) as ex:
+            self.fritz.login()
+        assert str(ex.value) == 'login for user="user" failed'
+
+    def test_login_connection_error(self):
+        self.mock.side_effect = ConnectionError
+
+        with pytest.raises(ConnectionError):
             self.fritz.login()
 
     def test_login(self):
