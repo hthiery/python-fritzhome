@@ -314,6 +314,7 @@ def main(args=None):
 
     # apply templates
     subparser = _sub_switch.add_parser("apply", help="Apply template")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=template_apply)
 
     args = parser.parse_args(args)
