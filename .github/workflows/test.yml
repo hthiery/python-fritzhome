@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "pypy3.7"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.7"]
 
     steps:
       - uses: actions/checkout@v3
@@ -20,7 +20,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install pytest pytest-cov python-coveralls coverage flake8 pydocstyle
+        run: pip install pytest pytest-cov python-coveralls coverage flake8 pydocstyle setuptools
 
       - name: Lint with flake8
         run: |
@@ -47,8 +47,8 @@ jobs:
     needs: tests
     runs-on: ubuntu-22.04
     steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.github_token }}
-        parallel-finished: true
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
