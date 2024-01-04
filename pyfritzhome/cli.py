@@ -30,6 +30,9 @@ def list_all(fritz, args):
         print("  present=%s" % device.present)
         print("  lock=%s" % device.lock)
         print("  devicelock=%s" % device.device_lock)
+        print("  is_group=%s" % device.is_group)
+        if device.is_group:
+            print("  group_members=%s" % device.group_members)
 
         if device.present is False:
             continue
