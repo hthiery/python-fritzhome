@@ -15,7 +15,9 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
     identifier = None
+    is_group = None
     fw_version = None
+    group_members = None
     manufacturer = None
     productname = None
     present = None
@@ -43,6 +45,11 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
         self.productname = node.attrib["productname"]
 
         self.present = bool(int(node.findtext("present")))
+
+        groupinfo = node.find("groupinfo")
+        self.is_group = groupinfo is not None
+        if self.is_group:
+            self.group_members = str(groupinfo.findtext("members")).split(",")
 
     # General
     def get_present(self):

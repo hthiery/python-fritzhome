@@ -143,7 +143,7 @@ class Fritzhome(object):
         plain = self._aha_request("get" + entity_type + "listinfos")
         dom = ElementTree.fromstring(plain)
         _LOGGER.debug(dom)
-        return dom.findall(entity_type)
+        return dom.findall("*")
 
     def get_device_elements(self):
         """Get the DOM elements for the device list."""

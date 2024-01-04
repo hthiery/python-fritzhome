@@ -38,6 +38,7 @@ add a new user.
       present=True
       lock=None
       devicelock=None
+      is_group=False
      Alert:
       alert=True
     ##############################
@@ -49,6 +50,7 @@ add a new user.
       present=True
       lock=False
       devicelock=False
+      is_group=False
      Temperature:
       temperature=19
       offset=-3
@@ -63,6 +65,50 @@ add a new user.
       summer=False
       holiday=False
     ##############################
+    name=Wohnzimmer Couch
+      ain=09995 0523646
+      id=17
+      productname=FRITZ!DECT 301
+      manufacturer=AVM
+      present=True
+      lock=False
+      devicelock=False
+      is_group=False
+    Temperature:
+      temperature=20.5
+    Thermostat:
+      battery_low=False
+      battery_level=80
+      actual=20.5
+      target=21.5
+      comfort=21.5
+      eco=17.5
+      window=False
+      summer=False
+      holiday=False
+    ##############################
+    name=Wohnzimmer Tisch
+      ain=09995 0517495
+      id=18
+      productname=FRITZ!DECT 301
+      manufacturer=AVM
+      present=True
+      lock=False
+      devicelock=False
+      is_group=False
+    Temperature:
+      temperature=21.0
+    Thermostat:
+      battery_low=False
+      battery_level=80
+      actual=21.0
+      target=21.5
+      comfort=21.5
+      eco=17.5
+      window=False
+      summer=False
+      holiday=False
+    ##############################
     name=Schalter WC Heizung
       ain=08761 0402392
       id=21
@@ -71,6 +117,7 @@ add a new user.
       present=True
       lock=True
       devicelock=False
+      is_group=False
      Switch:
       switch_state=False
      Powermeter:
@@ -80,7 +127,27 @@ add a new user.
      Temperature:
       temperature=22
       offset=3
-
+    ##############################
+    name=Wohnzimmer
+      ain=grp303E4F-3F7D9BE07
+      id=900
+      productname=
+      manufacturer=AVM
+      present=True
+      lock=False
+      devicelock=False
+      is_group=True
+      group_members=['17', '18']
+    Thermostat:
+      battery_low=None
+      battery_level=None
+      actual=None
+      target=21.5
+      comfort=21.5
+      eco=17.5
+      window=None
+      summer=None
+      holiday=None
 
 Fritzbox User
 -------------
