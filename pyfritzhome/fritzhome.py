@@ -69,7 +69,7 @@ class Fritzhome(object):
         params = {"security:command/logout": "1", "sid": self._sid}
 
         self._request(url, params)
-    
+
     @staticmethod
     def _create_login_secrete_pbkdf2(challenge, password):
         challenge_parts = challenge.split("$")
@@ -79,12 +79,14 @@ class Fritzhome(object):
         iter2 = int(challenge_parts[3])
         salt2 = bytes.fromhex(challenge_parts[4])
         # Hash twice, once with static salt...
-        #hash1 = hashlib.pbkdf2_hmac("sha256", password.encode(), salt1, iter1)
-        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),length=32,salt=salt1,iterations=iter1)
+        # hash1 = hashlib.pbkdf2_hmac("sha256", password.encode(), salt1, iter1)
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt1,
+                         iterations=iter1)
         hash1 = kdf.derive(password.encode())
         # Once with dynamic salt.
-        #hash2 = hashlib.pbkdf2_hmac("sha256", hash1, salt2, iter2)
-        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),length=32,salt=salt2,iterations=iter2)
+        # hash2 = hashlib.pbkdf2_hmac("sha256", hash1, salt2, iter2)
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt2,
+                         iterations=iter2)
         hash2 = kdf.derive(hash1)
         return f"{challenge_parts[4]}${hash2.hex()}"
 
@@ -121,7 +123,8 @@ class Fritzhome(object):
                     time.sleep(blocktime)
                 # PBKDF2 (FRITZ!OS 7.24 or later)
                 if challenge.startswith("2$"):
-                    secret = self._create_login_secrete_pbkdf2(challenge, self._password)
+                    secret = self._create_login_secrete_pbkdf2(challenge,
+                                                               self._password)
                 # fallback to MD5
                 else:
                     secret = self._create_login_secret_md5(challenge, self._password)
