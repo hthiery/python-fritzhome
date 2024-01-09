@@ -39,19 +39,25 @@ class TestFritzhome(object):
         ]
 
         self.fritz.login()
-    
+
     def test_login_pbkdf2(self):
         self.mock.side_effect = [
             Helper.response("login_rsp_without_valid_sid_pbkdf2"),
             Helper.response("login_rsp_with_valid_sid_pbkdf2"),
         ]
-        #challenge was generated using http://home.mengelke.de/login_sid.lua?version=2 (Fritzbox Anmeldesimulator)
-        #response was generated using python code from https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AVM%20Technical%20Note%20-%20Session%20ID_deutsch%20-%20Nov2020.pdf
-        #the example challenge and response in this document is faulty and does not work with given example code
+        """
+        challenge was generated using
+        http://home.mengelke.de/login_sid.lua?version=2 (Fritzbox Anmeldesimulator)
+        response was generated using python code from
+        https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AVM%20Technical%20Note%20-%20Session%20ID_deutsch%20-%20Nov2020.pdf
+        the example challenge and response in this document is faulty and
+        does not work with given example code
+        """
         self.fritz.login()
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/login_sid.lua?version=2",
-            {"username": "user", "response": "b9c232dea345233f5a893b2284931ac8$2825c7fbd8cdbcbaf93ca2e8d0798c31cf38394469a9ce89365778dc9103ad82"},
+            {"username": "user", "response": "b9c232dea345233f5a893b2284931ac8$"
+             "2825c7fbd8cdbcbaf93ca2e8d0798c31cf38394469a9ce89365778dc9103ad82"},
         )
 
     def test_logout(self):
