@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomeentitybase import FritzhomeEntityBase
 
 from .helper import Helper
 
@@ -89,3 +90,24 @@ class TestFritzhomeDeviceBase(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"ain": "08761 0000434", "switchcmd": "getswitchpresent", "sid": None},
         )
+
+    def test_device_and_unit_id(self):
+        device = FritzhomeEntityBase()
+
+        device.ain = "11630 0114733"
+        assert device.device_and_unit_id == ("11630 0114733", None)
+
+        device.ain = "11630 0114733-1"
+        assert device.device_and_unit_id == ("11630 0114733", "1")
+
+        device.ain = "ZA4C1380C30E07AB1"
+        assert device.device_and_unit_id == ("ZA4C1380C30E07AB1", None)
+
+        device.ain = "ZA4C1380C30E07AB101"
+        assert device.device_and_unit_id == ("ZA4C1380C30E07AB1", "01")
+
+        device.ain = "grp303E4F-3F7D9BE07"
+        assert device.device_and_unit_id == ("grp303E4F-3F7D9BE07", None)
+
+        device.ain = "tmp816271-3F6EB615E"
+        assert device.device_and_unit_id == ("tmp816271-3F6EB615E", None)
