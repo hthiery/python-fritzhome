@@ -43,6 +43,17 @@ class FritzhomeEntityBase(ABC):
 
         self.name = node.findtext("name").strip()
 
+    @property
+    def device_and_unit_id(self):
+        """Get the device and possible unit id."""
+        if self.ain.startswith("tmp") or self.ain.startswith("grp"):
+            return (self.ain, None)
+        elif self.ain.startswith("Z") and len(self.ain) == 19:
+            return (self.ain[0:17], self.ain[17:])
+        elif "-" in self.ain:
+            return tuple(self.ain.split("-"))
+        return (self.ain, None)
+
     # XML Helpers
 
     def get_node_value(self, elem, node):
