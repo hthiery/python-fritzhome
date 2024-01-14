@@ -20,8 +20,6 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     device_lock = None
     lock = None
     error_code = None
-    battery_low = None
-    battery_level = None
     window_open = None
     window_open_endtime = None
     summer_active = None
@@ -44,6 +42,7 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         return self._has_feature(FritzhomeDeviceFeatures.THERMOSTAT)
 
     def _update_hkr_from_node(self, node):
+        _LOGGER.debug("update thermostat device")
         hkr_element = node.find("hkr")
 
         try:
@@ -62,6 +61,7 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
             )
             self.lock = self.get_node_value_as_int_as_bool(hkr_element, "lock")
             self.error_code = self.get_node_value_as_int(hkr_element, "errorcode")
+            # keep battery values as fallback for Fritz!OS < 7.08
             self.battery_low = self.get_node_value_as_int_as_bool(
                 hkr_element, "batterylow"
             )

@@ -29,6 +29,7 @@ class FritzhomeDeviceAlarm(FritzhomeDeviceBase):
         return self._has_feature(FritzhomeDeviceFeatures.ALARM)
 
     def _update_alarm_from_node(self, node):
+        _LOGGER.debug("update alert device")
         val = node.find("alert")
         try:
             self.alert_state = self.get_node_value_as_int_as_bool(val, "state")

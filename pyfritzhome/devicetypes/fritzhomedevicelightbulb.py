@@ -13,7 +13,6 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
     state = None
-    level = None
     hue = None
     saturation = None
     unmapped_hue = None
@@ -37,31 +36,18 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         return self._has_feature(FritzhomeDeviceFeatures.LIGHTBULB)
 
     @property
-    def has_level(self):
-        """Check if the device has LightBulb function."""
-        return self._has_feature(FritzhomeDeviceFeatures.LEVEL)
-
-    @property
     def has_color(self):
         """Check if the device has LightBulb function."""
         return self._has_feature(FritzhomeDeviceFeatures.COLOR)
 
     def _update_lightbulb_from_node(self, node):
+        _LOGGER.debug("update light bulb device")
         state_element = node.find("simpleonoff")
         try:
             self.state = self.get_node_value_as_int_as_bool(state_element, "state")
 
         except ValueError:
             pass
-
-        if self.has_level:
-            level_element = node.find("levelcontrol")
-            try:
-                self.level = self.get_node_value_as_int(level_element, "level")
-
-                self.level_percentage = int(self.level / 2.55)
-            except ValueError:
-                pass
 
         if self.has_color:
             colorcontrol_element = node.find("colorcontrol")
@@ -119,16 +105,6 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         """Toogle light bulb state."""
         self.state = True
         self._fritz.set_state_toggle(self.ain)
-
-    def set_level(self, level):
-        """Set level."""
-        if self.has_level:
-            self._fritz.set_level(self.ain, level)
-
-    def set_level_percentage(self, level):
-        """Set HSV color in percent."""
-        if self.has_level:
-            self._fritz.set_level_percentage(self.ain, level)
 
     def get_colors(self):
         """Get the supported colors."""

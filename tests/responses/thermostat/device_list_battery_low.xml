@@ -4,6 +4,8 @@
     fwversion="03.54" manufacturer="AVM" productname="Comet DECT">
         <present>1</present>
         <name>Badezimmer</name>
+        <battery>10</battery>
+        <batterylow>1</batterylow>
         <temperature>
             <celsius>205</celsius>
             <offset>-15</offset>
@@ -17,6 +19,7 @@
             <devicelock>0</devicelock>
             <errorcode>0</errorcode>
             <batterylow>1</batterylow>
+            <battery>10</battery>
             <nextchange>
                 <endperiod>1508342400</endperiod>
                 <tchange>42</tchange>

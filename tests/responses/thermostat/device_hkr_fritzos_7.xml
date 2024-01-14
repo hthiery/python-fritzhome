@@ -3,6 +3,8 @@
     <device functionbitmask="320" fwversion="03.54" id="22" identifier="12345" manufacturer="AVM" productname="Comet DECT">
         <present>1</present>
         <name>Thermostat Wohnzimmer Seite</name>
+        <batterylow>0</batterylow>
+        <battery>70</battery>
         <temperature>
             <celsius>205</celsius>
             <offset>-10</offset>
