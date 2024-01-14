@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome, FritzhomeDevice
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -27,6 +28,10 @@ class TestFritzhomeDeviceThermostat(object):
         assert device.lock is None
         assert device.error_code is None
         assert device.battery_low is None
+        assert device.supported_features == [
+            FritzhomeDeviceFeatures.THERMOSTAT,
+            FritzhomeDeviceFeatures.TEMPERATURE,
+        ]
 
     def test_device_hkr_fw_03_54(self):
         self.mock.side_effect = [
@@ -36,6 +41,10 @@ class TestFritzhomeDeviceThermostat(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("23456")
         assert device.present
+        assert device.supported_features == [
+            FritzhomeDeviceFeatures.THERMOSTAT,
+            FritzhomeDeviceFeatures.TEMPERATURE,
+        ]
 
     def test_get_target_temperature(self):
         self.mock.side_effect = [

@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -33,6 +34,10 @@ class TestFritzhomeTemplate(object):
         assert not template.apply_level
         assert not template.apply_color
         assert not template.apply_dialhelper
+        assert template.supported_features == [
+            FritzhomeDeviceFeatures.THERMOSTAT,
+            FritzhomeDeviceFeatures.TEMPERATURE,
+        ]
 
     def test_template_with_single_device(self):
         template = self.fritz.get_template_by_ain("tmp0B32F7-1B0650234")

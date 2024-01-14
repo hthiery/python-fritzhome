@@ -18,6 +18,7 @@ class FritzhomeEntityBase(ABC):
     _fritz = None
     ain: str = None
     _functionsbitmask = None
+    supported_features = None
 
     def __init__(self, fritz=None, node=None):
         """Create an entity base object."""
@@ -42,6 +43,11 @@ class FritzhomeEntityBase(ABC):
         self._functionsbitmask = int(node.attrib["functionbitmask"])
 
         self.name = node.findtext("name").strip()
+
+        self.supported_features = []
+        for feature in FritzhomeDeviceFeatures:
+            if self._has_feature(feature):
+                self.supported_features.append(feature)
 
     @property
     def device_and_unit_id(self):

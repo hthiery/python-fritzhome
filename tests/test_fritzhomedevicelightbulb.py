@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -26,6 +27,7 @@ class TestFritzhomeDeviceLightBulb(object):
         assert device.ain == "12345"
         assert device.fw_version == "34.10.16.16.009"
         assert device.present  # Lightbulb has power and is connected
+        assert device.supported_features == [FritzhomeDeviceFeatures.HANFUN_DEVICE]
 
         # Get sub-device
         device = self.fritz.get_device_by_ain("12345-1")
@@ -39,6 +41,13 @@ class TestFritzhomeDeviceLightBulb(object):
         assert device.saturation == 180
         assert device.color_temp is None
         assert device.name == "FRITZ!DECT 500 Büro"
+        assert device.supported_features == [
+            FritzhomeDeviceFeatures.LIGHTBULB,
+            FritzhomeDeviceFeatures.HANFUN_UNIT,
+            FritzhomeDeviceFeatures.SWITCHABLE,
+            FritzhomeDeviceFeatures.LEVEL,
+            FritzhomeDeviceFeatures.COLOR,
+        ]
 
     def test_device_init_non_color_bulb(self):
         self.mock.side_effect = [

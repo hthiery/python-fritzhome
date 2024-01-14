@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -25,6 +26,11 @@ class TestFritzhomeDevicePowermeter(object):
         device = self.fritz.get_device_by_ain("08761 0000434")
 
         assert device.get_switch_power() == 18000
+        assert device.supported_features == [
+            FritzhomeDeviceFeatures.POWER_METER,
+            FritzhomeDeviceFeatures.TEMPERATURE,
+            FritzhomeDeviceFeatures.SWITCH,
+        ]
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {"ain": "08761 0000434", "switchcmd": "getswitchpower", "sid": None},

@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -24,11 +25,18 @@ class TestFritzhomeDeviceBlind(object):
         device1 = self.fritz.get_device_by_ain("14276 1234567")
         assert device1.present
         assert not device1.tx_busy
+        assert device1.supported_features == [FritzhomeDeviceFeatures.HANFUN_DEVICE]
 
         device2 = self.fritz.get_device_by_ain("14276 1234567-1")
         assert device2.present
         assert not device2.tx_busy
         assert device2.endpositionsset
+        assert device2.supported_features == [
+            FritzhomeDeviceFeatures.ALARM,
+            FritzhomeDeviceFeatures.HANFUN_UNIT,
+            FritzhomeDeviceFeatures.LEVEL,
+            FritzhomeDeviceFeatures.BLIND,
+        ]
 
         assert device2.level == 252
         assert device2.levelpercentage == 99
