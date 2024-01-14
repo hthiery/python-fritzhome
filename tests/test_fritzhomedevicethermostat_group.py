@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -25,3 +26,4 @@ class TestFritzhomeDeviceThermostat(object):
         assert group.has_thermostat
         assert group.is_group
         assert group.group_members == ["16", "17"]
+        assert group.supported_features == [FritzhomeDeviceFeatures.THERMOSTAT]

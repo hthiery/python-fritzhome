@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 from pyfritzhome.devicetypes.fritzhomeentitybase import FritzhomeEntityBase
 
 from .helper import Helper
@@ -28,6 +29,11 @@ class TestFritzhomeDeviceBase(object):
         assert device.has_switch
         assert device.has_temperature_sensor
         assert device.has_powermeter
+        assert device.supported_features == [
+            FritzhomeDeviceFeatures.POWER_METER,
+            FritzhomeDeviceFeatures.TEMPERATURE,
+            FritzhomeDeviceFeatures.SWITCH,
+        ]
 
     def test_device_init_present_false(self):
         self.mock.side_effect = [

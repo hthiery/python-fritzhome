@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -24,6 +25,10 @@ class TestFritzhomeDeviceAlarm(object):
         device = self.fritz.get_device_by_ain("05333 0077045-1")
         assert device.present
         assert device.alert_state
+        assert device.supported_features == [
+            FritzhomeDeviceFeatures.ALARM,
+            FritzhomeDeviceFeatures.HANFUN_UNIT,
+        ]
 
     def test_device_alert_off(self):
         self.mock.side_effect = [

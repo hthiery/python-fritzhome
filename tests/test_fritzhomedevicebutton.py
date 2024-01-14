@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock
 
 from pyfritzhome import Fritzhome
+from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
 
 from .helper import Helper
 
@@ -29,6 +30,10 @@ class TestFritzhomeDeviceButton(object):
         assert not device.battery_low
         assert device.battery_level == 100
         assert not device.tx_busy
+        assert device.supported_features == [
+            FritzhomeDeviceFeatures.BUTTON,
+            FritzhomeDeviceFeatures.TEMPERATURE,
+        ]
 
         button = device.get_button_by_ain("12345 0000001-1")
         assert button.name == "Taster Wohnzimmer: Oben rechts"
