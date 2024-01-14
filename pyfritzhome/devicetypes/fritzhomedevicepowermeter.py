@@ -32,6 +32,7 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
         return self._has_feature(FritzhomeDeviceFeatures.POWER_METER)
 
     def _update_powermeter_from_node(self, node):
+        _LOGGER.debug("update powermeter device")
         val = node.find("powermeter")
         self.power = int(val.findtext("power"))
         self.energy = int(val.findtext("energy"))

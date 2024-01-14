@@ -31,13 +31,15 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
         if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
             # for AVM plugs like FRITZ!DECT 200 and FRITZ!DECT 210
             return True
-        if (self._has_feature(FritzhomeDeviceFeatures.SWITCHABLE)
-                and not self._has_feature(FritzhomeDeviceFeatures.LIGHTBULB)):
+        if self._has_feature(
+            FritzhomeDeviceFeatures.SWITCHABLE
+        ) and not self._has_feature(FritzhomeDeviceFeatures.LIGHTBULB):
             # for HAN-FUN plugs
             return True
         return False
 
     def _update_switch_from_node(self, node):
+        _LOGGER.debug("update switch device")
         if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
             val = node.find("switch")
             try:

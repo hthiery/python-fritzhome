@@ -7,6 +7,8 @@ from .devicetypes import (
     FritzhomeDeviceAlarm,
     FritzhomeDeviceBlind,
     FritzhomeDeviceButton,
+    FritzhomeDeviceHumidity,
+    FritzhomeDeviceLevel,
     FritzhomeDeviceLightBulb,
     FritzhomeDevicePowermeter,
     FritzhomeDeviceRepeater,
@@ -18,14 +20,16 @@ from .devicetypes import (
 
 class FritzhomeDevice(
     FritzhomeDeviceAlarm,
+    FritzhomeDeviceBlind,
     FritzhomeDeviceButton,
+    FritzhomeDeviceHumidity,
+    FritzhomeDeviceLevel,
+    FritzhomeDeviceLightBulb,
     FritzhomeDevicePowermeter,
     FritzhomeDeviceRepeater,
     FritzhomeDeviceSwitch,
     FritzhomeDeviceTemperature,
     FritzhomeDeviceThermostat,
-    FritzhomeDeviceLightBulb,
-    FritzhomeDeviceBlind,
 ):
     """The Fritzhome Device class."""
 

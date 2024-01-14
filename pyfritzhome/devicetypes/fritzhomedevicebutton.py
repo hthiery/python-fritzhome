@@ -28,18 +28,12 @@ class FritzhomeDeviceButton(FritzhomeDeviceBase):
         return self._has_feature(FritzhomeDeviceFeatures.BUTTON)
 
     def _update_button_from_node(self, node):
+        _LOGGER.debug("update button device")
         self.buttons = {}
 
         for element in node.findall("button"):
             button = FritzhomeButton(element)
             self.buttons[button.ain] = button
-
-        try:
-            self.tx_busy = self.get_node_value_as_int_as_bool(node, "txbusy")
-            self.battery_low = self.get_node_value_as_int_as_bool(node, "batterylow")
-            self.battery_level = int(self.get_node_value_as_int(node, "battery"))
-        except Exception:
-            pass
 
     def get_button_by_ain(self, ain):
         """Return the button by AIN."""

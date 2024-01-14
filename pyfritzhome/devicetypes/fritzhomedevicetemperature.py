@@ -14,7 +14,6 @@ class FritzhomeDeviceTemperature(FritzhomeDeviceBase):
 
     offset = None
     temperature = None
-    rel_humidity = None
 
     def _update_from_node(self, node):
         super()._update_from_node(node)
@@ -31,6 +30,7 @@ class FritzhomeDeviceTemperature(FritzhomeDeviceBase):
         return self._has_feature(FritzhomeDeviceFeatures.TEMPERATURE)
 
     def _update_temperature_from_node(self, node):
+        _LOGGER.debug("update temperature device")
         temperature_element = node.find("temperature")
         try:
             self.offset = (
@@ -45,12 +45,3 @@ class FritzhomeDeviceTemperature(FritzhomeDeviceBase):
             )
         except ValueError:
             pass
-
-        humidity_element = node.find("humidity")
-        if humidity_element is not None:
-            try:
-                self.rel_humidity = self.get_node_value_as_int(
-                    humidity_element, "rel_humidity"
-                )
-            except ValueError:
-                pass

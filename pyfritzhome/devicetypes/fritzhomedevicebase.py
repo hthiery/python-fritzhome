@@ -14,6 +14,8 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
+    battery_level = None
+    battery_low = None
     identifier = None
     is_group = None
     fw_version = None
@@ -21,6 +23,7 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
     manufacturer = None
     productname = None
     present = None
+    tx_busy = None
 
     def __repr__(self):
         """Return a string."""
@@ -37,6 +40,7 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
         self._fritz.update_devices()
 
     def _update_from_node(self, node):
+        _LOGGER.debug("update base device")
         super()._update_from_node(node)
         self.ain = node.attrib["identifier"]
         self.identifier = node.attrib["id"]
@@ -50,6 +54,17 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
         self.is_group = groupinfo is not None
         if self.is_group:
             self.group_members = str(groupinfo.findtext("members")).split(",")
+
+        try:
+            self.tx_busy = self.get_node_value_as_int_as_bool(node, "txbusy")
+        except Exception:
+            pass
+
+        try:
+            self.battery_low = self.get_node_value_as_int_as_bool(node, "batterylow")
+            self.battery_level = int(self.get_node_value_as_int(node, "battery"))
+        except Exception:
+            pass
 
     # General
     def get_present(self):

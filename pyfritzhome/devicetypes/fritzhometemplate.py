@@ -25,6 +25,7 @@ class FritzhomeTemplate(FritzhomeEntityBase):
     apply_dialhelper = None
 
     def _update_from_node(self, node):
+        _LOGGER.debug("update template")
         super()._update_from_node(node)
 
         self.features = FritzhomeDeviceFeatures(self._functionsbitmask)
