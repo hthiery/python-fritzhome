@@ -276,6 +276,14 @@ class Fritzhome(object):
             "sethkrwindowopen", ain=ain, param={"endtimestamp": endtimestamp}
         )
 
+    def set_boost_mode(self, ain, seconds):
+        """Set the thermostate to boost mode."""
+        endtimestamp = int(time.time() + seconds)
+
+        self._aha_request(
+            "sethkrboost", ain=ain, param={"endtimestamp": endtimestamp}
+        )
+
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
         return self._get_temperature(ain, "gethkrkomfort")

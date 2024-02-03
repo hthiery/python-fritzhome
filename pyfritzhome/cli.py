@@ -58,6 +58,10 @@ def list_all(fritz, args):
             print("  comfort=%s" % device.comfort_temperature)
             print("  eco=%s" % device.eco_temperature)
             print("  window=%s" % device.window_open)
+            print("  window_until=%s" % device.window_open_endtime)
+            print("  boost=%s" % device.boost_active)
+            print("  boost_until=%s" % device.boost_active_endtime)
+            print("  adaptive_heating_running=%s" % device.adaptive_heating_running)
             print("  summer=%s" % device.summer_active)
             print("  holiday=%s" % device.holiday_active)
         if device.has_alarm:
@@ -117,6 +121,10 @@ def thermostat_set_target_temperature(fritz, args):
 def thermostat_set_window_open(fritz, args):
     """Command that sets the thermostats window state."""
     fritz.set_window_open(args.ain, args.timespan)
+
+def thermostat_set_boost_mode(fritz, args):
+    """Command that sets the thermostats into boost mode."""
+    fritz.set_boost_mode(args.ain, args.timespan)
 
 
 def switch_get(fritz, args):
@@ -282,6 +290,22 @@ def main(args=None):
         help="Open timespan in seconds (default=300s)",
     )
     subparser.set_defaults(func=thermostat_set_window_open)
+
+    # thermostat boost_mpde
+    subparser = _sub_switch.add_parser(
+        "set_boost_mode", help="activate the boost mode"
+    )
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.add_argument(
+        "timespan",
+        type=int,
+        choices=range(0, 86400),
+        metavar="TIMESPAN",
+        nargs="?",
+        default=300,
+        help="Boost timespan in seconds (default=300s)",
+    )
+    subparser.set_defaults(func=thermostat_set_boost_mode)
 
     # switch
     subparser = _sub.add_parser("switch", help="Switch commands")

@@ -227,3 +227,16 @@ class TestFritzhome(object):
                 "endtimestamp": 1000 + 25,
             },
         )
+
+    @patch("time.time", MagicMock(return_value=1000))
+    def test_set_boost_mode(self):
+        self.fritz.set_boost_mode("1", 25)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "sid": None,
+                "ain": "1",
+                "switchcmd": "sethkrboost",
+                "endtimestamp": 1000 + 25,
+            },
+        )

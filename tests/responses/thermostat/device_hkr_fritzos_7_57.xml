@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<devicelist version="1">
+    <device identifier="12345 6789012" id="25" functionbitmask="320" fwversion="05.13" manufacturer="AVM" productname="FRITZ!DECT 302">
+        <present>1</present>
+        <txbusy>0</txbusy>
+        <name>Wohnzimmer</name>
+        <battery>90</battery>
+        <batterylow>0</batterylow>
+        <temperature>
+            <celsius>265</celsius>
+            <offset>0</offset>
+        </temperature>
+        <hkr>
+            <tist>53</tist>
+            <tsoll>47</tsoll>
+            <absenk>36</absenk>
+            <komfort>44</komfort>
+            <lock>0</lock>
+            <devicelock>0</devicelock>
+            <errorcode>0</errorcode>
+            <windowopenactiv>0</windowopenactiv>
+            <windowopenactiveendtime>0</windowopenactiveendtime>
+            <boostactive>1</boostactive>
+            <boostactiveendtime>1704630842</boostactiveendtime>
+            <batterylow>0</batterylow>
+            <battery>90</battery>
+            <nextchange>
+                <endperiod>1704650400</endperiod>
+                <tchange>44</tchange>
+            </nextchange>
+            <summeractive>0</summeractive>
+            <holidayactive>0</holidayactive>
+            <adaptiveHeatingActive>1</adaptiveHeatingActive>
+            <adaptiveHeatingRunning>0</adaptiveHeatingRunning>
+        </hkr>
+    </device>
+</devicelist>
