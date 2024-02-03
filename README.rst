@@ -6,7 +6,9 @@ Python Library to access AVM Fritz!Box homeautomation
 Tested Devices
 --------------
 * `FRITZ!Box 6490 Cable`_
+* `FRITZ!Box 7590`_
 * `FRITZ!DECT 200`_
+* `FRITZ!DECT 302`_
 * `FRITZ!DECT 440`_
 * `FRITZ!DECT 500`_
 * `Comet DECT`_
@@ -62,6 +64,10 @@ add a new user.
       comfort=22.0
       eco=19.0
       window=False
+      window_until=0
+      boost=None
+      boost_until=None
+      adaptive_heating_running=None
       summer=False
       holiday=False
     ##############################
@@ -182,9 +188,11 @@ References
 
 .. _Comet DECT: https://www.eurotronic.org/produkte/comet-dect.html
 .. _FRITZ!DECT 200: https://avm.de/produkte/fritzdect/fritzdect-200/
+.. _FRITZ!DECT 302: https://avm.de/produkte/fritzdect/fritzdect-302/
 .. _FRITZ!DECT 440: https://avm.de/produkte/fritzdect/fritzdect-440/
 .. _FRITZ!DECT 500: https://avm.de/produkte/fritzdect/fritzdect-500/
 .. _FRITZ!Box 6490 Cable: https://avm.de/produkte/fritzbox/fritzbox-6490-cable/
+.. _FRITZ!Box 7590: https://avm.de/produkte/fritzbox/fritzbox-7590/
 .. _Magenta Smarthome Tür-/Fensterkontakt optisch: https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-optisch-weiss
 .. _RADEMACHER RolloTron DECT 1213: https://www.rademacher.de/shop/rollladen-sonnenschutz/elektrischer-gurtwickler/rollotron-dect-1213
 .. _Magenta Smarthome Zwischenstecker außen: https://www.smarthome.de/geraete/smarthome-zwischenstecker-aussen-schwarz

@@ -27,3 +27,9 @@ class TestFritzhomeDeviceThermostat(object):
         assert group.is_group
         assert group.group_members == ["16", "17"]
         assert group.supported_features == [FritzhomeDeviceFeatures.THERMOSTAT]
+        assert group.adaptive_heating_active is True
+        assert group.adaptive_heating_running is False
+        assert group.boost_active is False
+        assert group.window_open is False
+        assert group.boost_active_endtime == 0
+        assert group.window_open_endtime == 0
