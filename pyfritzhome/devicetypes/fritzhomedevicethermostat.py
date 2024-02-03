@@ -22,6 +22,10 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     error_code = None
     window_open = None
     window_open_endtime = None
+    boost_active = None
+    boost_active_endtime = None
+    adaptive_heating_active = None
+    adaptive_heating_running = None
     summer_active = None
     holiday_active = None
     nextchange_endperiod = None
@@ -88,6 +92,24 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
             self.nextchange_temperature = self.get_temp_from_node(
                 nextchange_element, "tchange"
             )
+
+            if hkr_element.find("boostactive") is not None:
+                self.boost_active = self.get_node_value_as_int_as_bool(
+                    hkr_element, "boostactive"
+                )
+                self.boost_active_endtime = (
+                    self.get_node_value_as_int(hkr_element, "boostactiveendtime")
+                    - time.time()
+                )
+                if self.boost_active_endtime < 0:
+                    self.boost_active_endtime = 0
+            if hkr_element.find("adaptiveHeatingActive") is not None:
+                self.adaptive_heating_active = self.get_node_value_as_int_as_bool(
+                    hkr_element, "adaptiveHeatingActive"
+                )
+                self.adaptive_heating_running = self.get_node_value_as_int_as_bool(
+                    hkr_element, "adaptiveHeatingRunning"
+                )
         except Exception:
             pass
 
@@ -106,6 +128,10 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     def set_window_open(self, seconds):
         """Set the thermostate to window open."""
         return self._fritz.set_window_open(self.ain, seconds)
+
+    def set_boost_mode(self, seconds):
+        """Set the thermostate into boost mode."""
+        return self._fritz.set_boost_mode(self.ain, seconds)
 
     def get_comfort_temperature(self):
         """Get the thermostate comfort temperature."""

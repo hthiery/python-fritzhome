@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from pyfritzhome import Fritzhome, FritzhomeDevice
 from pyfritzhome.devicetypes.fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -196,6 +196,23 @@ class TestFritzhomeDeviceThermostat(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("12345")
         assert not device.window_open
+
+    @patch("time.time", MagicMock(return_value=1704630800))
+    def test_hkr_boost_mode(self):
+        self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7_57")]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345 6789012")
+        assert device.boost_active is True
+        assert device.boost_active_endtime == 42
+
+    def test_hkr_adaptive_heating(self):
+        self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7_57")]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345 6789012")
+        assert device.adaptive_heating_active is True
+        assert device.adaptive_heating_running is False
 
     def test_hkr_summer_active(self):
         self.mock.side_effect = [Helper.response("thermostat/device_hkr_fritzos_7")]
