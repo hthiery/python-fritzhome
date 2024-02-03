@@ -157,6 +157,8 @@ class Fritzhome(object):
     def update_devices(self):
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
+        if self._sid is None:
+            raise RuntimeError("Please login before accessing devices")
         if self._devices is None:
             self._devices = {}
 
