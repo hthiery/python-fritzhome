@@ -66,10 +66,13 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
             self.lock = self.get_node_value_as_int_as_bool(hkr_element, "lock")
             self.error_code = self.get_node_value_as_int(hkr_element, "errorcode")
             # keep battery values as fallback for Fritz!OS < 7.08
-            self.battery_low = self.get_node_value_as_int_as_bool(
-                hkr_element, "batterylow"
-            )
-            self.battery_level = int(self.get_node_value_as_int(hkr_element, "battery"))
+
+            if hkr_element.find("batterylow") is not None:
+                self.battery_low = self.get_node_value_as_int_as_bool(
+                    hkr_element, "batterylow"
+                )
+                self.battery_level = int(self.get_node_value_as_int(hkr_element, "battery"))
+
             self.window_open = self.get_node_value_as_int_as_bool(
                 hkr_element, "windowopenactiv"
             )
@@ -103,6 +106,7 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
                 )
                 if self.boost_active_endtime < 0:
                     self.boost_active_endtime = 0
+
             if hkr_element.find("adaptiveHeatingActive") is not None:
                 self.adaptive_heating_active = self.get_node_value_as_int_as_bool(
                     hkr_element, "adaptiveHeatingActive"
@@ -110,6 +114,7 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
                 self.adaptive_heating_running = self.get_node_value_as_int_as_bool(
                     hkr_element, "adaptiveHeatingRunning"
                 )
+
         except Exception:
             pass
 
