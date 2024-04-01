@@ -15,6 +15,7 @@ class TestFritzhomeDeviceTemperature(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid = "0000001"
 
     def test_get_temperature(self):
         self.mock.side_effect = [
@@ -32,5 +33,5 @@ class TestFritzhomeDeviceTemperature(object):
         ]
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "12345", "switchcmd": "gettemperature", "sid": None},
+            {"ain": "12345", "switchcmd": "gettemperature", "sid": "0000001"},
         )

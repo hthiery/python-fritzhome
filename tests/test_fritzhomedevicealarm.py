@@ -15,6 +15,7 @@ class TestFritzhomeDeviceAlarm(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid = "0000001"
 
     def test_device_alert_on(self):
         self.mock.side_effect = [

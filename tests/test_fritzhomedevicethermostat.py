@@ -15,6 +15,7 @@ class TestFritzhomeDeviceThermostat(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid="0000001"
 
     def test_device_hkr_fw_03_50(self):
         self.mock.side_effect = [
@@ -58,7 +59,7 @@ class TestFritzhomeDeviceThermostat(object):
         assert device.get_target_temperature() == 19.0
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "12345", "switchcmd": "gethkrtsoll", "sid": None},
+            {"ain": "12345", "switchcmd": "gethkrtsoll", "sid": "0000001"},
         )
 
     def test_get_eco_temperature(self):
@@ -73,7 +74,7 @@ class TestFritzhomeDeviceThermostat(object):
         assert device.get_eco_temperature() == 20.0
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "12345", "switchcmd": "gethkrabsenk", "sid": None},
+            {"ain": "12345", "switchcmd": "gethkrabsenk", "sid": "0000001"},
         )
 
     def test_get_comfort_temperature(self):
@@ -88,7 +89,7 @@ class TestFritzhomeDeviceThermostat(object):
         assert device.get_comfort_temperature() == 20.5
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "12345", "switchcmd": "gethkrkomfort", "sid": None},
+            {"ain": "12345", "switchcmd": "gethkrkomfort", "sid": "0000001"},
         )
 
     def test_hkr_without_temperature_values(self):
@@ -165,7 +166,7 @@ class TestFritzhomeDeviceThermostat(object):
         device.set_hkr_state("on")
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "12345", "switchcmd": "sethkrtsoll", "param": 254, "sid": None},
+            {"ain": "12345", "switchcmd": "sethkrtsoll", "param": 254, "sid": "0000001"},
         )
 
     def test_hkr_set_state_off(self):
@@ -180,7 +181,7 @@ class TestFritzhomeDeviceThermostat(object):
         device.set_hkr_state("off")
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "12345", "switchcmd": "sethkrtsoll", "param": 253, "sid": None},
+            {"ain": "12345", "switchcmd": "sethkrtsoll", "param": 253, "sid": "0000001"},
         )
 
     def test_hkr_battery_level(self):

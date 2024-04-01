@@ -15,6 +15,7 @@ class TestFritzhomeDevicePowermeter(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid = "0000001"
 
     def test_get_switch_power(self):
         self.mock.side_effect = [
@@ -33,7 +34,7 @@ class TestFritzhomeDevicePowermeter(object):
         ]
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "08761 0000434", "switchcmd": "getswitchpower", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "getswitchpower", "sid": "0000001"},
         )
 
     def test_get_switch_energy(self):
@@ -48,7 +49,7 @@ class TestFritzhomeDevicePowermeter(object):
         assert device.get_switch_energy() == 2000
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "08761 0000434", "switchcmd": "getswitchenergy", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "getswitchenergy", "sid": "0000001"},
         )
 
     def test_get_switch_powermeter_properties(self):

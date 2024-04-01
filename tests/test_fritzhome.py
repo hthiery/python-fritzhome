@@ -5,16 +5,16 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pyfritzhome import Fritzhome, InvalidError, LoginError
+from pyfritzhome import Fritzhome, InvalidError, LoginError, NotLoggedInError
 
 from .helper import Helper
-
 
 class TestFritzhome(object):
     def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "admin123")
         self.fritz._request = self.mock
+        self.fritz._sid="0000001"
 
     def test_login_fail(self):
         self.mock.side_effect = [
@@ -64,27 +64,32 @@ class TestFritzhome(object):
         self.fritz.logout()
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/login_sid.lua",
-            {"sid": None, "security:command/logout": "1"},
+            {"sid": "0000001", "security:command/logout": "1"},
         )
+
+    def test_not_logged_in_error(self):
+        self.fritz._sid=None
+        with pytest.raises(NotLoggedInError):
+            self.fritz.update_devices()
 
     def test_aha_request(self):
         self.fritz._aha_request(cmd="testcmd")
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "switchcmd": "testcmd"},
+            {"sid": "0000001", "switchcmd": "testcmd"},
         )
 
         self.fritz._aha_request(cmd="testcmd", ain="1")
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "switchcmd": "testcmd", "ain": "1"},
+            {"sid": "0000001", "switchcmd": "testcmd", "ain": "1"},
         )
 
         self.fritz._aha_request(cmd="testcmd", ain="1", param={"a": "1", "b": "2"})
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
-                "sid": None,
+                "sid": "0000001",
                 "switchcmd": "testcmd",
                 "ain": "1",
                 "a": "1",
@@ -140,7 +145,7 @@ class TestFritzhome(object):
 
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "switchcmd": "getdevicelistinfos"},
+            {"sid": "0000001", "switchcmd": "getdevicelistinfos"},
         )
 
     def test_get_device_name(self):
@@ -150,7 +155,7 @@ class TestFritzhome(object):
 
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "ain": "1234", "switchcmd": "getswitchname"},
+            {"sid": "0000001", "ain": "1234", "switchcmd": "getswitchname"},
         )
 
     def test_get_template_by_ain(self):
@@ -175,7 +180,7 @@ class TestFritzhome(object):
 
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "switchcmd": "gettemplatelistinfos"},
+            {"sid": "0000001", "switchcmd": "gettemplatelistinfos"},
         )
 
     def test_aha_apply_template(self):
@@ -183,26 +188,26 @@ class TestFritzhome(object):
 
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "ain": "1234", "switchcmd": "applytemplate"},
+            {"sid": "0000001", "ain": "1234", "switchcmd": "applytemplate"},
         )
 
     def test_set_target_temperature(self):
         self.fritz.set_target_temperature("1", 25.5)
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "ain": "1", "switchcmd": "sethkrtsoll", "param": 51},
+            {"sid": "0000001", "ain": "1", "switchcmd": "sethkrtsoll", "param": 51},
         )
 
         self.fritz.set_target_temperature("1", 0.0)
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "ain": "1", "switchcmd": "sethkrtsoll", "param": 253},
+            {"sid": "0000001", "ain": "1", "switchcmd": "sethkrtsoll", "param": 253},
         )
 
         self.fritz.set_target_temperature("1", 32.0)
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"sid": None, "ain": "1", "switchcmd": "sethkrtsoll", "param": 254},
+            {"sid": "0000001", "ain": "1", "switchcmd": "sethkrtsoll", "param": 254},
         )
 
     @patch("time.time", MagicMock(return_value=1000))
@@ -211,7 +216,7 @@ class TestFritzhome(object):
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
-                "sid": None,
+                "sid": "0000001",
                 "ain": "1",
                 "switchcmd": "sethkrwindowopen",
                 "endtimestamp": 1000 + 25,

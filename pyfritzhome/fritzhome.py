@@ -13,7 +13,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from requests import Session
 
-from .errors import InvalidError, LoginError
+from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhomedevice import FritzhomeDevice
 from .fritzhomedevice import FritzhomeTemplate
 from typing import Dict
@@ -100,6 +100,12 @@ class Fritzhome(object):
     def _aha_request(self, cmd, ain=None, param=None, rf=str):
         """Send an AHA request."""
         url = self.get_prefixed_host() + "/webservices/homeautoswitch.lua"
+
+        _LOGGER.debug("self._sid:%s", self._sid)
+
+        if not self._sid:
+            raise NotLoggedInError
+
         params = {"switchcmd": cmd, "sid": self._sid}
         if param:
             params.update(param)
@@ -117,6 +123,7 @@ class Fritzhome(object):
     def login(self):
         """Login and get a valid session ID."""
         (sid, challenge, blocktime) = self._login_request()
+        _LOGGER.info("sid:%s, challenge:%s, blocktime:%s", sid, challenge, blocktime)
         if sid == "0000000000000000":
             if blocktime > 0:
                 time.sleep(blocktime)
