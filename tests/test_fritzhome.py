@@ -9,12 +9,13 @@ from pyfritzhome import Fritzhome, InvalidError, LoginError, NotLoggedInError
 
 from .helper import Helper
 
+
 class TestFritzhome(object):
     def setup_method(self):
         self.mock = MagicMock()
         self.fritz = Fritzhome("10.0.0.1", "user", "admin123")
         self.fritz._request = self.mock
-        self.fritz._sid="0000001"
+        self.fritz._sid = "0000001"
 
     def test_login_fail(self):
         self.mock.side_effect = [
@@ -56,8 +57,11 @@ class TestFritzhome(object):
         self.fritz.login()
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/login_sid.lua?version=2",
-            {"username": "user", "response": "b9c232dea345233f5a893b2284931ac8$"
-             "2825c7fbd8cdbcbaf93ca2e8d0798c31cf38394469a9ce89365778dc9103ad82"},
+            {
+                "username": "user",
+                "response": "b9c232dea345233f5a893b2284931ac8$"
+                "2825c7fbd8cdbcbaf93ca2e8d0798c31cf38394469a9ce89365778dc9103ad82",
+            },
         )
 
     def test_logout(self):
@@ -68,7 +72,7 @@ class TestFritzhome(object):
         )
 
     def test_not_logged_in_error(self):
-        self.fritz._sid=None
+        self.fritz._sid = None
         with pytest.raises(NotLoggedInError):
             self.fritz.update_devices()
 
