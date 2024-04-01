@@ -15,6 +15,7 @@ class TestFritzhomeDeviceLightBulb(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid = "0000001"
 
     def test_device_init(self):
         self.mock.side_effect = [
@@ -211,7 +212,7 @@ class TestFritzhomeDeviceLightBulb(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
                 "switchcmd": "setcolor",
-                "sid": None,
+                "sid": "0000001",
                 "hue": 180,
                 "saturation": 200,
                 "duration": 0,
@@ -234,7 +235,7 @@ class TestFritzhomeDeviceLightBulb(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
                 "switchcmd": "setunmappedcolor",
-                "sid": None,
+                "sid": "0000001",
                 "hue": 180,
                 "saturation": 200,
                 "duration": 0,

@@ -15,6 +15,7 @@ class TestFritzhomeTemplate(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid = "0000001"
 
         self.mock.side_effect = [Helper.response("templates/template_list")]
 

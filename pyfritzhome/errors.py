@@ -13,6 +13,14 @@ class LoginError(Exception):
         return 'login for user="{}" failed'.format(self.user)
 
 
+class NotLoggedInError(Exception):
+    """The NotLoggedInError Exception."""
+
+    def __str__(self):
+        """Return the error."""
+        return "not logged in, login before doing any requests."
+
+
 class InvalidError(Exception):
     """The InvalidError Exception."""
 

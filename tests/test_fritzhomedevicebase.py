@@ -16,6 +16,7 @@ class TestFritzhomeDeviceBase(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid = "0000001"
 
     def test_device_init(self):
         self.mock.side_effect = [Helper.response("base/device_list")]
@@ -94,7 +95,7 @@ class TestFritzhomeDeviceBase(object):
         assert not device.get_present()
         device._fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
-            {"ain": "08761 0000434", "switchcmd": "getswitchpresent", "sid": None},
+            {"ain": "08761 0000434", "switchcmd": "getswitchpresent", "sid": "0000001"},
         )
 
     def test_device_and_unit_id(self):

@@ -15,6 +15,7 @@ class TestFritzhomeDeviceBlind(object):
         self.fritz = Fritzhome("10.0.0.1", "user", "pass")
         self.fritz._request = self.mock
         self.fritz._devices = {}
+        self.fritz._sid = "0000001"
 
     def test_device_response(self):
         self.mock.side_effect = [
@@ -58,7 +59,7 @@ class TestFritzhomeDeviceBlind(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
                 "switchcmd": "setlevel",
-                "sid": None,
+                "sid": "0000001",
                 "ain": "14276 1234567-1",
                 "level": 100,
             },
@@ -78,7 +79,7 @@ class TestFritzhomeDeviceBlind(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
                 "switchcmd": "setlevelpercentage",
-                "sid": None,
+                "sid": "0000001",
                 "ain": "14276 1234567-1",
                 "level": 50,
             },
@@ -98,7 +99,7 @@ class TestFritzhomeDeviceBlind(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
                 "switchcmd": "setblind",
-                "sid": None,
+                "sid": "0000001",
                 "ain": "14276 1234567-1",
                 "target": "open",
             },
@@ -118,7 +119,7 @@ class TestFritzhomeDeviceBlind(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
                 "switchcmd": "setblind",
-                "sid": None,
+                "sid": "0000001",
                 "ain": "14276 1234567-1",
                 "target": "close",
             },
@@ -138,7 +139,7 @@ class TestFritzhomeDeviceBlind(object):
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
                 "switchcmd": "setblind",
-                "sid": None,
+                "sid": "0000001",
                 "ain": "14276 1234567-1",
                 "target": "stop",
             },
