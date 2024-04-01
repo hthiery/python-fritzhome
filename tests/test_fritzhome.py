@@ -73,8 +73,9 @@ class TestFritzhome(object):
 
     def test_not_logged_in_error(self):
         self.fritz._sid = None
-        with pytest.raises(NotLoggedInError):
+        with pytest.raises(NotLoggedInError) as ex:
             self.fritz.update_devices()
+        assert str(ex.value) == "not logged in, login before doing any requests."
 
     def test_aha_request(self):
         self.fritz._aha_request(cmd="testcmd")
