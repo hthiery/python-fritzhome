@@ -40,6 +40,20 @@ class TestFritzhomeTemplate(object):
             FritzhomeDeviceFeatures.TEMPERATURE,
         ]
 
+    def test_template_removed(self):
+        self.mock.side_effect = [
+            Helper.response("templates/template_list"),
+            Helper.response("templates/template_list_removed_template"),
+            Helper.response("templates/template_list_removed_template"),
+        ]
+
+        self.fritz.update_templates()
+        assert len(self.fritz.get_templates()) == 12
+        self.fritz.update_templates()
+        assert len(self.fritz.get_templates()) == 12
+        self.fritz.update_templates(ignore_removed=False)
+        assert len(self.fritz.get_templates()) == 11
+
     def test_template_with_single_device(self):
         template = self.fritz.get_template_by_ain("tmp0B32F7-1B0650234")
 

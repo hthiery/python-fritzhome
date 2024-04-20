@@ -234,7 +234,7 @@ class TestFritzhome(object):
         self.fritz._request.assert_called_with(
             "http://10.0.0.1/webservices/homeautoswitch.lua",
             {
-                "sid": None,
+                "sid": "0000001",
                 "ain": "1",
                 "switchcmd": "sethkrboost",
                 "endtimestamp": 1000 + 25,

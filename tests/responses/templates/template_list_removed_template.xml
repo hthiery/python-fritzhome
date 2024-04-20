@@ -1,0 +1,85 @@
+<templatelist version="1">
+    <!-- Base Data Tests -->
+    <template identifier="tmp0B32F7-1B0650682" id="60000" functionbitmask="320" applymask="0">
+        <name>Base Data</name>
+        <devices />
+        <applymask />
+    </template>
+
+    <!-- Device Tests -->
+    <template identifier="tmp0B32F7-1B0650234" id="60010" functionbitmask="0" applymask="0">
+        <name>One Device</name>
+        <devices>
+            <device identifier="08735 0525249" />
+        </devices>
+        <applymask />
+    </template>
+    <template identifier="tmp0B32F7-1C40A2B8A" id="60011" functionbitmask="0" applymask="0">
+        <name>Multiple Devices</name>
+        <devices>
+            <device identifier="08735 0316335" />
+            <device identifier="08735 0525249" />
+            <device identifier="08735 0526125" />
+            <device identifier="08735 0340143" />
+        </devices>
+        <applymask />
+    </template>
+
+    <!-- Applymask Tests -->
+    <template identifier="tmp0B32F7-1B064FA20" id="60020" functionbitmask="0" applymask="0">
+        <name>Apply Heating Summer Mode (Heating off)</name>
+        <devices />
+        <applymask>
+            <hkr_summer />
+        </applymask>
+    </template>
+    <template identifier="tmp0B32F7-1B064FA21" id="60021" functionbitmask="0" applymask="0">
+        <name>Apply Heating Target Temperature</name>
+        <devices />
+        <applymask>
+            <hkr_temperature />
+        </applymask>
+    </template>
+    <template identifier="tmp0B32F7-1B064FA22" id="60022" functionbitmask="0" applymask="0">
+        <name>Apply Heating Holiday Mode</name>
+        <devices />
+        <applymask>
+            <hkr_holidays />
+        </applymask>
+    </template>
+    <template identifier="tmp0B32F7-1B064FA23" id="60023" functionbitmask="0" applymask="0">
+        <name>Apply Heating Time Table</name>
+        <devices />
+        <applymask>
+            <hkr_time_table />
+        </applymask>
+    </template>
+    <template identifier="tmp0B32F7-1B064FA24" id="60024" functionbitmask="0" applymask="0">
+        <name>Apply Switch/Lamp/Actor manuel on/off Setting</name>
+        <devices />
+        <applymask>
+            <relay_manual />
+        </applymask>
+    </template>
+    <template identifier="tmp0B32F7-1B064FA25" id="60025" functionbitmask="0" applymask="0">
+        <name>Apply Switch/Lamp/Actor Automatic Time Table</name>
+        <devices />
+        <applymask>
+            <relay_automatic />
+        </applymask>
+    </template>
+    <template identifier="tmp0B32F7-1B064FA26" id="60026" functionbitmask="0" applymask="0">
+        <name>Apply Lamp/Blind Level</name>
+        <devices />
+        <applymask>
+            <level />
+        </applymask>
+    </template>
+    <template identifier="tmp0B32F7-1B064FA27" id="60027" functionbitmask="0" applymask="0">
+        <name>Apply Lamp Color</name>
+        <devices />
+        <applymask>
+            <color />
+        </applymask>
+    </template>
+</templatelist>

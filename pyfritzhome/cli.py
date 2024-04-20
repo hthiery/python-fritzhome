@@ -122,6 +122,7 @@ def thermostat_set_window_open(fritz, args):
     """Command that sets the thermostats window state."""
     fritz.set_window_open(args.ain, args.timespan)
 
+
 def thermostat_set_boost_mode(fritz, args):
     """Command that sets the thermostats into boost mode."""
     fritz.set_boost_mode(args.ain, args.timespan)
@@ -292,9 +293,7 @@ def main(args=None):
     subparser.set_defaults(func=thermostat_set_window_open)
 
     # thermostat boost_mpde
-    subparser = _sub_switch.add_parser(
-        "set_boost_mode", help="activate the boost mode"
-    )
+    subparser = _sub_switch.add_parser("set_boost_mode", help="activate the boost mode")
     subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.add_argument(
         "timespan",
