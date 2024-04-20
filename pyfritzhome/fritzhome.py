@@ -162,13 +162,14 @@ class Fritzhome(object):
         else:
             return "http://" + host
 
-    def update_devices(self):
+    def update_devices(self, ignore_removed=True):
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
         if self._devices is None:
             self._devices = {}
 
-        for element in self.get_device_elements():
+        device_elements = self.get_device_elements()
+        for element in device_elements:
             if element.attrib["identifier"] in self._devices.keys():
                 _LOGGER.info(
                     "Updating already existing Device " + element.attrib["identifier"]
@@ -178,6 +179,15 @@ class Fritzhome(object):
                 _LOGGER.info("Adding new Device " + element.attrib["identifier"])
                 device = FritzhomeDevice(self, node=element)
                 self._devices[device.ain] = device
+
+        if not ignore_removed:
+            for identifier in list(self._devices.keys()):
+                if identifier not in [
+                    element.attrib["identifier"] for element in device_elements
+                ]:
+                    _LOGGER.info("Removing no more existing device " + identifier)
+                    self._devices.pop(identifier)
+
         return True
 
     def _get_listinfo_elements(self, entity_type):
@@ -280,9 +290,7 @@ class Fritzhome(object):
         """Set the thermostate to boost mode."""
         endtimestamp = int(time.time() + seconds)
 
-        self._aha_request(
-            "sethkrboost", ain=ain, param={"endtimestamp": endtimestamp}
-        )
+        self._aha_request("sethkrboost", ain=ain, param={"endtimestamp": endtimestamp})
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""
@@ -407,13 +415,14 @@ class Fritzhome(object):
             return False
         return True
 
-    def update_templates(self):
+    def update_templates(self, ignore_removed=True):
         """Update the template."""
         _LOGGER.info("Updating Templates ...")
         if self._templates is None:
             self._templates = {}
 
-        for element in self.get_template_elements():
+        template_elements = self.get_template_elements()
+        for element in template_elements:
             if element.attrib["identifier"] in self._templates.keys():
                 _LOGGER.info(
                     "Updating already existing Template " + element.attrib["identifier"]
@@ -423,6 +432,15 @@ class Fritzhome(object):
                 _LOGGER.info("Adding new Template " + element.attrib["identifier"])
                 template = FritzhomeTemplate(self, node=element)
                 self._templates[template.ain] = template
+
+        if not ignore_removed:
+            for identifier in list(self._templates.keys()):
+                if identifier not in [
+                    element.attrib["identifier"] for element in template_elements
+                ]:
+                    _LOGGER.info("Removing no more existing template " + identifier)
+                    self._templates.pop(identifier)
+
         return True
 
     def get_template_elements(self):

@@ -71,7 +71,9 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
                 self.battery_low = self.get_node_value_as_int_as_bool(
                     hkr_element, "batterylow"
                 )
-                self.battery_level = int(self.get_node_value_as_int(hkr_element, "battery"))
+                self.battery_level = int(
+                    self.get_node_value_as_int(hkr_element, "battery")
+                )
 
             self.window_open = self.get_node_value_as_int_as_bool(
                 hkr_element, "windowopenactiv"

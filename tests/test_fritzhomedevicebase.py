@@ -98,6 +98,20 @@ class TestFritzhomeDeviceBase(object):
             {"ain": "08761 0000434", "switchcmd": "getswitchpresent", "sid": "0000001"},
         )
 
+    def test_device_removed(self):
+        self.mock.side_effect = [
+            Helper.response("base/device_list"),
+            Helper.response("base/device_list_removed_device"),
+            Helper.response("base/device_list_removed_device"),
+        ]
+
+        self.fritz.update_devices()
+        assert len(self.fritz.get_devices()) == 5
+        self.fritz.update_devices()
+        assert len(self.fritz.get_devices()) == 5
+        self.fritz.update_devices(ignore_removed=False)
+        assert len(self.fritz.get_devices()) == 4
+
     def test_device_and_unit_id(self):
         device = FritzhomeEntityBase()
 
