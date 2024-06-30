@@ -54,7 +54,11 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         except ValueError:
             pass
 
-        self.target_temperature = self.get_temp_from_node(hkr_element, "tsoll")
+        try:
+            self.target_temperature = self.get_temp_from_node(hkr_element, "tsoll")
+        except ValueError:
+            self.target_temperature = None
+
         self.eco_temperature = self.get_temp_from_node(hkr_element, "absenk")
         self.comfort_temperature = self.get_temp_from_node(hkr_element, "komfort")
 
