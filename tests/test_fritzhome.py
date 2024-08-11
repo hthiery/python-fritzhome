@@ -215,6 +215,103 @@ class TestFritzhome(object):
             {"sid": "0000001", "ain": "1", "switchcmd": "sethkrtsoll", "param": 254},
         )
 
+    def test_set_state(self):
+        self.fritz.set_state_off("1")
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setsimpleonoff", "sid": "0000001", "onoff": 0, "ain": "1"},
+        )
+
+        self.fritz.set_state_on("1")
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setsimpleonoff", "sid": "0000001", "onoff": 1, "ain": "1"},
+        )
+
+        self.fritz.set_state_toggle("1")
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setsimpleonoff", "sid": "0000001", "onoff": 2, "ain": "1"},
+        )
+
+    def test_set_level(self):
+        self.fritz.set_level("1", 10)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setlevel", "sid": "0000001", "level": 10, "ain": "1"},
+        )
+
+        self.fritz.set_level("1", -1)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setlevel", "sid": "0000001", "level": 0, "ain": "1"},
+        )
+
+        self.fritz.set_level("1", 256)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {"switchcmd": "setlevel", "sid": "0000001", "level": 255, "ain": "1"},
+        )
+
+    def test_set_level_percentage(self):
+        self.fritz.set_level_percentage("1", 10)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setlevelpercentage",
+                "sid": "0000001",
+                "level": 10,
+                "ain": "1",
+            },
+        )
+
+        self.fritz.set_level_percentage("1", -1)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setlevelpercentage",
+                "sid": "0000001",
+                "level": 0,
+                "ain": "1",
+            },
+        )
+
+        self.fritz.set_level_percentage("1", 101)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setlevelpercentage",
+                "sid": "0000001",
+                "level": 100,
+                "ain": "1",
+            },
+        )
+
+    def test_set_color_temp(self):
+        self.fritz.set_color_temp("1", 3500)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setcolortemperature",
+                "sid": "0000001",
+                "temperature": 3500,
+                "duration": 0,
+                "ain": "1",
+            },
+        )
+
+        self.fritz.set_color_temp("1", 3500, 2)
+        self.fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setcolortemperature",
+                "sid": "0000001",
+                "temperature": 3500,
+                "duration": 20,
+                "ain": "1",
+            },
+        )
+
     @patch("time.time", MagicMock(return_value=1000))
     def test_set_window_open(self):
         self.fritz.set_window_open("1", 25)
@@ -240,3 +337,19 @@ class TestFritzhome(object):
                 "endtimestamp": 1000 + 25,
             },
         )
+
+    def test_wait_tx_busy(self):
+        self.mock.side_effect = [
+            Helper.response("base/device_txbusy"),
+            Helper.response("base/device_not_txbusy"),
+        ]
+
+        assert self.fritz.wait_device_txbusy("11960 0089208")
+
+    def test_wait_tx_busy_failed(self):
+        self.mock.side_effect = [
+            Helper.response("base/device_txbusy"),
+            Helper.response("base/device_txbusy"),
+        ]
+
+        assert not self.fritz.wait_device_txbusy("11960 0089208", 1)

@@ -68,14 +68,14 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
         """Get the switch state."""
         return self._fritz.get_switch_state(self.ain)
 
-    def set_switch_state_on(self):
+    def set_switch_state_on(self, wait=False):
         """Set the switch state to on."""
-        return self._fritz.set_switch_state_on(self.ain)
+        return self._fritz.set_switch_state_on(self.ain, wait)
 
-    def set_switch_state_off(self):
+    def set_switch_state_off(self, wait=False):
         """Set the switch state to off."""
-        return self._fritz.set_switch_state_off(self.ain)
+        return self._fritz.set_switch_state_off(self.ain, wait)
 
-    def set_switch_state_toggle(self):
+    def set_switch_state_toggle(self, wait=False):
         """Toggle the switch state."""
-        return self._fritz.set_switch_state_toggle(self.ain)
+        return self._fritz.set_switch_state_toggle(self.ain, wait)

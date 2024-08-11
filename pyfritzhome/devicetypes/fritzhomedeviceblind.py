@@ -38,14 +38,14 @@ class FritzhomeDeviceBlind(FritzhomeDeviceBase):
         except Exception:
             pass
 
-    def set_blind_open(self):
+    def set_blind_open(self, wait=False):
         """Open the blind."""
-        self._fritz.set_blind_open(self.ain)
+        self._fritz.set_blind_open(self.ain, wait)
 
-    def set_blind_close(self):
+    def set_blind_close(self, wait=False):
         """Close the blind."""
-        self._fritz.set_blind_close(self.ain)
+        self._fritz.set_blind_close(self.ain, wait)
 
-    def set_blind_stop(self):
+    def set_blind_stop(self, wait=False):
         """Stop the blind."""
-        self._fritz.set_blind_stop(self.ain)
+        self._fritz.set_blind_stop(self.ain, wait)

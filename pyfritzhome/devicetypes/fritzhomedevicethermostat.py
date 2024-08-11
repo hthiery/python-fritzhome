@@ -132,17 +132,17 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         """Get the thermostate target temperature."""
         return self._fritz.get_target_temperature(self.ain)
 
-    def set_target_temperature(self, temperature):
+    def set_target_temperature(self, temperature, wait=False):
         """Set the thermostate target temperature."""
-        return self._fritz.set_target_temperature(self.ain, temperature)
+        return self._fritz.set_target_temperature(self.ain, temperature, wait)
 
-    def set_window_open(self, seconds):
+    def set_window_open(self, seconds, wait=False):
         """Set the thermostate to window open."""
-        return self._fritz.set_window_open(self.ain, seconds)
+        return self._fritz.set_window_open(self.ain, seconds, wait)
 
-    def set_boost_mode(self, seconds):
+    def set_boost_mode(self, seconds, wait=False):
         """Set the thermostate into boost mode."""
-        return self._fritz.set_boost_mode(self.ain, seconds)
+        return self._fritz.set_boost_mode(self.ain, seconds, wait)
 
     def get_comfort_temperature(self):
         """Get the thermostate comfort temperature."""
@@ -164,7 +164,7 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         except KeyError:
             return "manual"
 
-    def set_hkr_state(self, state):
+    def set_hkr_state(self, state, wait=False):
         """Set the state of the thermostat.
 
         Possible values for state are: 'on', 'off', 'comfort', 'eco'.
@@ -179,4 +179,4 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         except KeyError:
             return
 
-        self.set_target_temperature(value)
+        self.set_target_temperature(value, wait)

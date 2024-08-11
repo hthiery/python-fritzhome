@@ -48,10 +48,10 @@ class FritzhomeDeviceLevel(FritzhomeDeviceBase):
         """Get the level in percentage."""
         return self.levelpercentage
 
-    def set_level(self, level):
+    def set_level(self, level, wait=False):
         """Set the level."""
-        self._fritz.set_level(self.ain, level)
+        self._fritz.set_level(self.ain, level, wait)
 
-    def set_level_percentage(self, levelpercentage):
+    def set_level_percentage(self, levelpercentage, wait=False):
         """Set the level in percentage."""
-        self._fritz.set_level_percentage(self.ain, levelpercentage)
+        self._fritz.set_level_percentage(self.ain, levelpercentage, wait)
