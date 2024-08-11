@@ -91,20 +91,20 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
                 # reset values after color mode changed
                 self.color_temp = None
 
-    def set_state_off(self):
+    def set_state_off(self, wait=False):
         """Switch light bulb off."""
         self.state = True
-        self._fritz.set_state_off(self.ain)
+        self._fritz.set_state_off(self.ain, wait)
 
-    def set_state_on(self):
+    def set_state_on(self, wait=False):
         """Switch light bulb on."""
         self.state = True
-        self._fritz.set_state_on(self.ain)
+        self._fritz.set_state_on(self.ain, wait)
 
-    def set_state_toggle(self):
+    def set_state_toggle(self, wait=False):
         """Toogle light bulb state."""
         self.state = True
-        self._fritz.set_state_toggle(self.ain)
+        self._fritz.set_state_toggle(self.ain, wait)
 
     def get_colors(self):
         """Get the supported colors."""
@@ -113,15 +113,15 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         else:
             return {}
 
-    def set_color(self, hsv, duration=0):
+    def set_color(self, hsv, duration=0, wait=False):
         """Set HSV color."""
         if self.has_color:
-            self._fritz.set_color(self.ain, hsv, duration, True)
+            self._fritz.set_color(self.ain, hsv, duration, True, wait)
 
-    def set_unmapped_color(self, hsv, duration=0):
+    def set_unmapped_color(self, hsv, duration=0, wait=False):
         """Set unmapped HSV color (Free color selection)."""
         if self.has_color:
-            self._fritz.set_color(self.ain, hsv, duration, False)
+            self._fritz.set_color(self.ain, hsv, duration, False, wait)
 
     def get_color_temps(self):
         """Get the supported color temperatures energy."""
@@ -130,7 +130,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         else:
             return []
 
-    def set_color_temp(self, temperature, duration=0):
+    def set_color_temp(self, temperature, duration=0, wait=False):
         """Set white color temperature."""
         if self.has_color:
-            self._fritz.set_color_temp(self.ain, temperature, duration)
+            self._fritz.set_color_temp(self.ain, temperature, duration, wait)
