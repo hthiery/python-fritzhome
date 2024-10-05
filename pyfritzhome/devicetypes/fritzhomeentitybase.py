@@ -42,6 +42,12 @@ class FritzhomeEntityBase(ABC):
         self.ain = node.attrib["identifier"]
         self._functionsbitmask = int(node.attrib["functionbitmask"])
 
+        # Workaround for broken AVM FRITZ!DECT 440 in FRITZ!OS < 7.20
+        if (node.attrib["manufacturer"] == "AVM"
+            and node.attrib["productname"] == "FRITZ!DECT 440"
+            and node.find("humidity") is None):
+            self._functionsbitmask &= ~int(FritzhomeDeviceFeatures.HUMIDITY)
+
         self.name = node.findtext("name").strip()
 
         self.supported_features = []
