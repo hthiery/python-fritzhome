@@ -1,4 +1,5 @@
 """The light bulb device class."""
+
 # -*- coding: utf-8 -*-
 
 import logging
@@ -20,6 +21,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     color_temp = None
     color_mode = None
     supported_color_mode = None
+    fullcolorsupport = None
 
     def _update_from_node(self, node):
         super()._update_from_node(node)
@@ -56,6 +58,10 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
                 self.supported_color_mode = colorcontrol_element.attrib.get(
                     "supported_modes"
+                )
+
+                self.fullcolorsupport = colorcontrol_element.attrib.get(
+                    "fullcolorsupport"
                 )
 
             except ValueError:
@@ -120,7 +126,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def set_unmapped_color(self, hsv, duration=0, wait=False):
         """Set unmapped HSV color (Free color selection)."""
-        if self.has_color:
+        if self.has_color and self.fullcolorsupport:
             self._fritz.set_color(self.ain, hsv, duration, False, wait)
 
     def get_color_temps(self):

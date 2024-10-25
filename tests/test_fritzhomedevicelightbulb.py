@@ -38,6 +38,7 @@ class TestFritzhomeDeviceLightBulb(object):
         assert device.state  # Lightbulb is switched on
         assert device.color_mode == "1"
         assert device.supported_color_mode == "5"
+        assert device.fullcolorsupport
         assert device.hue == 358
         assert device.saturation == 180
         assert device.color_temp is None
@@ -87,6 +88,7 @@ class TestFritzhomeDeviceLightBulb(object):
         assert device.state  # Lightbulb is switched on
         assert device.color_mode == "4"
         assert device.supported_color_mode == "5"
+        assert device.fullcolorsupport
         assert device.hue is None
         assert device.saturation is None
         assert device.color_temp == 2800
