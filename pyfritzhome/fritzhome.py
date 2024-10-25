@@ -396,7 +396,7 @@ class Fritzhome(object):
         if mapped:
             self._aha_request("setcolor", ain=ain, param=params)
         else:
-            # undocumented API method for free color selection
+            # available since Fritz!OS 7.39
             self._aha_request("setunmappedcolor", ain=ain, param=params)
         wait and self.wait_device_txbusy(ain)
 
