@@ -18,7 +18,7 @@
     {
       "label": "Run tests",
       "type": "shell",
-      "command": "pytest --cov=pyfritzhome",
+      "command": "pytest --cov=pyfritzhome --cov-report term-missing",
       "group": {
         "kind": "test",
         "isDefault": true

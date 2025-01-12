@@ -22,8 +22,7 @@ RUN pip3 install \
       pytest \
       pytest-cov \
       python-coveralls \
-      rstcheck \
-      snooty-lextudio
+      rstcheck
 
 WORKDIR /workspaces
 
