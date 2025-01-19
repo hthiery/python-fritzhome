@@ -74,7 +74,7 @@ class TestFritzhomeDevicePowermeter(object):
         self.fritz.update_devices()
         device = self.fritz.get_device_by_ain("08761 0000434")
 
-        assert device.energy == 0
-        assert device.power == 0
-        assert device.voltage == 0
+        assert device.energy is None
+        assert device.power is None
+        assert device.voltage is None
         assert device.current is None
