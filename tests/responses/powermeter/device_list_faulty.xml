@@ -10,9 +10,6 @@
             <devicelock>0</devicelock>
         </switch>
         <powermeter>
-            <power>0</power>
-            <energy>0</energy>
-            <voltage>0</voltage>
         </powermeter>
         <temperature>
             <celsius>285</celsius>
