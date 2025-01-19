@@ -34,8 +34,17 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
     def _update_powermeter_from_node(self, node):
         _LOGGER.debug("update powermeter device")
         val = node.find("powermeter")
-        self.power = int(val.findtext("power"))
-        self.energy = int(val.findtext("energy"))
+
+        try:
+            self.power = int(val.findtext("power"))
+        except Exception:
+            pass
+
+        try:
+            self.energy = int(val.findtext("energy"))
+        except Exception:
+            pass
+
         try:
             self.voltage = int(val.findtext("voltage"))
         except Exception:
