@@ -6,12 +6,7 @@ from __future__ import print_function
 import logging
 import argparse
 
-try:
-    from version import __version__
-except ImportError:
-    __version__ = "dev"
-
-from pyfritzhome import Fritzhome
+from pyfritzhome import Fritzhome, __version__
 
 _LOGGER = logging.getLogger(__name__)
 
