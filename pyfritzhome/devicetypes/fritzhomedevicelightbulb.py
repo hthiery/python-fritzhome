@@ -21,7 +21,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     color_temp = None
     color_mode = None
     supported_color_mode = None
-    fullcolorsupport = None
+    fullcolorsupport: bool = False
 
     def _update_from_node(self, node):
         super()._update_from_node(node)
@@ -60,8 +60,8 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
                     "supported_modes"
                 )
 
-                self.fullcolorsupport = colorcontrol_element.attrib.get(
-                    "fullcolorsupport"
+                self.fullcolorsupport = bool(
+                    colorcontrol_element.attrib.get("fullcolorsupport")
                 )
 
             except ValueError:
