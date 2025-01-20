@@ -67,6 +67,7 @@ class TestFritzhomeDeviceLightBulb(object):
         device = self.fritz.get_device_by_ain("12701 0072784-1")
         assert device.has_lightbulb
         assert device.has_level
+        assert device.fullcolorsupport is False
         assert device.state  # Lightbulb is switched on
         assert device.name == "Telekom White Dimmable Bulb"
 
