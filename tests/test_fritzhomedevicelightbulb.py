@@ -171,6 +171,18 @@ class TestFritzhomeDeviceLightBulb(object):
         # fmt: on
         assert colors == expected_colors
 
+    def test_get_colors_NonColorBulb(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_Telekom_Magenta_NonColorBulb")
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12701 0072784")
+
+        temps = device.get_colors()
+        # No colors and no exception
+        assert temps == {}
+
     def test_get_color_temps(self):
         self.mock.side_effect = [
             Helper.response("lightbulb/device_FritzDECT500_34_12_16")
@@ -197,6 +209,18 @@ class TestFritzhomeDeviceLightBulb(object):
         ]
         assert temps == expected_temps
 
+    def test_get_color_temps_NonColorBulb(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_Telekom_Magenta_NonColorBulb")
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12701 0072784")
+
+        temps = device.get_color_temps()
+        # No color temps and no exception
+        assert temps == []
+
     def test_set_color(self):
         self.mock.side_effect = [
             Helper.response("lightbulb/device_FritzDECT500_34_12_16"),
@@ -215,6 +239,28 @@ class TestFritzhomeDeviceLightBulb(object):
                 "sid": "0000001",
                 "hue": 180,
                 "saturation": 200,
+                "duration": 0,
+                "ain": "12345-1",
+            },
+        )
+
+    def test_set_color_temp(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_FritzDECT500_34_12_16"),
+            "1",
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345-1")
+
+        device.set_color_temp(3000, 0)
+
+        device._fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setcolortemperature",
+                "sid": "0000001",
+                "temperature": 3000,
                 "duration": 0,
                 "ain": "12345-1",
             },
@@ -239,6 +285,69 @@ class TestFritzhomeDeviceLightBulb(object):
                 "hue": 180,
                 "saturation": 200,
                 "duration": 0,
+                "ain": "12345-1",
+            },
+        )
+
+    def test_set_state_off(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_FritzDECT500_34_12_16"),
+            "1",
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345-1")
+
+        device.set_state_off()
+
+        device._fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setsimpleonoff",
+                "sid": "0000001",
+                "onoff": 0,
+                "ain": "12345-1",
+            },
+        )
+
+    def test_set_state_on(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_FritzDECT500_34_12_16"),
+            "1",
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345-1")
+
+        device.set_state_on()
+
+        device._fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setsimpleonoff",
+                "sid": "0000001",
+                "onoff": 1,
+                "ain": "12345-1",
+            },
+        )
+
+    def test_set_state_toggle(self):
+        self.mock.side_effect = [
+            Helper.response("lightbulb/device_FritzDECT500_34_12_16"),
+            "1",
+        ]
+
+        self.fritz.update_devices()
+        device = self.fritz.get_device_by_ain("12345-1")
+
+        device.set_state_toggle()
+
+        device._fritz._request.assert_called_with(
+            "http://10.0.0.1/webservices/homeautoswitch.lua",
+            {
+                "switchcmd": "setsimpleonoff",
+                "sid": "0000001",
+                "onoff": 2,
                 "ain": "12345-1",
             },
         )
