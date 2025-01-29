@@ -1,4 +1,5 @@
 """The entity base class."""
+
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -16,8 +17,8 @@ class FritzhomeEntityBase(ABC):
     """The Fritzhome Entity class."""
 
     _fritz = None
-    ain: str = None
-    _functionsbitmask = None
+    ain: str
+    _functionsbitmask: int = 0
     supported_features = None
 
     def __init__(self, fritz=None, node=None):
