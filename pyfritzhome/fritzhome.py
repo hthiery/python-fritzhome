@@ -11,7 +11,7 @@ from xml.etree import ElementTree
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from requests import Session
+from requests import exceptions, Session
 
 from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhomedevice import FritzhomeDevice
@@ -36,6 +36,7 @@ class Fritzhome(object):
         self._password = password
         self._session = Session()
         self._ssl_verify = ssl_verify
+        self._has_getdeviceinfos = True
 
     def _request(self, url, params=None, timeout=10):
         """Send a request with parameters."""
@@ -200,8 +201,17 @@ class Fritzhome(object):
     def wait_device_txbusy(self, ain, retries=10):
         """Wait for device to finish command execution."""
         for _ in range(retries):
-            plain = self.get_device_infos(ain)
-            dom = ElementTree.fromstring(plain)
+            if self._has_getdeviceinfos:
+                try:
+                    plain = self.get_device_infos(ain)
+                    dom = ElementTree.fromstring(plain)
+                except exceptions.HTTPError:
+                    _LOGGER.debug("fallback to getdevicelistinfos")
+                    self._has_getdeviceinfos = False
+
+            if not self._has_getdeviceinfos:
+                dom = self.get_device_element(ain)
+
             txbusy = dom.findall("txbusy")
             if txbusy[0].text == "0":
                 return True
