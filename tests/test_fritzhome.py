@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, HTTPError
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -345,6 +345,15 @@ class TestFritzhome(object):
         ]
 
         assert self.fritz.wait_device_txbusy("11960 0089208")
+
+    def test_wait_tx_busy_fallback(self):
+        self.mock.side_effect = [
+            HTTPError("400 Client Error: Bad Request"),
+            Helper.response("base/device_list_txbusy"),
+            Helper.response("base/device_list_not_txbusy"),
+        ]
+
+        assert self.fritz.wait_device_txbusy("22960 0089208")
 
     def test_wait_tx_busy_failed(self):
         self.mock.side_effect = [
