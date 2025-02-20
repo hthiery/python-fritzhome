@@ -292,7 +292,7 @@ class Fritzhome(object):
 
     def _get_temperature(self, ain, name):
         plain = self._aha_request(name, ain=ain, rf=float)
-        return (plain - 16) / 2 + 8
+        return plain / 2
 
     def get_target_temperature(self, ain):
         """Get the thermostate target temperature."""
@@ -300,11 +300,11 @@ class Fritzhome(object):
 
     def set_target_temperature(self, ain, temperature, wait=False):
         """Set the thermostate target temperature."""
-        temp = int(16 + ((float(temperature) - 8) * 2))
+        temp = int(temperature * 2)
 
-        if temp < min(range(16, 56)):
+        if temp < 16:
             temp = 253
-        elif temp > max(range(16, 56)):
+        elif temp > 56:
             temp = 254
 
         self._aha_request("sethkrtsoll", ain=ain, param={"param": temp})
