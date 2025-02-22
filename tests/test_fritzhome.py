@@ -355,8 +355,19 @@ class TestFritzhome(object):
             Helper.response("base/device_list_not_txbusy"),
         ]
 
+        # first call will set _has_getdeviceinfos to False
+        # so sub-sequent calls won't try getdeviceinfos anymore
         assert self.fritz.wait_device_txbusy("22960 0089208")
         assert self.mock.call_count == 3
+
+        self.mock.reset_mock()
+        self.mock.side_effect = [
+            Helper.response("base/device_list_txbusy"),
+            Helper.response("base/device_list_not_txbusy"),
+        ]
+
+        assert self.fritz.wait_device_txbusy("22960 0089208")
+        assert self.mock.call_count == 2
 
     def test_wait_tx_busy_no_txbusy(self):
         """FritzOS <7.20 has no txbusy and no getdeviceinfos"""
@@ -365,8 +376,13 @@ class TestFritzhome(object):
             Helper.response("base/device_list_no_txbusy"),
         ]
 
+        # first call will set _has_txbusy to False, those skip all sub-sequent calls
         assert self.fritz.wait_device_txbusy("32960 0089208")
         assert self.mock.call_count == 2
+        self.mock.reset_mock()
+
+        assert self.fritz.wait_device_txbusy("32960 0089208")
+        assert self.mock.call_count == 0
 
     def test_wait_tx_busy_failed(self):
         self.mock.side_effect = [
