@@ -37,6 +37,7 @@ class Fritzhome(object):
         self._session = Session()
         self._ssl_verify = ssl_verify
         self._has_getdeviceinfos = True
+        self._has_txbusy = True
 
     def _request(self, url, params=None, timeout=10):
         """Send a request with parameters."""
@@ -200,9 +201,13 @@ class Fritzhome(object):
 
     def wait_device_txbusy(self, ain, retries=10):
         """Wait for device to finish command execution."""
+        if not self._has_txbusy:
+            return True
+
         for _ in range(retries):
             if self._has_getdeviceinfos:
                 try:
+                    # getdeviceinfos was added in FritzOS 7.24
                     plain = self.get_device_infos(ain)
                     dom = ElementTree.fromstring(plain)
                 except exceptions.HTTPError:
@@ -213,8 +218,13 @@ class Fritzhome(object):
                 dom = self.get_device_element(ain)
 
             txbusy = dom.findall("txbusy")
-            if txbusy[0].text == "0":
+            if not txbusy:
+                # txbusy was added in FritzOS 7.20
+                self._has_txbusy = False
+
+            if not txbusy or txbusy[0].text == "0":
                 return True
+
             time.sleep(0.2)
         return False
 

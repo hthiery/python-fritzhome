@@ -345,8 +345,10 @@ class TestFritzhome(object):
         ]
 
         assert self.fritz.wait_device_txbusy("11960 0089208")
+        assert self.mock.call_count == 2
 
     def test_wait_tx_busy_fallback(self):
+        """FritzOS <7.24 has no getdeviceinfos"""
         self.mock.side_effect = [
             HTTPError("400 Client Error: Bad Request"),
             Helper.response("base/device_list_txbusy"),
@@ -354,6 +356,17 @@ class TestFritzhome(object):
         ]
 
         assert self.fritz.wait_device_txbusy("22960 0089208")
+        assert self.mock.call_count == 3
+
+    def test_wait_tx_busy_no_txbusy(self):
+        """FritzOS <7.20 has no txbusy and no getdeviceinfos"""
+        self.mock.side_effect = [
+            HTTPError("400 Client Error: Bad Request"),
+            Helper.response("base/device_list_no_txbusy"),
+        ]
+
+        assert self.fritz.wait_device_txbusy("32960 0089208")
+        assert self.mock.call_count == 2
 
     def test_wait_tx_busy_failed(self):
         self.mock.side_effect = [
@@ -362,3 +375,4 @@ class TestFritzhome(object):
         ]
 
         assert not self.fritz.wait_device_txbusy("11960 0089208", 1)
+        assert self.mock.call_count == 1
