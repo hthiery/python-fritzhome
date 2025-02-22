@@ -221,8 +221,9 @@ class Fritzhome(object):
             if not txbusy:
                 # txbusy was added in FritzOS 7.20
                 self._has_txbusy = False
+                return True
 
-            if not txbusy or txbusy[0].text == "0":
+            if txbusy[0].text == "0":
                 return True
 
             time.sleep(0.2)
