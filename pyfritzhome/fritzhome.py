@@ -16,7 +16,7 @@ from requests import exceptions, Session
 from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhomedevice import FritzhomeDevice
 from .fritzhomedevice import FritzhomeTemplate
-from typing import Dict
+from typing import Dict, Optional
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,8 +26,8 @@ class Fritzhome(object):
 
     _sid = None
     _session = None
-    _devices: Dict[str, FritzhomeDevice] = None
-    _templates: Dict[str, FritzhomeTemplate] = None
+    _devices: Optional[Dict[str, FritzhomeDevice]] = None
+    _templates: Optional[Dict[str, FritzhomeTemplate]] = None
 
     def __init__(self, host, user, password, ssl_verify=True):
         """Create a fritzhome object."""
