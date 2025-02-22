@@ -213,7 +213,7 @@ class Fritzhome(object):
                 dom = self.get_device_element(ain)
 
             txbusy = dom.findall("txbusy")
-            if txbusy[0].text == "0":
+            if len(txbusy) == 0 or txbusy[0].text == "0":
                 return True
             time.sleep(0.2)
         return False
