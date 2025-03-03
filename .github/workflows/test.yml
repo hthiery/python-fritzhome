@@ -51,7 +51,7 @@ jobs:
         run: pydocstyle
 
       - name: Setup
-        run: python setup.py install
+        run: pip install .
 
       - name: Test
         run: pytest --cov=pyfritzhome --cov-report=lcov
