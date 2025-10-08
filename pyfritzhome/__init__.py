@@ -1,14 +1,12 @@
 """Init file for pyfritzhome."""
 
-try:
-    from importlib.metadata import version
-    __version__ = version(__name__)
-except ImportError:
-    __version__ = "dev"
+from importlib.metadata import version
 
 from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhome import Fritzhome
 from .fritzhomedevice import FritzhomeDevice
+
+__version__ = version(__name__)
 
 __all__ = (
     "Fritzhome",
