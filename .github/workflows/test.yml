@@ -35,11 +35,11 @@ jobs:
 
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
-        run: pip install pytest pytest-cov python-coveralls coverage flake8 pydocstyle setuptools cryptography<44
+        run: pip install pytest pytest-cov python-coveralls coverage flake8 pydocstyle cryptography<44
 
       - name: Install dependencies (Ubuntu)
         if: runner.os == 'Linux'
-        run: pip install pytest pytest-cov python-coveralls coverage flake8 pydocstyle setuptools cryptography
+        run: pip install pytest pytest-cov python-coveralls coverage flake8 pydocstyle cryptography
 
       - name: Lint with flake8
         run: |
