@@ -167,7 +167,7 @@ Add a new user: System -> FRITZ!Box-Benutzer
 References
 ----------
 
-- https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AHA-HTTP-Interface.pdf
+- https://fritz.support/resources/AHA-HTTP-Interface.pdf
 - https://github.com/DerMitch/fritzbox-smarthome
 
 
