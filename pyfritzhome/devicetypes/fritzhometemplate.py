@@ -1,10 +1,11 @@
 """The template class."""
+
 # -*- coding: utf-8 -*-
 
 import logging
 
-from .fritzhomeentitybase import FritzhomeEntityBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
+from .fritzhomeentitybase import FritzhomeEntityBase
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -12,7 +13,7 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeTemplate(FritzhomeEntityBase):
     """The Fritzhome Template class."""
 
-    devices = None
+    devices: list = []
     features = None
     apply_hkr_summer = None
     apply_hkr_temperature = None
@@ -24,7 +25,7 @@ class FritzhomeTemplate(FritzhomeEntityBase):
     apply_color = None
     apply_dialhelper = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node) -> None:
         _LOGGER.debug("update template")
         super()._update_from_node(node)
 

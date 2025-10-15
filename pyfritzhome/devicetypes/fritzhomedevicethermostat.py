@@ -1,8 +1,10 @@
 """The thermostat device class."""
+
 # -*- coding: utf-8 -*-
 
 import logging
 import time
+from typing import Optional
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -17,8 +19,8 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     target_temperature = None
     eco_temperature = None
     comfort_temperature = None
-    device_lock = None
-    lock = None
+    device_lock: Optional[bool] = None
+    lock: Optional[bool] = None
     error_code = None
     window_open = None
     window_open_endtime = None
