@@ -16,6 +16,7 @@ from requests import exceptions, Session
 from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhomedevice import FritzhomeDevice
 from .fritzhomedevice import FritzhomeTemplate
+from .fritzhomedevice import FritzhomeTrigger
 from typing import Dict, Optional
 
 _LOGGER = logging.getLogger(__name__)
@@ -28,6 +29,7 @@ class Fritzhome(object):
     _session = None
     _devices: Optional[Dict[str, FritzhomeDevice]] = None
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
+    _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
     def __init__(self, host, user, password, ssl_verify=True):
         """Create a fritzhome object."""
@@ -519,3 +521,71 @@ class Fritzhome(object):
     def apply_template(self, ain):
         """Appliy a template."""
         self._aha_request("applytemplate", ain=ain)
+
+    # Trigger-related commands
+
+    def has_triggers(self):
+        """Check if the Fritz!Box supports smarthome triggers."""
+        plain = self._aha_request("gettriggerlistinfos")
+        try:
+            ElementTree.fromstring(plain)
+        except ElementTree.ParseError:
+            return False
+        return True
+
+    def update_triggers(self, ignore_removed=True):
+        """Update the triger."""
+        _LOGGER.info("Updating Trigers ...")
+        if self._triggers is None:
+            self._triggers = {}
+
+        trigger_elements = self.get_trigger_elements()
+        for element in trigger_elements:
+            if element.attrib["identifier"] in self._triggers.keys():
+                _LOGGER.info(
+                    "Updating already existing Trigger " + element.attrib["identifier"]
+                )
+                self._triggers[element.attrib["identifier"]]._update_from_node(element)
+            else:
+                _LOGGER.info("Adding new Trigger " + element.attrib["identifier"])
+                trigger = FritzhomeTrigger(self, node=element)
+                self._triggers[trigger.ain] = trigger
+
+        if not ignore_removed:
+            for identifier in list(self._triggers.keys()):
+                if identifier not in [
+                    element.attrib["identifier"] for element in trigger_elements
+                ]:
+                    _LOGGER.info("Removing no more existing trigger " + identifier)
+                    self._triggers.pop(identifier)
+
+        return True
+
+    def get_trigger_elements(self):
+        """Get the DOM elements for the trigger list."""
+        return self._get_listinfo_elements("trigger")
+
+    def get_triggers(self):
+        """Get the list of all known triggers."""
+        return list(self.get_triggers_as_dict().values())
+
+    def get_triggers_as_dict(self):
+        """Get all known triggers as dictionary."""
+        if self._triggers is None:
+            self.update_triggers()
+        return self._triggers
+
+    def get_trigger_by_ain(self, ain):
+        """Return a trigger specified by the AIN."""
+        return self.get_triggers_as_dict()[ain]
+
+    def _set_trigger_state(self, ain, state):
+        self._aha_request("settriggeractive", ain=ain, param={"active": state})
+
+    def set_trigger_active(self, ain):
+        """Set the trigger to active state."""
+        self._set_trigger_state(ain, "1")
+
+    def set_trigger_inactive(self, ain):
+        """Set the trigger to inactive state."""
+        self._set_trigger_state(ain, "0")
