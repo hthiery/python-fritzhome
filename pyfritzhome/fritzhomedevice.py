@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 
 from .devicetypes import FritzhomeTemplate  # noqa: F401
+from .devicetypes import FritzhomeTrigger  # noqa: F401
 from .devicetypes import (
     FritzhomeDeviceAlarm,
     FritzhomeDeviceBlind,

@@ -56,7 +56,11 @@ class FritzhomeEntityBase(ABC):
     @property
     def device_and_unit_id(self) -> tuple:
         """Get the device and possible unit id."""
-        if self.ain.startswith("tmp") or self.ain.startswith("grp"):
+        if (
+            self.ain.startswith("tmp")
+            or self.ain.startswith("grp")
+            or self.ain.startswith("trg")
+        ):
             return (self.ain, None)
         elif self.ain.startswith("Z") and len(self.ain) == 19:
             return (self.ain[0:17], self.ain[17:])

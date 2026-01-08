@@ -12,6 +12,7 @@ from .fritzhomedevicethermostat import FritzhomeDeviceThermostat
 from .fritzhomedevicelightbulb import FritzhomeDeviceLightBulb
 from .fritzhomedeviceblind import FritzhomeDeviceBlind
 from .fritzhometemplate import FritzhomeTemplate
+from .fritzhometrigger import FritzhomeTrigger
 
 
 __all__ = (
@@ -27,4 +28,5 @@ __all__ = (
     "FritzhomeDeviceLightBulb",
     "FritzhomeDeviceBlind",
     "FritzhomeTemplate",
+    "FritzhomeTrigger",
 )

@@ -1,0 +1,5 @@
+<triggerlist version="1">
+    <trigger identifier="trg303e4f-41979A02D" active="1">
+        <name>Test Trigger Active</name>
+    </trigger>
+</triggerlist>

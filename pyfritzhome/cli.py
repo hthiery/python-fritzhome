@@ -174,6 +174,27 @@ def template_apply(fritz, args):
     fritz.apply_template(args.ain)
 
 
+def list_triggers(fritz, args):
+    """Command that prints all trigger information."""
+    triggers = fritz.get_triggers()
+
+    for trigger in triggers:
+        print("#" * 30)
+        print("name=%s" % trigger.name)
+        print("  ain=%s" % trigger.ain)
+        print("  active=%s" % trigger.active)
+
+
+def trigger_set_active(fritz, args):
+    """Command that enables a trigger."""
+    fritz.set_trigger_active(args.ain)
+
+
+def trigger_set_inactive(fritz, args):
+    """Command that disables a trigger."""
+    fritz.set_trigger_inactive(args.ain)
+
+
 def main(args=None):
     """Enter the main function of the CLI tool."""
     parser = argparse.ArgumentParser(description="Fritz!Box Smarthome CLI tool.")
@@ -337,6 +358,24 @@ def main(args=None):
     subparser = _sub_switch.add_parser("apply", help="Apply template")
     subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=template_apply)
+
+    # triggers
+    subparser = _sub.add_parser("trigger", help="Trigger commands")
+    _sub_switch = subparser.add_subparsers()
+
+    # list triggers
+    subparser = _sub_switch.add_parser("list", help="List all available triggers")
+    subparser.set_defaults(func=list_triggers)
+
+    # activate triggers
+    subparser = _sub_switch.add_parser("activate", help="Activate a trigger")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.set_defaults(func=trigger_set_active)
+
+    # deactivate triggers
+    subparser = _sub_switch.add_parser("deactivate", help="Deactivate a trigger")
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.set_defaults(func=trigger_set_inactive)
 
     args = parser.parse_args(args)
 
