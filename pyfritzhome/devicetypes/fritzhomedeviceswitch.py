@@ -1,7 +1,9 @@
 """The switch device class."""
+
 # -*- coding: utf-8 -*-
 
 import logging
+from typing import Optional
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -14,9 +16,10 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
 
     switch_state = None
     switch_mode = None
-    lock = None
+    lock: Optional[bool] = None
+    device_lock: Optional[bool] = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
@@ -26,7 +29,7 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
 
     # Switch
     @property
-    def has_switch(self):
+    def has_switch(self) -> bool:
         """Check if the device has switch function."""
         if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
             # for AVM plugs like FRITZ!DECT 200 and FRITZ!DECT 210
@@ -38,7 +41,7 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
             return True
         return False
 
-    def _update_switch_from_node(self, node):
+    def _update_switch_from_node(self, node) -> None:
         _LOGGER.debug("update switch device")
         if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
             val = node.find("switch")

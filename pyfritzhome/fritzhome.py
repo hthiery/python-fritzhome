@@ -1,35 +1,31 @@
 """The main fritzhome handling class."""
-# -*- coding: utf-8 -*-
 
-from __future__ import print_function
+# -*- coding: utf-8 -*-
 
 import hashlib
 import logging
 import time
+from typing import Optional
 from xml.etree import ElementTree
 
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-from requests import exceptions, Session
+from requests import Session, exceptions
 
 from .errors import InvalidError, LoginError, NotLoggedInError
-from .fritzhomedevice import FritzhomeDevice
-from .fritzhomedevice import FritzhomeTemplate
-from .fritzhomedevice import FritzhomeTrigger
-from typing import Dict, Optional
+from .fritzhomedevice import FritzhomeDevice, FritzhomeTemplate, FritzhomeTrigger
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Fritzhome(object):
+class Fritzhome:
     """Fritzhome object to communicate with the device."""
 
     _sid = None
-    _session = None
-    _devices: Optional[Dict[str, FritzhomeDevice]] = None
-    _templates: Optional[Dict[str, FritzhomeTemplate]] = None
-    _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
+    _session: Session
+    _devices: Optional[dict[str, FritzhomeDevice]] = None
+    _templates: Optional[dict[str, FritzhomeTemplate]] = None
+    _triggers: Optional[dict[str, FritzhomeTrigger]] = None
 
     def __init__(self, host, user, password, ssl_verify=True):
         """Create a fritzhome object."""
@@ -61,7 +57,7 @@ class Fritzhome(object):
         plain = self._request(url, params)
         dom = ElementTree.fromstring(plain)
         sid = dom.findtext("SID")
-        blocktime = int(dom.findtext("BlockTime"))
+        blocktime = int(dom.findtext("BlockTime") or "0")
         challenge = dom.findtext("Challenge")
 
         return (sid, challenge, blocktime)
