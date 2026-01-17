@@ -31,15 +31,18 @@ class Fritzhome(object):
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
-    def __init__(self, host, user, password, ssl_verify=True):
+    def __init__(self, host, user, password, port=None, ssl_verify=True):
         """Create a fritzhome object."""
-        self._host = host
         self._user = user
         self._password = password
         self._session = Session()
         self._ssl_verify = ssl_verify
         self._has_getdeviceinfos = True
         self._has_txbusy = True
+        if host.startswith("https://") or host.startswith("http://"):
+            self.base_url = f"{host}:{port}" if port else host
+        else:
+            self.base_url = f"http://{host}:{port}" if port else f"http://{host}"
 
     def _request(self, url, params=None, timeout=10):
         """Send a request with parameters."""
@@ -51,7 +54,7 @@ class Fritzhome(object):
 
     def _login_request(self, username=None, secret=None):
         """Send a login request with paramerters."""
-        url = self.get_prefixed_host() + "/login_sid.lua?version=2"
+        url = f"{self.base_url}/login_sid.lua?version=2"
         params = {}
         if username:
             params["username"] = username
@@ -69,7 +72,7 @@ class Fritzhome(object):
     def _logout_request(self):
         """Send a logout request."""
         _LOGGER.debug("logout")
-        url = self.get_prefixed_host() + "/login_sid.lua"
+        url = f"{self.base_url}/login_sid.lua"
         params = {"security:command/logout": "1", "sid": self._sid}
 
         self._request(url, params)
@@ -105,7 +108,7 @@ class Fritzhome(object):
 
     def _aha_request(self, cmd, ain=None, param=None, rf=str):
         """Send an AHA request."""
-        url = self.get_prefixed_host() + "/webservices/homeautoswitch.lua"
+        url = f"{self.base_url}/webservices/homeautoswitch.lua"
 
         _LOGGER.debug("self._sid:%s", self._sid)
 
@@ -151,20 +154,6 @@ class Fritzhome(object):
         """Logout."""
         self._logout_request()
         self._sid = None
-
-    def get_prefixed_host(self):
-        """Choose the correct protocol prefix for the host.
-
-        Supports three input formats:
-        - https://<host>(requests use strict certificate validation by default)
-        - http://<host> (unecrypted)
-        - <host> (unencrypted)
-        """
-        host = self._host
-        if host.startswith("https://") or host.startswith("http://"):
-            return host
-        else:
-            return "http://" + host
 
     def update_devices(self, ignore_removed=True):
         """Update the device."""

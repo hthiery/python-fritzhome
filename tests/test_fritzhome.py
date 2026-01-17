@@ -77,6 +77,21 @@ class TestFritzhome(object):
             self.fritz.update_devices()
         assert str(ex.value) == "not logged in, login before doing any requests."
 
+    @pytest.mark.parametrize(
+        ("host", "port", "expected_base_url"),
+        [
+            ("10.0.0.1", None, "http://10.0.0.1"),
+            ("http://10.0.0.1", None, "http://10.0.0.1"),
+            ("https://10.0.0.1", None, "https://10.0.0.1"),
+            ("10.0.0.1", 1234, "http://10.0.0.1:1234"),
+            ("http://10.0.0.1", 1234, "http://10.0.0.1:1234"),
+            ("https://10.0.0.1", 1234, "https://10.0.0.1:1234"),
+        ],
+    )
+    def test_base_url(self, host: str, port: int, expected_base_url: str):
+        fritz = Fritzhome(host, "user", "admin123", port)
+        assert fritz.base_url == expected_base_url
+
     def test_aha_request(self):
         self.fritz._aha_request(cmd="testcmd")
         self.fritz._request.assert_called_with(
