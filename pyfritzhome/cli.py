@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """A simple CLI tool."""
+
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -209,8 +210,15 @@ def main(args=None):
         help="Fritz!Box IP address",
         default="fritz.box",
     )
+    parser.add_argument("--port", type=int, dest="port", help="Port")
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        dest="insecure",
+        help="Don't verify SSL certificates",
+    )
     parser.add_argument("-u", "--user", type=str, dest="user", help="Username")
-    parser.add_argument("-p", "--password", type=str, dest="password", help="Username")
+    parser.add_argument("-p", "--password", type=str, dest="password", help="Password")
     parser.add_argument(
         "-a",
         "--ain",
@@ -385,7 +393,13 @@ def main(args=None):
 
     fritzbox = None
     try:
-        fritzbox = Fritzhome(host=args.host, user=args.user, password=args.password)
+        fritzbox = Fritzhome(
+            host=args.host,
+            user=args.user,
+            password=args.password,
+            port=args.port or None,
+            ssl_verify=not args.insecure,
+        )
         fritzbox.login()
         args.func(fritzbox, args)
     finally:
