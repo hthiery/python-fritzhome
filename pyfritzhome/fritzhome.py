@@ -6,6 +6,7 @@ from __future__ import print_function
 import hashlib
 import logging
 import time
+import json
 from xml.etree import ElementTree
 
 from cryptography.hazmat.primitives import hashes
@@ -15,6 +16,7 @@ from requests import exceptions, Session
 
 from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhomedevice import FritzhomeDevice
+from .fritzhomedevice import FritzhomeUnit
 from .fritzhomedevice import FritzhomeTemplate
 from .fritzhomedevice import FritzhomeTrigger
 from typing import Dict, Optional
@@ -27,6 +29,7 @@ class Fritzhome(object):
 
     _sid = None
     _session = None
+    _units: Optional[Dict[str, FritzhomeUnit]] = None
     _devices: Optional[Dict[str, FritzhomeDevice]] = None
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
@@ -44,11 +47,12 @@ class Fritzhome(object):
             self.base_url = f"{host}:{port}" if port else host
         else:
             self.base_url = f"http://{host}:{port}" if port else f"http://{host}"
+        self.rest_url = f"{self.base_url}/api/v0/smarthome"
 
-    def _request(self, url, params=None):
+    def _request(self, url, params=None, headers=None):
         """Send a request with parameters."""
         rsp = self._session.get(
-            url, params=params, timeout=self._timeout, verify=self._ssl_verify
+            url, params=params, headers=headers, timeout=self._timeout, verify=self._ssl_verify
         )
         rsp.raise_for_status()
         return rsp.text.strip()
@@ -130,6 +134,26 @@ class Fritzhome(object):
             return bool(int(plain))
         return rf(plain)
 
+    def _rest_request(self, endpoint, param=None):
+        """Send an REST API request"""
+        url = f"{self.rest_url}/{endpoint}"
+
+        _LOGGER.debug("self._sid:%s", self._sid)
+
+        if not self._sid:
+            raise NotLoggedInError
+
+        params = {"Authorization": f"AVM-SID {self._sid}"}
+        if param:
+            params.update(param)
+
+        response = self._request(url, headers=params)
+        data = json.loads(response)
+        #~ if data.contains("errors"):
+            #~ raise InvalidError
+
+        return data
+
     def login(self):
         """Login and get a valid session ID."""
         (sid, challenge, blocktime) = self._login_request()
@@ -156,6 +180,37 @@ class Fritzhome(object):
         self._logout_request()
         self._sid = None
 
+    def update_unit(self, uid):
+        if self._units is None:
+            self._units = {}
+
+        _LOGGER.info("Updating units ...")
+        data = self._rest_request("overview/units/{uid}")
+        if uid in self._units.keys():
+            _LOGGER.info(
+                "Updating already existing unit " + uid
+            )
+            self._units[uid]._update_from_node(data)
+        else:
+            raise RuntimeError
+
+    def update_units(self):
+        if self._units is None:
+            self._units = {}
+
+        _LOGGER.info("Updating units ...")
+        data = self._rest_request("overview/units")
+        for element in data:
+            ain = element["ain"]
+            if ain in self._units.keys():
+                _LOGGER.info(
+                    "Updating already existing unit " + ain
+                )
+                self._units[ain]._update_from_node(element)
+            else:
+                _LOGGER.info("Adding new unit " + ain)
+                self._units[ain] = FritzhomeUnit(self, node=element)
+
     def update_devices(self, ignore_removed=True):
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
@@ -164,15 +219,21 @@ class Fritzhome(object):
 
         device_elements = self.get_device_elements()
         for element in device_elements:
-            if element.attrib["identifier"] in self._devices.keys():
+            uid = element["UID"]
+            if uid in self._devices.keys():
                 _LOGGER.info(
-                    "Updating already existing Device " + element.attrib["identifier"]
+                    "Updating already existing Device " + uid
                 )
-                self._devices[element.attrib["identifier"]]._update_from_node(element)
+                self._devices[uid]._update_from_node(element)
             else:
-                _LOGGER.info("Adding new Device " + element.attrib["identifier"])
-                device = FritzhomeDevice(self, node=element)
-                self._devices[device.ain] = device
+                _LOGGER.info("Adding new Device " + uid)
+                self._devices[uid] = FritzhomeDevice(self, node=element)
+            self._devices[uid].clear_units()
+            for unit_ain in element["unitUids"]:
+                if unit_ain in self._units.keys():
+                    self._devices[uid].add_unit(self._units[unit_ain])
+                else:
+                    _LOGGER.warning(f"Unknown unit {unit_ain}")
 
         if not ignore_removed:
             for identifier in list(self._devices.keys()):
@@ -222,11 +283,12 @@ class Fritzhome(object):
         return False
 
     def get_device_elements(self):
-        """Get the DOM elements for the device list."""
-        return self._get_listinfo_elements("device")
+        """Get the JSON elements for the device list."""
+        resp = self._rest_request("overview/devices")
+        return resp
 
     def get_device_element(self, ain):
-        """Get the DOM element for the specified device."""
+        """Get the JSON element for the specified device."""
         elements = self.get_device_elements()
         for element in elements:
             if element.attrib["identifier"] == ain:
@@ -239,6 +301,8 @@ class Fritzhome(object):
 
     def get_devices_as_dict(self):
         """Get the list of all known devices."""
+        if self._units is None:
+            self.update_units()
         if self._devices is None:
             self.update_devices()
         return self._devices

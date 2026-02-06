@@ -14,22 +14,14 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
-    battery_level = None
-    battery_low = None
-    identifier = None
-    is_group = None
-    fw_version = None
-    group_members = None
-    manufacturer = None
-    productname = None
-    present = None
-    tx_busy = None
+    def __init__(self, fritz=None, node=None):
+        super().__init__(fritz, node)
+        self._units = []
 
     def __repr__(self):
         """Return a string."""
-        return "{ain} {identifier} {manuf} {prod} {name}".format(
+        return "{ain} {manuf} {prod} {name}".format(
             ain=self.ain,
-            identifier=self.identifier,
             manuf=self.manufacturer,
             prod=self.productname,
             name=self.name,
@@ -42,31 +34,39 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
     def _update_from_node(self, node):
         _LOGGER.debug("update base device")
         super()._update_from_node(node)
-        self.ain = node.attrib["identifier"]
-        self.identifier = node.attrib["id"]
-        self.fw_version = node.attrib["fwversion"]
-        self.manufacturer = node.attrib["manufacturer"]
-        self.productname = node.attrib["productname"]
 
-        self.present = bool(int(node.findtext("present")))
+    @property
+    def uid(self):
+        return self._node["UID"]
 
-        groupinfo = node.find("groupinfo")
-        self.is_group = groupinfo is not None
-        if self.is_group:
-            self.group_members = str(groupinfo.findtext("members")).split(",")
+    @property
+    def manufacturer(self):
+        return self._node["manufacturer"]
 
-        try:
-            self.tx_busy = self.get_node_value_as_int_as_bool(node, "txbusy")
-        except Exception:
-            pass
+    @property
+    def product_name(self):
+        return self._node["productName"]
 
-        try:
-            self.battery_low = self.get_node_value_as_int_as_bool(node, "batterylow")
-            self.battery_level = int(self.get_node_value_as_int(node, "battery"))
-        except Exception:
-            pass
+    # legacy
+    @property
+    def productname(self):
+        return self.product_name
 
-    # General
-    def get_present(self):
-        """Check if the device is present."""
-        return self._fritz.get_device_present(self.ain)
+    # legacy
+    @property
+    def is_connected(self):
+        return self._node["isConnected"]
+
+    # legacy
+    @property
+    def present(self):
+        return self.is_connected
+
+    def clear_units(self):
+        self._units = []
+
+    def add_unit(self, unit):
+        self._units.append(unit)
+
+    def units(self):
+        return self._units.values()

@@ -20,15 +20,12 @@ def list_all(fritz, args):
         print("#" * 30)
         print("name=%s" % device.name)
         print("  ain=%s" % device.ain)
-        print("  id=%s" % device.identifier)
         print("  productname=%s" % device.productname)
         print("  manufacturer=%s" % device.manufacturer)
         print("  present=%s" % device.present)
-        print("  lock=%s" % device.lock)
-        print("  devicelock=%s" % device.device_lock)
-        print("  is_group=%s" % device.is_group)
-        if device.is_group:
-            print("  group_members=%s" % device.group_members)
+        #~ print("  is_group=%s" % device.is_group)
+        #~ if device.is_group:
+            #~ print("  group_members=%s" % device.group_members)
 
         if device.present is False:
             continue
@@ -36,46 +33,46 @@ def list_all(fritz, args):
         if device.has_switch:
             print(" Switch:")
             print("  switch_state=%s" % device.switch_state)
-        if device.has_powermeter:
-            print(" Powermeter:")
-            print("  power=%s" % device.power)
-            print("  energy=%s" % device.energy)
-            print("  voltage=%s" % device.voltage)
-        if device.has_temperature_sensor:
-            print(" Temperature:")
-            print("  temperature=%s" % device.temperature)
-            print("  offset=%s" % device.offset)
-        if device.has_thermostat:
-            print(" Thermostat:")
-            print("  battery_low=%s" % device.battery_low)
-            print("  battery_level=%s" % device.battery_level)
-            print("  actual=%s" % device.actual_temperature)
-            print("  target=%s" % device.target_temperature)
-            print("  comfort=%s" % device.comfort_temperature)
-            print("  eco=%s" % device.eco_temperature)
-            print("  window=%s" % device.window_open)
-            print("  window_until=%s" % device.window_open_endtime)
-            print("  boost=%s" % device.boost_active)
-            print("  boost_until=%s" % device.boost_active_endtime)
-            print("  adaptive_heating_running=%s" % device.adaptive_heating_running)
-            print("  summer=%s" % device.summer_active)
-            print("  holiday=%s" % device.holiday_active)
-        if device.has_alarm:
-            print(" Alert:")
-            print("  alert=%s" % device.alert_state)
-        if device.has_lightbulb:
-            print(" Light bulb:")
-            print("  state=%s" % ("Off" if device.state == 0 else "On"))
-            if device.has_level:
-                print("  level=%s" % device.level)
-            if device.has_color:
-                print("  hue=%s" % device.hue)
-                print("  saturation=%s" % device.saturation)
-        if device.has_blind:
-            print(" Blind:")
-            print("  level=%s" % device.level)
-            print("  levelpercentage=%s" % device.levelpercentage)
-            print("  endpositionset=%s" % device.endpositionsset)
+        #~ if device.has_powermeter:
+            #~ print(" Powermeter:")
+            #~ print("  power=%s" % device.power)
+            #~ print("  energy=%s" % device.energy)
+            #~ print("  voltage=%s" % device.voltage)
+        #~ if device.has_temperature_sensor:
+            #~ print(" Temperature:")
+            #~ print("  temperature=%s" % device.temperature)
+            #~ print("  offset=%s" % device.offset)
+        #~ if device.has_thermostat:
+            #~ print(" Thermostat:")
+            #~ print("  battery_low=%s" % device.battery_low)
+            #~ print("  battery_level=%s" % device.battery_level)
+            #~ print("  actual=%s" % device.actual_temperature)
+            #~ print("  target=%s" % device.target_temperature)
+            #~ print("  comfort=%s" % device.comfort_temperature)
+            #~ print("  eco=%s" % device.eco_temperature)
+            #~ print("  window=%s" % device.window_open)
+            #~ print("  window_until=%s" % device.window_open_endtime)
+            #~ print("  boost=%s" % device.boost_active)
+            #~ print("  boost_until=%s" % device.boost_active_endtime)
+            #~ print("  adaptive_heating_running=%s" % device.adaptive_heating_running)
+            #~ print("  summer=%s" % device.summer_active)
+            #~ print("  holiday=%s" % device.holiday_active)
+        #~ if device.has_alarm:
+            #~ print(" Alert:")
+            #~ print("  alert=%s" % device.alert_state)
+        #~ if device.has_lightbulb:
+            #~ print(" Light bulb:")
+            #~ print("  state=%s" % ("Off" if device.state == 0 else "On"))
+            #~ if device.has_level:
+                #~ print("  level=%s" % device.level)
+            #~ if device.has_color:
+                #~ print("  hue=%s" % device.hue)
+                #~ print("  saturation=%s" % device.saturation)
+        #~ if device.has_blind:
+            #~ print(" Blind:")
+            #~ print("  level=%s" % device.level)
+            #~ print("  levelpercentage=%s" % device.levelpercentage)
+            #~ print("  endpositionset=%s" % device.endpositionsset)
 
 
 def device_name(fritz, args):

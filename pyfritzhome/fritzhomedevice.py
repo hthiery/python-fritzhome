@@ -2,35 +2,15 @@
 
 # -*- coding: utf-8 -*-
 
+from .devicetypes import FritzhomeUnit  # noqa: F401
 from .devicetypes import FritzhomeTemplate  # noqa: F401
 from .devicetypes import FritzhomeTrigger  # noqa: F401
-from .devicetypes import (
-    FritzhomeDeviceAlarm,
-    FritzhomeDeviceBlind,
-    FritzhomeDeviceButton,
-    FritzhomeDeviceHumidity,
-    FritzhomeDeviceLevel,
-    FritzhomeDeviceLightBulb,
-    FritzhomeDevicePowermeter,
-    FritzhomeDeviceRepeater,
-    FritzhomeDeviceSwitch,
-    FritzhomeDeviceTemperature,
-    FritzhomeDeviceThermostat,
-)
-
+from .devicetypes import FritzhomeDeviceBase
+from .devicetypes import FritzhomeOnOffMixin
 
 class FritzhomeDevice(
-    FritzhomeDeviceAlarm,
-    FritzhomeDeviceBlind,
-    FritzhomeDeviceButton,
-    FritzhomeDeviceHumidity,
-    FritzhomeDeviceLevel,
-    FritzhomeDeviceLightBulb,
-    FritzhomeDevicePowermeter,
-    FritzhomeDeviceRepeater,
-    FritzhomeDeviceSwitch,
-    FritzhomeDeviceTemperature,
-    FritzhomeDeviceThermostat,
+    FritzhomeDeviceBase,
+    FritzhomeOnOffMixin
 ):
     """The Fritzhome Device class."""
 
