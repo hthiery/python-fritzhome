@@ -34,7 +34,7 @@ class Fritzhome(object):
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
-    def __init__(self, host, user, password, port=None, ssl_verify=True, timeout=10):
+    def __init__(self, host, user, password, port=None, ssl_verify=True, timeout=10, use_testdata=False):
         """Create a fritzhome object."""
         self._user = user
         self._password = password
@@ -43,6 +43,7 @@ class Fritzhome(object):
         self._timeout = timeout
         self._has_getdeviceinfos = True
         self._has_txbusy = True
+        self._use_testdata = use_testdata
         if host.startswith("https://") or host.startswith("http://"):
             self.base_url = f"{host}:{port}" if port else host
         else:
@@ -136,6 +137,8 @@ class Fritzhome(object):
 
     def _rest_request(self, endpoint, param=None):
         """Send an REST API request"""
+        if self._use_testdata:
+            return json.load(open(f"testdata/{endpoint.replace("/", "_")}.json.txt", "r"))
         url = f"{self.rest_url}/{endpoint}"
 
         _LOGGER.debug("self._sid:%s", self._sid)
@@ -156,6 +159,8 @@ class Fritzhome(object):
 
     def login(self):
         """Login and get a valid session ID."""
+        if self._use_testdata:
+            return
         (sid, challenge, blocktime) = self._login_request()
         _LOGGER.info("sid:%s, challenge:%s, blocktime:%s", sid, challenge, blocktime)
         if sid == "0000000000000000":

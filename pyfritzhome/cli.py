@@ -231,6 +231,12 @@ def main(args=None):
         version="{version}".format(version=__version__),
         help="Print version",
     )
+    parser.add_argument(
+        "--test-data",
+        action="store_true",
+        dest="testdata",
+        help="Use offline test data"
+    )
 
     _sub = parser.add_subparsers(title="Commands")
 
@@ -396,6 +402,7 @@ def main(args=None):
             password=args.password,
             port=args.port or None,
             ssl_verify=not args.insecure,
+            use_testdata=args.testdata
         )
         fritzbox.login()
         args.func(fritzbox, args)
