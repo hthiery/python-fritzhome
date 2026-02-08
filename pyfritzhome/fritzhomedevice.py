@@ -13,6 +13,7 @@ class FritzhomeDevice(
     FritzhomeOnOffMixin,
     FritzhomeMultimeterMixin,
     FritzhomeTemperatureMixin,
+    FritzhomeHumidityMixin,
 ):
     """The Fritzhome Device class."""
 

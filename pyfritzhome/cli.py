@@ -43,6 +43,9 @@ def list_all(fritz, args):
             print(" Temperature:")
             print("  temperature=%s" % device.temperature)
             print("  offset=%s" % device.offset)
+        if device.has_humidity_sensor:
+            print(" Humidity:")
+            print("  relative_humidity=%s" % device.rel_humidity)
         #~ if device.has_thermostat:
             #~ print(" Thermostat:")
             #~ print("  battery_low=%s" % device.battery_low)

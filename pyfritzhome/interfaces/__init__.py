@@ -5,9 +5,11 @@ __all__ = (
     "FritzhomeOnOffInterface", "FritzhomeOnOffMixin",
     "FritzhomeMultimeterInterface", "FritzhomeMultimeterMixin",
     "FritzhomeTemperatureInterface", "FritzhomeTemperatureMixin",
+    "FritzhomeHumidityInterface", "FritzhomeHumidityMixin",
 )
 
 from .interface import FritzhomeInterface
 from .onoffinterface import FritzhomeOnOffInterface, FritzhomeOnOffMixin
 from .multimeterinterface import FritzhomeMultimeterInterface, FritzhomeMultimeterMixin
 from .temperatureinterface import FritzhomeTemperatureInterface, FritzhomeTemperatureMixin
+from .humidityinterface import FritzhomeHumidityInterface, FritzhomeHumidityMixin

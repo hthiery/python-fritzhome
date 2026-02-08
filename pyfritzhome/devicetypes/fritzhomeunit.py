@@ -13,7 +13,8 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeUnit(FritzhomeUnitBase,
                     interfaces.FritzhomeOnOffMixin,
                     interfaces.FritzhomeMultimeterMixin,
-                    interfaces.FritzhomeTemperatureMixin):
+                    interfaces.FritzhomeTemperatureMixin,
+                    interfaces.FritzhomeHumidityMixin):
     """The Fritzhome Device class."""
 
     def __init__(self, fritz=None, node=None):
