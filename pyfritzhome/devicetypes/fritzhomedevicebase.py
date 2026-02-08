@@ -16,7 +16,7 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
 
     def __init__(self, fritz=None, node=None):
         super().__init__(fritz, node)
-        self._units = []
+        self._units = {}
 
     def __repr__(self):
         """Return a string."""
@@ -66,10 +66,10 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
         return self.is_connected
 
     def clear_units(self):
-        self._units = []
+        self._units = {}
 
-    def add_unit(self, unit):
-        self._units.append(unit)
+    def add_or_update_unit(self, unit):
+        self._units[unit.ain] = unit
 
     def units(self):
         return self._units.values()

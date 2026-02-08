@@ -41,8 +41,8 @@ class FritzhomeUnitBase(FritzhomeEntityBase):
     def units(self):
         return [self]
 
-    def update(self):
-        pass
+    def update_interface(self, interface):
+        self._fritz.put_unit(self.ain, {"interfaces": {interface.type: interface._node}})
 
     @property
     def parent(self):

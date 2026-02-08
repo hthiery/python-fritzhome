@@ -29,8 +29,8 @@ class Fritzhome(object):
 
     _sid = None
     _session = None
-    _units: Optional[Dict[str, FritzhomeUnit]] = None
-    _devices: Optional[Dict[str, FritzhomeDevice]] = None
+    _units: Dict[str, FritzhomeUnit]
+    _devices: Dict[str, FritzhomeDevice]
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
@@ -43,6 +43,8 @@ class Fritzhome(object):
         self._timeout = timeout
         self._has_getdeviceinfos = True
         self._has_txbusy = True
+        self._devices = {}
+        self._units = {}
         self._use_testdata = use_testdata
         if host.startswith("https://") or host.startswith("http://"):
             self.base_url = f"{host}:{port}" if port else host
@@ -54,6 +56,23 @@ class Fritzhome(object):
         """Send a request with parameters."""
         rsp = self._session.get(
             url, params=params, headers=headers, timeout=self._timeout, verify=self._ssl_verify
+        )
+        rsp.raise_for_status()
+        return rsp.text.strip()
+
+    def _request2(self, url, params=None, headers=None, timeout=10):
+        """Send a request with parameters."""
+        rsp = self._session.get(
+            url, params=params, headers=headers, timeout=timeout, verify=self._ssl_verify
+        )
+        rsp.raise_for_status()
+        return rsp
+
+    def _put(self, url, data, params=None, headers=None, timeout=10):
+        """Send a request with parameters."""
+        rsp = self._session.put(
+            url, params=params, headers=headers, timeout=timeout, verify=self._ssl_verify,
+            json=data
         )
         rsp.raise_for_status()
         return rsp.text.strip()
@@ -150,12 +169,11 @@ class Fritzhome(object):
         if param:
             params.update(param)
 
-        response = self._request(url, headers=params)
-        data = json.loads(response)
-        #~ if data.contains("errors"):
-            #~ raise InvalidError
+        response = self._request2(url, headers=params)
+        if response.ok:
+            return response.json()
 
-        return data
+        return None
 
     def login(self):
         """Login and get a valid session ID."""
@@ -185,58 +203,73 @@ class Fritzhome(object):
         self._logout_request()
         self._sid = None
 
-    def update_unit(self, uid):
-        if self._units is None:
-            self._units = {}
-
-        _LOGGER.info("Updating units ...")
-        data = self._rest_request("overview/units/{uid}")
-        if uid in self._units.keys():
-            _LOGGER.info(
-                "Updating already existing unit " + uid
-            )
-            self._units[uid]._update_from_node(data)
+    def _update_unit_from_node(self, node):
+        ain = node["ain"]
+        if unit := self._units.get(ain):
+            _LOGGER.info("Updating already existing unit " + ain)
+            unit._update_from_node(node)
         else:
-            raise RuntimeError
+            _LOGGER.info("Adding new unit " + ain)
+            self._units[ain] = FritzhomeUnit(self, node=node)
 
-    def update_units(self):
+    def _update_unit(self, ain):
+        if self._units is None:
+            self._units = {}
+
+        self._update_unit_from_node(self.get_unit_element(ain))
+
+    def _update_units(self):
         if self._units is None:
             self._units = {}
 
         _LOGGER.info("Updating units ...")
-        data = self._rest_request("overview/units")
-        for element in data:
-            ain = element["ain"]
-            if ain in self._units.keys():
-                _LOGGER.info(
-                    "Updating already existing unit " + ain
-                )
-                self._units[ain]._update_from_node(element)
-            else:
-                _LOGGER.info("Adding new unit " + ain)
-                self._units[ain] = FritzhomeUnit(self, node=element)
+        for element in self.get_unit_elements():
+            self._update_unit_from_node(element)
+
+    def put_unit(self, ain, node):
+        if self._units is None:
+            self._units = {}
+
+        _LOGGER.info("put units ...\n" + json.dumps(node))
+        params = {"Authorization": f"AVM-SID {self._sid}"}
+        data = self._put(f"{self.rest_url}/configuration/units/{ain}", node, headers=params)
+
+    def _update_device_from_node(self, node):
+        ain = node["ain"]
+        if dev := self._devices.get(ain):
+            _LOGGER.info("Updating already existing device " + ain)
+            dev._update_from_node(node)
+        else:
+            _LOGGER.info("Adding new device " + ain)
+            self._devices[ain] = FritzhomeDevice(self, node=node)
+
+    def update_device(self, ain):
+        """Update the device."""
+        _LOGGER.info(f"Updating Device {ain}  ...")
+
+        if element := self.get_device_element(ain):
+            self._update_device_from_node(element)
+            for unit_ain in element["unitUids"]:
+                self._update_unit(unit_ain)
+                if unit := self._units.get(unit_ain):
+                    self._devices[ain].add_or_update_unit(unit)
+                else:
+                    _LOGGER.warning(f"Unknown unit {unit_ain}")
+            return True
+        return False
 
     def update_devices(self, ignore_removed=True):
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
-        if self._devices is None:
-            self._devices = {}
-
+        self._update_units()
         device_elements = self.get_device_elements()
         for element in device_elements:
-            uid = element["UID"]
-            if uid in self._devices.keys():
-                _LOGGER.info(
-                    "Updating already existing Device " + uid
-                )
-                self._devices[uid]._update_from_node(element)
-            else:
-                _LOGGER.info("Adding new Device " + uid)
-                self._devices[uid] = FritzhomeDevice(self, node=element)
-            self._devices[uid].clear_units()
+            ain = element["ain"]
+            self._update_device_from_node(element)
+            self._devices[ain].clear_units()
             for unit_ain in element["unitUids"]:
-                if unit_ain in self._units.keys():
-                    self._devices[uid].add_unit(self._units[unit_ain])
+                if unit := self._units.get(unit_ain):
+                    self._devices[ain].add_or_update_unit(unit)
                 else:
                     _LOGGER.warning(f"Unknown unit {unit_ain}")
 
@@ -287,18 +320,21 @@ class Fritzhome(object):
             time.sleep(0.2)
         return False
 
+    def get_unit_elements(self):
+        """Get the JSON elements for the unit list."""
+        return self._rest_request("overview/units")
+
+    def get_unit_element(self, ain):
+        """Get the JSON element for the specified unit."""
+        return self._rest_request(f"overview/units/{ain}")
+
     def get_device_elements(self):
         """Get the JSON elements for the device list."""
-        resp = self._rest_request("overview/devices")
-        return resp
+        return self._rest_request("overview/devices")
 
     def get_device_element(self, ain):
         """Get the JSON element for the specified device."""
-        elements = self.get_device_elements()
-        for element in elements:
-            if element.attrib["identifier"] == ain:
-                return element
-        return None
+        return self._rest_request(f"overview/devices/{ain}")
 
     def get_devices(self):
         """Get the list of all known devices."""
@@ -306,9 +342,7 @@ class Fritzhome(object):
 
     def get_devices_as_dict(self):
         """Get the list of all known devices."""
-        if self._units is None:
-            self.update_units()
-        if self._devices is None:
+        if not self._devices:
             self.update_devices()
         return self._devices
 
@@ -334,21 +368,21 @@ class Fritzhome(object):
 
     def set_switch_state_on(self, ain, wait=False):
         """Set the switch to on state."""
-        result = self._aha_request("setswitchon", ain=ain, rf=bool)
-        wait and self.wait_device_txbusy(ain)
-        return result
+        if self.update_device(ain):
+            self._devices[ain].set_switch_state_on()
+        return None
 
     def set_switch_state_off(self, ain, wait=False):
         """Set the switch to off state."""
-        result = self._aha_request("setswitchoff", ain=ain, rf=bool)
-        wait and self.wait_device_txbusy(ain)
-        return result
+        if self.update_device(ain):
+            self._devices[ain].set_switch_state_off()
+        return None
 
     def set_switch_state_toggle(self, ain, wait=False):
         """Toggle the switch state."""
-        result = self._aha_request("setswitchtoggle", ain=ain, rf=bool)
-        wait and self.wait_device_txbusy(ain)
-        return result
+        if self.update_device(ain):
+            self._devices[ain].set_switch_state_toggle()
+        return None
 
     def get_switch_power(self, ain):
         """Get the switch power consumption."""

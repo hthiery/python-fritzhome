@@ -21,9 +21,9 @@ class FritzhomeInterface(FritzhomeOnOffInterface,
                          FritzhomeTemperatureInterface):
     """The Fritzhome Interface class."""
 
-    def __init__(self, type, node = None):
+    def __init__(self, unit, type, node = None):
         """Create an entity base object."""
-        super().__init__(type, node)
+        super().__init__(unit, type, node)
 
     # interfaces are not entities, only their parent units are, therefore this is
     # called with the unit REST node

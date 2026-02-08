@@ -58,17 +58,17 @@ class FritzhomeOnOffMixin():
         """Set the switch state to on."""
         if pair := self.find_switch_interface():
             pair[1].set_switch_state_on()
-            pair[0].update()
+            pair[1].update()
 
     def set_switch_state_off(self):
         """Set the switch state to off."""
         if pair := self.find_switch_interface():
             pair[1].set_switch_state_off()
-            pair[0].update()
+            pair[1].update()
 
     def set_switch_state_toggle(self):
         """Toggle the switch state."""
         if pair := self.find_switch_interface():
             pair[1].set_switch_state_toggle()
-            pair[0].update()
+            pair[1].update()
 
