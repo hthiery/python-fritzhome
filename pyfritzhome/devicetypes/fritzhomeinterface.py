@@ -11,10 +11,14 @@ import json
 
 from .fritzhomeinterfacebase import FritzhomeInterfaceBase
 from .fritzhomeonoffinterface import FritzhomeOnOffInterface
+from .fritzhomemultimeterinterface import FritzhomeMultimeterInterface
+from .fritzhometemperatureinterface import FritzhomeTemperatureInterface
 
 _LOGGER = logging.getLogger(__name__)
 
-class FritzhomeInterface(FritzhomeOnOffInterface):
+class FritzhomeInterface(FritzhomeOnOffInterface,
+                         FritzhomeMultimeterInterface,
+                         FritzhomeTemperatureInterface):
     """The Fritzhome Interface class."""
 
     def __init__(self, type, node = None):

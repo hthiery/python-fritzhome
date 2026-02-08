@@ -29,11 +29,14 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
 
     def update(self):
         """Update the device values."""
-        self._fritz.update_devices()
+        self._fritz.update_device()
 
     def _update_from_node(self, node):
         _LOGGER.debug("update base device")
         super()._update_from_node(node)
+
+    def get_config():
+        self._fritz.update_device_config(self.ain)
 
     @property
     def uid(self):

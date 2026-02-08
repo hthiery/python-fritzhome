@@ -7,10 +7,14 @@ from .devicetypes import FritzhomeTemplate  # noqa: F401
 from .devicetypes import FritzhomeTrigger  # noqa: F401
 from .devicetypes import FritzhomeDeviceBase
 from .devicetypes import FritzhomeOnOffMixin
+from .devicetypes import FritzhomeMultimeterMixin
+from .devicetypes import FritzhomeTemperatureMixin
 
 class FritzhomeDevice(
     FritzhomeDeviceBase,
-    FritzhomeOnOffMixin
+    FritzhomeOnOffMixin,
+    FritzhomeMultimeterMixin,
+    FritzhomeTemperatureMixin,
 ):
     """The Fritzhome Device class."""
 

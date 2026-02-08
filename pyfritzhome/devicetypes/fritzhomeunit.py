@@ -6,12 +6,16 @@ from __future__ import print_function
 import logging
 
 from .fritzhomeunitbase import FritzhomeUnitBase
-from .fritzhomeonoffinterface import *
+from .fritzhomeonoffinterface import FritzhomeOnOffMixin
+from .fritzhomemultimeterinterface import FritzhomeMultimeterMixin
+from .fritzhometemperatureinterface import FritzhomeTemperatureMixin
 
 _LOGGER = logging.getLogger(__name__)
 
 class FritzhomeUnit(FritzhomeUnitBase,
-                    FritzhomeOnOffMixin):
+                    FritzhomeOnOffMixin,
+                    FritzhomeMultimeterMixin,
+                    FritzhomeTemperatureMixin):
     """The Fritzhome Device class."""
 
     def __init__(self, fritz=None, node=None):

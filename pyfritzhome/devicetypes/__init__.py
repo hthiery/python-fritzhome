@@ -6,6 +6,8 @@ from .fritzhometrigger import FritzhomeTrigger
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomeinterface import FritzhomeInterface
 from .fritzhomeonoffinterface import *
+from .fritzhomemultimeterinterface import *
+from .fritzhometemperatureinterface import *
 
 __all__ = (
     "FritzhomeUnit",
@@ -13,4 +15,6 @@ __all__ = (
     "FritzhomeTrigger",
     "FritzhomeInterface",
     "FritzhomeOnOffInterface", "FritzhomeOnOffMixin",
+    "FritzhomeMultimeterInterface", "FritzhomeMultimeterMixin",
+    "FritzhomeTemperatureInterface", "FritzhomeTemperatureMixin",
 )
