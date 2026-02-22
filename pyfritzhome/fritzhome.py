@@ -31,12 +31,13 @@ class Fritzhome(object):
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
-    def __init__(self, host, user, password, port=None, ssl_verify=True):
+    def __init__(self, host, user, password, port=None, ssl_verify=True, timeout=10):
         """Create a fritzhome object."""
         self._user = user
         self._password = password
         self._session = Session()
         self._ssl_verify = ssl_verify
+        self._timeout = timeout
         self._has_getdeviceinfos = True
         self._has_txbusy = True
         if host.startswith("https://") or host.startswith("http://"):
@@ -44,10 +45,10 @@ class Fritzhome(object):
         else:
             self.base_url = f"http://{host}:{port}" if port else f"http://{host}"
 
-    def _request(self, url, params=None, timeout=10):
+    def _request(self, url, params=None):
         """Send a request with parameters."""
         rsp = self._session.get(
-            url, params=params, timeout=timeout, verify=self._ssl_verify
+            url, params=params, timeout=self._timeout, verify=self._ssl_verify
         )
         rsp.raise_for_status()
         return rsp.text.strip()
