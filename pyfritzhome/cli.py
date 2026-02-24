@@ -204,6 +204,9 @@ def main(args=None):
         "-v", action="store_true", dest="verbose", help="be more verbose"
     )
     parser.add_argument(
+        "-A", "--aha", action="store_true", dest="aha_api", help="Use legacy AHA API"
+    )
+    parser.add_argument(
         "-f",
         "--fritzbox",
         type=str,
@@ -406,6 +409,7 @@ def main(args=None):
             password=args.password,
             port=args.port or None,
             ssl_verify=not args.insecure,
+            force_aha_api=args.aha_api,
             use_testdata=args.testdata
         )
         fritzbox.login()

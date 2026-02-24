@@ -34,7 +34,7 @@ class Fritzhome(object):
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
-    def __init__(self, host, user, password, port=None, ssl_verify=True, timeout=10, use_testdata=False):
+    def __init__(self, host, user, password, port=None, ssl_verify=True, timeout=10, force_aha_api=False, use_testdata=False):
         """Create a fritzhome object."""
         self._user = user
         self._password = password
@@ -45,6 +45,7 @@ class Fritzhome(object):
         self._has_txbusy = True
         self._devices = {}
         self._units = {}
+        self._use_aha = force_aha_api
         self._use_testdata = use_testdata
         if host.startswith("https://") or host.startswith("http://"):
             self.base_url = f"{host}:{port}" if port else host
@@ -356,15 +357,25 @@ class Fritzhome(object):
 
     def get_device_present(self, ain):
         """Get the device presence."""
-        return self._aha_request("getswitchpresent", ain=ain, rf=bool)
+        if self._use_aha:
+            return self._aha_request("getswitchpresent", ain=ain)
+        return self._update_device_config(ain).is_connected
 
     def get_device_name(self, ain):
         """Get the device name."""
-        return self._aha_request("getswitchname", ain=ain)
+        if self._use_aha:
+            return self._aha_request("getswitchname", ain=ain)
+        return self._update_device_config(ain).name
 
     def get_switch_state(self, ain):
         """Get the switch state."""
-        return self._aha_request("getswitchstate", ain=ain, rf=bool)
+        if self._use_aha:
+            return self._aha_request("getswitchstate", ain=ain, rf=bool)
+        if dev := self._update_device_config(ain):
+            if not dev.has_switch:
+                _LOGGER.error(f"Device {dev.name} is not a switch")
+                return None
+            return dev.switch_state
 
     def set_switch_state_on(self, ain, wait=False):
         """Set the switch to on state."""
@@ -386,15 +397,33 @@ class Fritzhome(object):
 
     def get_switch_power(self, ain):
         """Get the switch power consumption."""
-        return self._aha_request("getswitchpower", ain=ain, rf=int)
+        if self._use_aha:
+            return self._aha_request("getswitchpower", ain=ain, rf=int)
+        if dev := self._update_device_config(ain):
+            if not dev.has_powermeter:
+                _LOGGER.error(f"Device {dev.name} is not a powermeter")
+                return None
+            return dev.power
 
     def get_switch_energy(self, ain):
         """Get the switch energy."""
-        return self._aha_request("getswitchenergy", ain=ain, rf=int)
+        if self._use_aha:
+            return self._aha_request("getswitchenergy", ain=ain, rf=int)
+        if dev := self._update_device_config(ain):
+            if not dev.has_powermeter:
+                _LOGGER.error(f"Device {dev.name} is not a powermeter")
+                return None
+            return dev.energy
 
     def get_temperature(self, ain):
         """Get the device temperature sensor value."""
-        return self._aha_request("gettemperature", ain=ain, rf=float) / 10.0
+        if self._use_aha:
+            return self._aha_request("gettemperature", ain=ain, rf=float) / 10.0
+        if dev := self._update_device_config(ain):
+            if not dev.has_temperature_sensor:
+                _LOGGER.error(f"Device {dev.name} is not a thermometer")
+                return None
+            return float(dev.temperature)
 
     def _get_temperature(self, ain, name):
         plain = self._aha_request(name, ain=ain, rf=float)
@@ -402,7 +431,13 @@ class Fritzhome(object):
 
     def get_target_temperature(self, ain):
         """Get the thermostate target temperature."""
-        return self._get_temperature(ain, "gethkrtsoll")
+        if self._use_aha:
+            return self._get_temperature(ain, "gethkrtsoll")
+        if dev := self._update_device_config(ain):
+            if not dev.has_temperature_sensor:
+                _LOGGER.error(f"Device {dev.name} is not a thermometer")
+                return None
+            return float(dev.temperature)
 
     def set_target_temperature(self, ain, temperature, wait=False):
         """Set the thermostate target temperature."""
@@ -442,8 +477,13 @@ class Fritzhome(object):
 
     def get_device_statistics(self, ain):
         """Get device statistics."""
-        plain = self._aha_request("getbasicdevicestats", ain=ain)
-        return plain
+        if self._use_aha:
+            return self._aha_request("getbasicdevicestats", ain=ain)
+        stats = {"statistics":[]}
+        for unit in self._update_device_config(ain).units():
+            if s := unit.statistics:
+                stats["statistics"].append(s)
+        return json.dumps(stats)
 
     # Lightbulb-related commands
 
