@@ -6,7 +6,7 @@ from __future__ import print_function
 import logging
 
 from .fritzhomeentitybase import FritzhomeEntityBase
-from .fritzhomeinterface import FritzhomeInterface
+from .. import interfaces
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class FritzhomeUnitBase(FritzhomeEntityBase):
         # unshare class attribute on write
         self.interfaces = {}
         for iface, node in node["interfaces"].items():
-            self.interfaces[iface] = FritzhomeInterface(iface, node)
+            self.interfaces[iface] = interfaces.FritzhomeInterface(self, iface, node)
 
     def units(self):
         return [self]

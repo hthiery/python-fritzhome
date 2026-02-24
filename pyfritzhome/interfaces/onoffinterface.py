@@ -3,7 +3,7 @@
 
 import logging
 
-from .fritzhomeinterfacebase import FritzhomeInterfaceBase
+from .interfacebase import FritzhomeInterfaceBase
 
 _LOGGER = logging.getLogger(__name__)
 

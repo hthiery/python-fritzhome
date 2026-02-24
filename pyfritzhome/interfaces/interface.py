@@ -9,10 +9,10 @@ from abc import ABC
 import logging
 import json
 
-from .fritzhomeinterfacebase import FritzhomeInterfaceBase
-from .fritzhomeonoffinterface import FritzhomeOnOffInterface
-from .fritzhomemultimeterinterface import FritzhomeMultimeterInterface
-from .fritzhometemperatureinterface import FritzhomeTemperatureInterface
+from .interfacebase import FritzhomeInterfaceBase
+from .onoffinterface import FritzhomeOnOffInterface
+from .multimeterinterface import FritzhomeMultimeterInterface
+from .temperatureinterface import FritzhomeTemperatureInterface
 
 _LOGGER = logging.getLogger(__name__)
 
