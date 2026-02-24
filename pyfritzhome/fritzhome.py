@@ -211,21 +211,9 @@ class Fritzhome(object):
             unit._update_from_node(node)
         else:
             _LOGGER.info("Adding new unit " + ain)
-            self._units[ain] = FritzhomeUnit(self, node=node)
-
-    def _update_unit(self, ain):
-        if self._units is None:
-            self._units = {}
-
-        self._update_unit_from_node(self.get_unit_element(ain))
-
-    def _update_units(self):
-        if self._units is None:
-            self._units = {}
-
-        _LOGGER.info("Updating units ...")
-        for element in self.get_unit_elements():
-            self._update_unit_from_node(element)
+            unit = FritzhomeUnit(self, node=node)
+            self._units[ain] = unit
+        return unit
 
     def put_unit(self, ain, node):
         if self._units is None:
@@ -237,42 +225,92 @@ class Fritzhome(object):
 
     def _update_device_from_node(self, node):
         ain = node["ain"]
-        if dev := self._devices.get(ain):
+        if device := self._devices.get(ain):
             _LOGGER.info("Updating already existing device " + ain)
-            dev._update_from_node(node)
+            device._update_from_node(node)
         else:
             _LOGGER.info("Adding new device " + ain)
-            self._devices[ain] = FritzhomeDevice(self, node=node)
+            device = FritzhomeDevice(self, node=node)
+            self._devices[ain] = device
+        return device
+
+    def _update_device_units(self, ain, unit_ains):
+        if self._units is None:
+            self._units = {}
+
+        for unit_ain in unit_ains:
+            self._update_unit_from_node(self.get_unit_element(unit_ain))
+            if unit := self._units.get(unit_ain):
+                self._devices[ain].add_or_update_unit(unit)
+            else:
+                _LOGGER.warning(f"Unknown unit {unit_ain}")
 
     def update_device(self, ain):
         """Update the device."""
         _LOGGER.info(f"Updating Device {ain}  ...")
-
-        if element := self.get_device_element(ain):
+        if node := self._rest_request(f"overview/devices/{ain}"):
             self._update_device_from_node(element)
-            for unit_ain in element["unitUids"]:
-                self._update_unit(unit_ain)
-                if unit := self._units.get(unit_ain):
-                    self._devices[ain].add_or_update_unit(unit)
-                else:
-                    _LOGGER.warning(f"Unknown unit {unit_ain}")
-            return True
+            for unit_ain in node["unitUids"]:
+                if node := self._rest_request(f"overview/unit/{unit_ain}"):
+                    self._update_device_from_node(node)
+                    return True
         return False
+
+    def _update_device_config(self, ain):
+        """Update the device, using its configuration endpoint."""
+        _LOGGER.info(f"Updating Device {ain}  ...")
+        device = None
+        units = []
+        if node := self._rest_request(f"configuration/devices/{ain}"):
+            units = node.pop("units")
+            device = self._update_device_from_node(node)
+        for node in units:
+            unit = self._update_unit_from_node(node)
+            device.add_or_update_unit(unit)
+        return device
 
     def update_devices(self, ignore_removed=True):
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
-        self._update_units()
+        devices = self._rest_request("overview/devices")
+        for node in devices:
+            self._update_device_from_node(node)
+        units = self._rest_request("overview/units")
+        for node in units:
+            self._update_unit_from_node(node)
+
+        for device in self._devices.values():
+            units = device.node["unitUids"]
+            for unit_ain in units:
+                if unit := self._units.get(unit_ain):
+                    device.add_or_update_unit(unit)
+
+        if not ignore_removed:
+            for ain in list(self._devices.keys()):
+                if ain not in [
+                    element.attrib["ain"] for element in devices
+                ]:
+                    _LOGGER.info("Removing no more existing device " + ain)
+                    self._devices.pop(ain)
+            for ain in list(self._units.keys()):
+                if ain not in [
+                    element.attrib["ain"] for element in units
+                ]:
+                    _LOGGER.info("Removing no more existing device " + ain)
+                    self._units.pop(ain)
+
+        return True
+
+    def update_units_devices(self, ignore_removed=True, with_units=False):
+        """Update the device."""
+        _LOGGER.info("Updating Devices ...")
         device_elements = self.get_device_elements()
         for element in device_elements:
             ain = element["ain"]
             self._update_device_from_node(element)
-            self._devices[ain].clear_units()
-            for unit_ain in element["unitUids"]:
-                if unit := self._units.get(unit_ain):
-                    self._devices[ain].add_or_update_unit(unit)
-                else:
-                    _LOGGER.warning(f"Unknown unit {unit_ain}")
+            if with_units:
+                self._devices[ain].clear_units()
+                self._update_device_units(ain, element["unitUids"])
 
         if not ignore_removed:
             for identifier in list(self._devices.keys()):
@@ -321,21 +359,9 @@ class Fritzhome(object):
             time.sleep(0.2)
         return False
 
-    def get_unit_elements(self):
-        """Get the JSON elements for the unit list."""
-        return self._rest_request("overview/units")
-
-    def get_unit_element(self, ain):
-        """Get the JSON element for the specified unit."""
-        return self._rest_request(f"overview/units/{ain}")
-
     def get_device_elements(self):
         """Get the JSON elements for the device list."""
         return self._rest_request("overview/devices")
-
-    def get_device_element(self, ain):
-        """Get the JSON element for the specified device."""
-        return self._rest_request(f"overview/devices/{ain}")
 
     def get_devices(self):
         """Get the list of all known devices."""
