@@ -20,6 +20,9 @@ class FritzhomeEntityBase(ABC):
         """Create an entity base object."""
         self._fritz = fritz
         self._node = node
+        self.ain = None
+        self.name = None
+        self._functionsbitmask = 0
         if node is not None:
             self._update_from_node(node)
 
@@ -27,20 +30,43 @@ class FritzhomeEntityBase(ABC):
         """Return a string."""
         return f"{self.ain} {self.name}"
 
+    def _has_feature(self, feature: FritzhomeDeviceFeatures) -> bool:
+        return feature in FritzhomeDeviceFeatures(self._functionsbitmask)
+
     def _update_from_node(self, node):
-        _LOGGER.debug(json.dumps(node))
-        if self.ain != node["ain"]:
-            raise ValueError("updating invalid ain")
         self._node = node
+        if self._fritz._use_aha:
+            if self.ain is not None and self.ain != node.attrib["identifier"]:
+                raise ValueError("updating invalid ain")
+            self.ain = node.attrib["identifier"]
+            self.name = self.get_node_value(node, "name")
+            self._functionsbitmask = int(node.attrib["functionbitmask"])
+        else:
+            if self.ain is not None and self.ain != node["ain"]:
+                raise ValueError("updating invalid ain")
+            self.ain = node["ain"]
+            self.name = node["name"]
 
     @property
     def node(self):
         return self._node;
 
-    @property
-    def ain(self):
-        return self._node["ain"];
 
-    @property
-    def name(self):
-        return self._node["name"];
+    # XML Helpers
+
+    def get_node_value(self, elem, node):
+        """Get the node value."""
+        return elem.findtext(node)
+
+    def get_node_value_as_int(self, elem, node) -> int:
+        """Get the node value as integer."""
+        return int(self.get_node_value(elem, node))
+
+    def get_node_value_as_int_as_bool(self, elem, node) -> bool:
+        """Get the node value as boolean."""
+        return bool(self.get_node_value_as_int(elem, node))
+
+    def get_temp_from_node(self, elem, node):
+        """Get the node temp value as float."""
+        return float(self.get_node_value(elem, node)) / 2
+        return x

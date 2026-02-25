@@ -15,10 +15,12 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from requests import exceptions, Session
 
 from .errors import InvalidError, LoginError, NotLoggedInError
-from .fritzhomedevice import FritzhomeDevice
+from .fritzhomedevice import FritzhomeDeviceAHA
+from .fritzhomedevice import FritzhomeDeviceREST
 from .fritzhomedevice import FritzhomeUnit
 from .fritzhomedevice import FritzhomeTemplate
 from .fritzhomedevice import FritzhomeTrigger
+from .fritzhomedevice import get_device_class
 from typing import Dict, Optional
 
 _LOGGER = logging.getLogger(__name__)
@@ -30,7 +32,7 @@ class Fritzhome(object):
     _sid = None
     _session = None
     _units: Dict[str, FritzhomeUnit]
-    _devices: Dict[str, FritzhomeDevice]
+    _devices: Dict[str, FritzhomeDeviceREST | FritzhomeDeviceAHA]
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
@@ -47,6 +49,7 @@ class Fritzhome(object):
         self._units = {}
         self._use_aha = force_aha_api
         self._use_testdata = use_testdata
+        get_device_class(self._use_aha)
         if host.startswith("https://") or host.startswith("http://"):
             self.base_url = f"{host}:{port}" if port else host
         else:
@@ -75,8 +78,13 @@ class Fritzhome(object):
             url, params=params, headers=headers, timeout=timeout, verify=self._ssl_verify,
             json=data
         )
-        rsp.raise_for_status()
-        return rsp.text.strip()
+        try:
+            rsp.raise_for_status()
+            return rsp.text.strip()
+        except exceptions.HTTPError as e:
+            _LOGGER.warning(e)
+            _LOGGER.warning("Error response: " + rsp.text)
+        return None
 
     def _login_request(self, username=None, secret=None):
         """Send a login request with paramerters."""
@@ -134,6 +142,7 @@ class Fritzhome(object):
 
     def _aha_request(self, cmd, ain=None, param=None, rf=str):
         """Send an AHA request."""
+        _LOGGER.debug("HTTP request using AHA API")
         url = f"{self.base_url}/webservices/homeautoswitch.lua"
 
         _LOGGER.debug("self._sid:%s", self._sid)
@@ -157,6 +166,7 @@ class Fritzhome(object):
 
     def _rest_request(self, endpoint, param=None):
         """Send an REST API request"""
+        _LOGGER.debug("HTTP request using REST API")
         if self._use_testdata:
             return json.load(open(f"testdata/{endpoint.replace("/", "_")}.json.txt", "r"))
         url = f"{self.rest_url}/{endpoint}"
@@ -230,7 +240,7 @@ class Fritzhome(object):
             device._update_from_node(node)
         else:
             _LOGGER.info("Adding new device " + ain)
-            device = FritzhomeDevice(self, node=node)
+            device = FritzhomeDeviceREST(self, node=node)
             self._devices[ain] = device
         return device
 
@@ -244,17 +254,6 @@ class Fritzhome(object):
                 self._devices[ain].add_or_update_unit(unit)
             else:
                 _LOGGER.warning(f"Unknown unit {unit_ain}")
-
-    def update_device(self, ain):
-        """Update the device."""
-        _LOGGER.info(f"Updating Device {ain}  ...")
-        if node := self._rest_request(f"overview/devices/{ain}"):
-            self._update_device_from_node(element)
-            for unit_ain in node["unitUids"]:
-                if node := self._rest_request(f"overview/unit/{unit_ain}"):
-                    self._update_device_from_node(node)
-                    return True
-        return False
 
     def _update_device_config(self, ain):
         """Update the device, using its configuration endpoint."""
@@ -272,18 +271,30 @@ class Fritzhome(object):
     def update_devices(self, ignore_removed=True):
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
-        devices = self._rest_request("overview/devices")
-        for node in devices:
-            self._update_device_from_node(node)
-        units = self._rest_request("overview/units")
-        for node in units:
-            self._update_unit_from_node(node)
+        if self._use_aha:
+            for element in self._get_listinfo_elements("device"):
+                if element.attrib["identifier"] in self._devices.keys():
+                    _LOGGER.info(
+                        "Updating already existing Device " + element.attrib["identifier"]
+                    )
+                    self._devices[element.attrib["identifier"]]._update_from_node(element)
+                else:
+                    _LOGGER.info("Adding new Device " + element.attrib["identifier"])
+                    device = FritzhomeDeviceAHA(self, node=element)
+                    self._devices[device.ain] = device
+        else:
+            devices = self._rest_request("overview/devices")
+            for node in devices:
+                self._update_device_from_node(node)
+            units = self._rest_request("overview/units")
+            for node in units:
+                self._update_unit_from_node(node)
 
-        for device in self._devices.values():
-            units = device.node["unitUids"]
-            for unit_ain in units:
-                if unit := self._units.get(unit_ain):
-                    device.add_or_update_unit(unit)
+            for device in self._devices.values():
+                units = device.node["unitUids"]
+                for unit_ain in units:
+                    if unit := self._units.get(unit_ain):
+                        device.add_or_update_unit(unit)
 
         if not ignore_removed:
             for ain in list(self._devices.keys()):
@@ -326,7 +337,6 @@ class Fritzhome(object):
         """Get the DOM elements for the entity list."""
         plain = self._aha_request("get" + entity_type + "listinfos")
         dom = ElementTree.fromstring(plain)
-        _LOGGER.debug(dom)
         return dom.findall("*")
 
     def wait_device_txbusy(self, ain, retries=10):
@@ -403,23 +413,39 @@ class Fritzhome(object):
                 return None
             return dev.switch_state
 
+    def _switch_action(self, ain, action):
+        if dev := self._update_device_config(ain):
+            if dev.has_switch:
+                action(dev)
+                return dev.switch_state
+            _LOGGER.error(f"Device {dev.name} is not a switch")
+        else:
+            _LOGGER.error(f"Device {ain} not found")
+        return None
+
     def set_switch_state_on(self, ain, wait=False):
         """Set the switch to on state."""
-        if self.update_device(ain):
-            self._devices[ain].set_switch_state_on()
-        return None
+        if self._use_aha:
+            result = self._aha_request("setswitchon", ain=ain, rf=bool)
+            wait and self.wait_device_txbusy(ain)
+            return result
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_on())
 
     def set_switch_state_off(self, ain, wait=False):
         """Set the switch to off state."""
-        if self.update_device(ain):
-            self._devices[ain].set_switch_state_off()
-        return None
+        if self._use_aha:
+            result = self._aha_request("setswitchoff", ain=ain, rf=bool)
+            wait and self.wait_device_txbusy(ain)
+            return result
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_off())
 
     def set_switch_state_toggle(self, ain, wait=False):
         """Toggle the switch state."""
-        if self.update_device(ain):
-            self._devices[ain].set_switch_state_toggle()
-        return None
+        if self._use_aha:
+            result = self._aha_request("setswitchtoggle", ain=ain, rf=bool)
+            wait and self.wait_device_txbusy(ain)
+            return result
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_toggle())
 
     def get_switch_power(self, ain):
         """Get the switch power consumption."""
@@ -511,46 +537,60 @@ class Fritzhome(object):
                 stats["statistics"].append(s)
         return json.dumps(stats)
 
-    # Lightbulb-related commands
-
+    # Lightbulb-related commands (for on/off/toggle there is no difference switch devices in REST)
     def set_state_off(self, ain, wait=False):
         """Set the switch/actuator/lightbulb to on state."""
-        self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 0})
-        wait and self.wait_device_txbusy(ain)
+        if self._use_aha:
+            self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 0})
+            wait and self.wait_device_txbusy(ain)
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_on())
 
     def set_state_on(self, ain, wait=False):
         """Set the switch/actuator/lightbulb to on state."""
-        self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 1})
-        wait and self.wait_device_txbusy(ain)
+        if self._use_aha:
+            self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 1})
+            wait and self.wait_device_txbusy(ain)
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_off())
 
     def set_state_toggle(self, ain, wait=False):
         """Toggle the switch/actuator/lightbulb state."""
-        self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 2})
-        wait and self.wait_device_txbusy(ain)
+        if self._use_aha:
+            self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 2})
+            wait and self.wait_device_txbusy(ain)
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_toggle())
 
     def set_level(self, ain, level, wait=False):
         """Set level/brightness/height in interval [0,255]."""
-        if level < 0:
-            level = 0  # 0%
-        elif level > 255:
-            level = 255  # 100 %
+        if self._use_aha:
+            if level < 0:
+                level = 0  # 0%
+            elif level > 255:
+                level = 255  # 100 %
 
-        self._aha_request("setlevel", ain=ain, param={"level": int(level)})
-        wait and self.wait_device_txbusy(ain)
+            self._aha_request("setlevel", ain=ain, param={"level": int(level)})
+            wait and self.wait_device_txbusy(ain)
+        else:
+            raise NotImplementedError("missing REST api impl")
 
     def set_level_percentage(self, ain, level, wait=False):
         """Set level/brightness/height in interval [0,100]."""
-        if level < 0:
-            level = 0
-        elif level > 100:
-            level = 100
+        if self._use_aha:
+            if level < 0:
+                level = 0
+            elif level > 100:
+                level = 100
 
-        self._aha_request("setlevelpercentage", ain=ain, param={"level": int(level)})
-        wait and self.wait_device_txbusy(ain)
+            self._aha_request("setlevelpercentage", ain=ain, param={"level": int(level)})
+            wait and self.wait_device_txbusy(ain)
+        else:
+            raise NotImplementedError("missing REST api impl")
 
     def _get_colordefaults(self, ain):
-        plain = self._aha_request("getcolordefaults", ain=ain)
-        return ElementTree.fromstring(plain)
+        if self._use_aha:
+            plain = self._aha_request("getcolordefaults", ain=ain)
+            return ElementTree.fromstring(plain)
+        else:
+            raise NotImplementedError("missing REST api impl")
 
     def get_colors(self, ain):
         """Get colors (HSV-space) supported by this lightbulb."""
@@ -596,29 +636,33 @@ class Fritzhome(object):
         temperature: temperature element obtained from get_temperatures()
         duration: Speed of change in seconds, 0 = instant
         """
-        params = {"temperature": int(temperature), "duration": int(duration) * 10}
-        self._aha_request("setcolortemperature", ain=ain, param=params)
-        wait and self.wait_device_txbusy(ain)
+        if self._use_aha:
+            params = {"temperature": int(temperature), "duration": int(duration) * 10}
+            self._aha_request("setcolortemperature", ain=ain, param=params)
+            wait and self.wait_device_txbusy(ain)
+        else:
+            raise NotImplementedError("missing REST api impl")
 
     # blinds
     # states: open, close, stop
-    def _set_blind_state(self, ain, state):
-        self._aha_request("setblind", ain=ain, param={"target": state})
+    def _set_blind_state(self, ain, state, wait):
+        if self._use_aha:
+            self._aha_request("setblind", ain=ain, param={"target": state})
+            wait and self.wait_device_txbusy(ain)
+        else:
+            raise NotImplementedError("missing REST api impl")
 
     def set_blind_open(self, ain, wait=False):
         """Set the blind state to open."""
-        self._set_blind_state(ain, "open")
-        wait and self.wait_device_txbusy(ain)
+        self._set_blind_state(ain, "open", wait)
 
     def set_blind_close(self, ain, wait=False):
         """Set the blind state to close."""
-        self._set_blind_state(ain, "close")
-        wait and self.wait_device_txbusy(ain)
+        self._set_blind_state(ain, "close", wait)
 
     def set_blind_stop(self, ain, wait=False):
         """Set the blind state to stop."""
-        self._set_blind_state(ain, "stop")
-        wait and self.wait_device_txbusy(ain)
+        self._set_blind_state(ain, "stop", wait)
 
     # Template-related commands
 

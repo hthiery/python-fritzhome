@@ -11,6 +11,8 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeOnOffInterface(FritzhomeInterfaceBase):
     """The Fritzhome OnOff interface class."""
 
+    switch_state = None
+
     # Switch
     @property
     def is_switch(self):

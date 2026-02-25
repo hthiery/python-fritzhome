@@ -14,9 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeUnitBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
-    def __init__(self, fritz=None, node=None):
-        super().__init__(fritz, node)
-        interfaces = {}
+    interfaces = None
 
     def __repr__(self):
         """Return a string."""

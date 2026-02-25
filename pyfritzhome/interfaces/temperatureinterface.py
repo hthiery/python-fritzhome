@@ -12,6 +12,7 @@ class FritzhomeTemperatureInterface(FritzhomeInterfaceBase):
     """The Fritzhome Device class."""
 
     celsius = None
+    offset = None
 
     @property
     def is_temperature(self):
