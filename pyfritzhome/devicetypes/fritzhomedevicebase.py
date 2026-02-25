@@ -39,6 +39,12 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
             self.product_name = self._node["productName"]
             self.is_connected = self._node["isConnected"]
 
+    def find_interface(self, interface):
+        for unit in self._units.values():
+            if interface := unit.find_interface(interface):
+                return interface
+        return None
+
     def get_config():
         self._fritz.update_device_config(self.ain)
 

@@ -38,11 +38,7 @@ class FritzhomeMultimeterMixin():
     """The Fritzhome Multimeter mixin."""
 
     def find_multimeter_interface(self):
-        #~ return next((unit for unit in self._units if unit.is_switch), None)
-        for unit in self.units():
-            if interface := unit.interfaces.get("multimeterInterface"):
-                return (unit, interface)
-        return None
+        return self.find_interface("multimeterInterface")
 
     @property
     def has_powermeter(self):
@@ -52,25 +48,21 @@ class FritzhomeMultimeterMixin():
     @property
     def power(self):
         """ Get the current powermeter power """
-        if pair := self.find_multimeter_interface():
-            return pair[1].current
+        self.find_multimeter_interface().current
 
     @property
     def energy(self):
         """ Get the current currentmeter energy """
-        if pair := self.find_multimeter_interface():
-            return pair[1].energy
+        self.find_multimeter_interface().energy
 
     @property
     def voltage(self):
         """ Get the current voltagemeter voltage """
-        if pair := self.find_multimeter_interface():
-            return pair[1].voltage
+        self.find_multimeter_interface().voltage
 
     @property
     def current(self):
         """ Get the current currentmeter current """
-        if pair := self.find_multimeter_interface():
-            return pair[1].current
+        self.find_multimeter_interface().current
 
 

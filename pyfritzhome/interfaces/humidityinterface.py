@@ -32,11 +32,7 @@ class FritzhomeHumidityMixin():
     """The Fritzhome Humidity mixin."""
 
     def find_humidity_interface(self):
-        #~ return next((unit for unit in self._units if unit.is_switch), None)
-        for unit in self.units():
-            if interface := unit.interfaces.get("humidityInterface"):
-                return (unit, interface)
-        return None
+        return self.find_interface("humidityInterface")
 
     @property
     def has_humidity_sensor(self):
@@ -46,5 +42,4 @@ class FritzhomeHumidityMixin():
     @property
     def rel_humidity(self):
         """ Get the current humidity """
-        if pair := self.find_humidity_interface():
-            return pair[1].rel_humidity
+        return self.find_humidity_interface().rel_humidity

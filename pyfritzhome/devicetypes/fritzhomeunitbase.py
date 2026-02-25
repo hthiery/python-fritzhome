@@ -36,11 +36,11 @@ class FritzhomeUnitBase(FritzhomeEntityBase):
         for iface, node in node["interfaces"].items():
             self.interfaces[iface] = interfaces.FritzhomeInterface(self, iface, node)
 
-    def units(self):
-        return [self]
-
     def update_interface(self, interface):
         self._fritz.put_unit(self.ain, {"interfaces": {interface.type: interface._node}})
+
+    def find_interface(self, interface):
+        return self.interfaces.get(interface);
 
     @property
     def parent(self):

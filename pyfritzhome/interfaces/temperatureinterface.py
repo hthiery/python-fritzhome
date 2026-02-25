@@ -35,11 +35,7 @@ class FritzhomeTemperatureMixin():
     """The Fritzhome Temperature mixin."""
 
     def find_temperature_interface(self):
-        #~ return next((unit for unit in self._units if unit.is_switch), None)
-        for unit in self.units():
-            if interface := unit.interfaces.get("temperatureInterface"):
-                return (unit, interface)
-        return None
+        return self.find_interface("temperatureInterface")
 
     @property
     def has_temperature_sensor(self):
@@ -49,11 +45,9 @@ class FritzhomeTemperatureMixin():
     @property
     def temperature(self):
         """ Get the current temperature """
-        if pair := self.find_temperature_interface():
-            return pair[1].celsius
+        self.find_temperature_interface().celsius
 
     @property
     def offset(self):
         """ Get the current temperature offset """
-        if pair := self.find_temperature_interface():
-            return pair[1].offset
+        self.find_temperature_interface().offset

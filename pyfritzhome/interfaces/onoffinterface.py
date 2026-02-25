@@ -29,22 +29,21 @@ class FritzhomeOnOffInterface(FritzhomeInterfaceBase):
 
     def set_switch_state_on(self, wait=False):
         self._node["active"] = True
+        return self
 
     def set_switch_state_off(self, wait=False):
         self._node["active"] = False
+        return self
 
     def set_switch_state_toggle(self, wait=False):
         self._node["active"] = not self._node["active"]
+        return self
 
 
 class FritzhomeOnOffMixin():
 
     def find_switch_interface(self):
-        #~ return next((unit for unit in self._units if unit.is_switch), None)
-        for unit in self.units():
-            if interface := unit.interfaces.get("onOffInterface"):
-                return (unit, interface)
-        return None
+        return self.find_interface("onOffInterface")
 
     @property
     def has_switch(self):
@@ -53,24 +52,17 @@ class FritzhomeOnOffMixin():
     @property
     def switch_state(self):
         """ Get the current switch state """
-        if pair := self.find_switch_interface():
-            return pair[1].switch_state
+        return self.find_switch_interface().switch_state
 
     def set_switch_state_on(self):
         """Set the switch state to on."""
-        if pair := self.find_switch_interface():
-            pair[1].set_switch_state_on()
-            pair[1].update()
+        self.find_switch_interface().set_switch_state_on().update()
 
     def set_switch_state_off(self):
         """Set the switch state to off."""
-        if pair := self.find_switch_interface():
-            pair[1].set_switch_state_off()
-            pair[1].update()
+        self.find_switch_interface().set_switch_state_off().update()
 
     def set_switch_state_toggle(self):
         """Toggle the switch state."""
-        if pair := self.find_switch_interface():
-            pair[1].set_switch_state_toggle()
-            pair[1].update()
+        self.find_switch_interface().set_switch_state_toggle().update()
 
