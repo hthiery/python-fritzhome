@@ -16,10 +16,18 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeInterfaceBase():
     """The Fritzhome Interface class."""
 
+    @staticmethod
+    def node_property(node_name, value_name):
+        return property(
+            fget = lambda self: self._node[node_name].get(value_name),
+            fset = lambda self, v: self._node[node_name].update(value_name, v)
+        )
+
     def __init__(self, unit, type, node):
         """Create an entity base object."""
         self.type = type
         self._node = node
+        self._node_set = {}
         self._unit_ref = weakref.ref(unit)
         if node is not None:
             self._update_from_node(node)
@@ -31,9 +39,13 @@ class FritzhomeInterfaceBase():
     def _update_from_node(self, node):
         pass
 
-    def update(self):
-        self._unit_ref().update_interface(self)
+    def changed(self):
+        assert self._node_set.keys() <= self._node.keys(), "_node_set must be a strict subset"
+        self._unit_ref().update_interface(self, self._node_set)
+        self._node |= self._node_set
+        self._node_set = {}
 
     @property
     def node(self):
         return self._node;
+

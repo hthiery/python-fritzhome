@@ -110,6 +110,10 @@ def blind_set_level_percentage(fritz, args):
     fritz.set_level_percentage(args.ain, args.level)
 
 
+def thermostat_get_info(fritz, args):
+    """DOC-TODO"""
+    print(fritz.get_device_infos(args.ain))
+
 def thermostat_set_target_temperature(fritz, args):
     """Command that sets the thermostat temperature."""
     fritz.set_target_temperature(args.ain, args.temperature)
@@ -297,6 +301,13 @@ def main(args=None):
     # thermostat
     subparser = _sub.add_parser("thermostat", help="Thermostat commands")
     _sub_switch = subparser.add_subparsers()
+
+    # thermostat target temperature
+    subparser = _sub_switch.add_parser(
+        "get_info", help="Get thermostat information"
+    )
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.set_defaults(func=thermostat_get_info)
 
     # thermostat target temperature
     subparser = _sub_switch.add_parser(

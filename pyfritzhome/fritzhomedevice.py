@@ -33,6 +33,7 @@ class FritzhomeDeviceREST(
     FritzhomeMultimeterMixin,
     FritzhomeTemperatureMixin,
     FritzhomeHumidityMixin,
+    FritzhomeThermostatMixin,
 ):
     """The Fritzhome Device class."""
 

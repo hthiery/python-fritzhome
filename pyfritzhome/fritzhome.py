@@ -226,12 +226,22 @@ class Fritzhome(object):
         return unit
 
     def put_unit(self, ain, node):
+        """DOC-TODO (REST)"""
         if self._units is None:
             self._units = {}
 
         _LOGGER.info("put units ...\n" + json.dumps(node))
         params = {"Authorization": f"AVM-SID {self._sid}"}
         data = self._put(f"{self.rest_url}/configuration/units/{ain}", node, headers=params)
+
+    def put_device(self, ain, node):
+        """DOC-TODO (REST)"""
+        if self._devices is None:
+            self._devices = {}
+
+        _LOGGER.info("put devices ...\n" + json.dumps(node))
+        params = {"Authorization": f"AVM-SID {self._sid}"}
+        data = self._put(f"{self.rest_url}/configuration/devices/{ain}", node, headers=params)
 
     def _update_device_from_node(self, node):
         ain = node["ain"]
@@ -267,6 +277,10 @@ class Fritzhome(object):
             unit = self._update_unit_from_node(node)
             device.add_or_update_unit(unit)
         return device
+
+    def get_config(self, ain):
+        """ DOC-TODO """
+        return self._update_device_config(ain)
 
     def update_devices(self, ignore_removed=True):
         """Update the device."""
@@ -389,7 +403,9 @@ class Fritzhome(object):
 
     def get_device_infos(self, ain):
         """Get the device infos."""
-        return self._aha_request("getdeviceinfos", ain=ain)
+        if self._use_aha:
+            return self._aha_request("getdeviceinfos", ain=ain)
+        return self._update_device_config(ain).get_json()
 
     def get_device_present(self, ain):
         """Get the device presence."""
@@ -467,6 +483,17 @@ class Fritzhome(object):
                 return None
             return dev.energy
 
+    def get_thermostat_config(self, ain):
+        """Get the thermostat ."""
+        if self._use_aha:
+            return None
+        if dev := self._update_device_config(ain):
+            if not dev.has_temperature:
+                _LOGGER.error(f"Device {dev.name} is not a thermostat")
+                return None
+        return float(dev.has_temperature)
+            
+
     def get_temperature(self, ain):
         """Get the device temperature sensor value."""
         if self._use_aha:
@@ -493,31 +520,48 @@ class Fritzhome(object):
 
     def set_target_temperature(self, ain, temperature, wait=False):
         """Set the thermostate target temperature."""
-        temp = int(temperature * 2)
+        if self._use_aha:
+            temp = int(temperature * 2)
 
-        if temp < 16:
-            temp = 253
-        elif temp > 56:
-            temp = 254
-
-        self._aha_request("sethkrtsoll", ain=ain, param={"param": temp})
-        wait and self.wait_device_txbusy(ain)
+            if temp < 16:
+                temp = 253
+            elif temp > 56:
+                temp = 254
+            self._aha_request("sethkrtsoll", ain=ain, param={"param": temp})
+            wait and self.wait_device_txbusy(ain)
+        elif dev := self._update_device_config(ain):
+            if not dev.has_thermostat:
+                _LOGGER.error(f"Device {dev.name} is not a thermostat")
+                return None
+            dev.set_target_temperature(seconds)
 
     def set_window_open(self, ain, seconds, wait=False):
         """Set the thermostate target temperature."""
         endtimestamp = int(time.time() + seconds)
 
-        self._aha_request(
-            "sethkrwindowopen", ain=ain, param={"endtimestamp": endtimestamp}
-        )
-        wait and self.wait_device_txbusy(ain)
+        if self._use_aha:
+            self._aha_request(
+                "sethkrwindowopen", ain=ain, param={"endtimestamp": endtimestamp}
+            )
+            wait and self.wait_device_txbusy(ain)
+        elif dev := self._update_device_config(ain):
+            if not dev.has_thermostat:
+                _LOGGER.error(f"Device {dev.name} is not a thermostat")
+                return None
+            dev.set_window_open(seconds)
 
     def set_boost_mode(self, ain, seconds, wait=False):
         """Set the thermostate to boost mode."""
         endtimestamp = int(time.time() + seconds)
 
-        self._aha_request("sethkrboost", ain=ain, param={"endtimestamp": endtimestamp})
-        wait and self.wait_device_txbusy(ain)
+        if self._use_aha:
+            self._aha_request("sethkrboost", ain=ain, param={"endtimestamp": endtimestamp})
+            wait and self.wait_device_txbusy(ain)
+        elif dev := self._update_device_config(ain):
+            if not dev.has_thermostat:
+                _LOGGER.error(f"Device {dev.name} is not a thermostat")
+                return None
+            dev.set_boost_mode(seconds)
 
     def get_comfort_temperature(self, ain):
         """Get the thermostate comfort temperature."""

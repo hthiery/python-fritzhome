@@ -14,13 +14,15 @@ from .onoffinterface import FritzhomeOnOffInterface
 from .multimeterinterface import FritzhomeMultimeterInterface
 from .temperatureinterface import FritzhomeTemperatureInterface
 from .humidityinterface import FritzhomeHumidityInterface
+from .thermostatinterface import FritzhomeThermostatInterface
 
 _LOGGER = logging.getLogger(__name__)
 
 class FritzhomeInterface(FritzhomeOnOffInterface,
                          FritzhomeMultimeterInterface,
                          FritzhomeTemperatureInterface,
-                         FritzhomeHumidityInterface):
+                         FritzhomeHumidityInterface,
+                         FritzhomeThermostatInterface):
     """The Fritzhome Interface class."""
 
     def __init__(self, unit, type, node = None):

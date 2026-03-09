@@ -23,6 +23,7 @@ class FritzhomeEntityBase(ABC):
         self.ain = None
         self.name = None
         self._functionsbitmask = 0
+        self.commit_now = True
         if node is not None:
             self._update_from_node(node)
 

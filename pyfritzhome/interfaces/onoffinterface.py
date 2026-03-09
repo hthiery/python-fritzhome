@@ -56,13 +56,13 @@ class FritzhomeOnOffMixin():
 
     def set_switch_state_on(self):
         """Set the switch state to on."""
-        self.find_switch_interface().set_switch_state_on().update()
+        self.find_switch_interface().set_switch_state_on().commit()
 
     def set_switch_state_off(self):
         """Set the switch state to off."""
-        self.find_switch_interface().set_switch_state_off().update()
+        self.find_switch_interface().set_switch_state_off().commit()
 
     def set_switch_state_toggle(self):
         """Toggle the switch state."""
-        self.find_switch_interface().set_switch_state_toggle().update()
+        self.find_switch_interface().set_switch_state_toggle().commit()
 

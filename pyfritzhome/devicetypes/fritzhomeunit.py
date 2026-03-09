@@ -14,7 +14,8 @@ class FritzhomeUnit(FritzhomeUnitBase,
                     interfaces.FritzhomeOnOffMixin,
                     interfaces.FritzhomeMultimeterMixin,
                     interfaces.FritzhomeTemperatureMixin,
-                    interfaces.FritzhomeHumidityMixin):
+                    interfaces.FritzhomeHumidityMixin,
+                    interfaces.FritzhomeThermostatMixin):
     """The Fritzhome Device class."""
 
     def __init__(self, fritz=None, node=None):

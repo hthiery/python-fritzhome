@@ -4,6 +4,7 @@
 from __future__ import print_function
 
 import logging
+import json
 
 from pyfritzhome.devicetypes.fritzhomeentitybase import FritzhomeEntityBase
 
@@ -28,8 +29,8 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
 
     def _update_from_node(self, node):
         _LOGGER.debug("update base device")
-        super()._update_from_node(node)
         self._units = {}
+        super()._update_from_node(node)
         if self._fritz._use_aha:
             self.manufacturer = node.attrib["manufacturer"]
             self.product_name = node.attrib["productname"]
@@ -39,14 +40,44 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
             self.product_name = self._node["productName"]
             self.is_connected = self._node["isConnected"]
 
-    def find_interface(self, interface):
-        for unit in self._units.values():
-            if interface := unit.find_interface(interface):
-                return interface
-        return None
+    def update_unit(self, unit, node):
+        """DOC-TODO (REST)"""
+        assert unit.ain in self._units.keys(), "unknown unit to update"
+        self._updates |= {"ain": self.ain, "units": node or unit._node}
+        self._updates["units"] |= { "ain": unit.ain }
+        if self.commit_now:
+            self.trigger_update()
 
-    def get_config():
+    def find_interface(self, interface):
+        """DOC-TODO (REST)"""
+        found = None
+        for unit in self.units():
+            if interface := unit.find_interface(interface):
+                if found is None:
+                    found = interface
+                else:
+                    _LOGGER.warning("ambigious device, multiple interface candidates, using first")
+        return found
+
+    def begin(self, unit_ain=None):
+        """DOC-TODO (REST)"""
+        if unit_ain:
+            return self.units[unit_ain].begin()
+        else:
+            if len(self.units()) > 1:
+                _LOGGER.warning("ambigious device, multiple units, using first")
+            for unit in self._units.values():
+                return unit.begin()
+
+    def get_device_config():
         self._fritz.update_device_config(self.ain)
+
+    def get_json(self):
+        r = self._node.copy()
+        r["units"] = {}
+        for unit in self._node["unitUids"]:
+            r["units"][unit] = self._units[unit]._node
+        return json.dumps(r)
 
     # legacy
     @property
