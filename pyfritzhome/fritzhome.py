@@ -307,7 +307,7 @@ class Fritzhome(object):
 
         if temp < 16:
             temp = 253
-        elif temp > 56:
+        elif temp > 56 and not temp == 253:
             temp = 254
 
         self._aha_request("sethkrtsoll", ain=ain, param={"param": temp})
