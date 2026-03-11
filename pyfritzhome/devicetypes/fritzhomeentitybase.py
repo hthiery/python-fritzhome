@@ -36,13 +36,13 @@ class FritzhomeEntityBase(ABC):
 
     def _update_from_node(self, node):
         self._node = node
-        if self._fritz._use_aha:
+        if node.get("identifier") is not None: # AHA
             if self.ain is not None and self.ain != node.attrib["identifier"]:
                 raise ValueError("updating invalid ain")
             self.ain = node.attrib["identifier"]
             self.name = self.get_node_value(node, "name")
             self._functionsbitmask = int(node.attrib["functionbitmask"])
-        else:
+        else: # REST
             if self.ain is not None and self.ain != node["ain"]:
                 raise ValueError("updating invalid ain")
             self.ain = node["ain"]

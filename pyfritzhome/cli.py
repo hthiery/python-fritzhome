@@ -170,9 +170,13 @@ def list_templates(fritz, args):
         print("  color=%s" % template.apply_color)
         print("  dialhelper=%s" % template.apply_dialhelper)
 
-        print(" Devices:")
-        for device_id in template.devices:
-            print("  %s=%s" % (device_id, devices[device_id].name))
+        # REST api does not expose group devices in the devices list
+        # (TODO: there's a groups endpoint)
+        template_devs = template.devices & devices.keys()
+        if len(template_devs) > 0:
+            print(" Devices:")
+            for device_id in template_devs.devices:
+                print("  %s=%s" % (device_id, devices[device_id].name))
 
 
 def template_apply(fritz, args):
