@@ -285,6 +285,8 @@ class Fritzhome(object):
     def update_devices(self, ignore_removed=True):
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
+        old_devs = self._devices.keys()
+        old_units = self._units.keys()
         if self._use_aha:
             for element in self._get_listinfo_elements("device"):
                 if element.attrib["identifier"] in self._devices.keys():
@@ -311,18 +313,12 @@ class Fritzhome(object):
                         device.add_or_update_unit(unit)
 
         if not ignore_removed:
-            for ain in list(self._devices.keys()):
-                if ain not in [
-                    element.attrib["ain"] for element in devices
-                ]:
-                    _LOGGER.info("Removing no more existing device " + ain)
-                    self._devices.pop(ain)
-            for ain in list(self._units.keys()):
-                if ain not in [
-                    element.attrib["ain"] for element in units
-                ]:
-                    _LOGGER.info("Removing no more existing device " + ain)
-                    self._units.pop(ain)
+            for ain in old_devs - self._devices.keys():
+                _LOGGER.info("Removing no more existing device " + ain)
+                self._devices.pop(ain)
+            for ain in old_units - self._units.keys():
+                _LOGGER.info("Removing no more existing device " + ain)
+                self._units.pop(ain)
 
         return True
 
