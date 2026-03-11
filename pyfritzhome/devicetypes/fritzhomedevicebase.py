@@ -101,3 +101,7 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
 
     def units(self):
         return self._units.values()
+
+    @property
+    def has_color(self):
+        return False
