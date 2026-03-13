@@ -48,6 +48,11 @@ class FritzhomeTemperatureMixin():
         self.find_temperature_interface().celsius
 
     @property
+    def actual_temperature(self):
+        """ Get the current temperature (legacy) """
+        self.find_temperature_interface().celsius
+
+    @property
     def offset(self):
         """ Get the current temperature offset """
         self.find_temperature_interface().offset
