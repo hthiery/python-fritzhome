@@ -26,17 +26,29 @@ class FritzhomeThermostatInterface(FritzhomeInterfaceBase):
         _LOGGER.debug("update switch device")
         super()._update_from_node(node)
 
+    @property
+    def target_temperature(self):
+        return self._node["setPointTemperature"]["celsius"]
+
     def set_target_temperature(self, v):
-        self._node_set["setPointTemperature"]= {}
+        self._node_set["setPointTemperature"] = {}
         self._node_set["setPointTemperature"]["celsius"] = v
         self._node_set["setPointTemperature"]["mode"] = "temperature"
         self.changed()
+
+    @property
+    def comfort_temperature(self):
+        return self._node["comfortTemperature"]["celsius"]
 
     def set_comfort_temperature(self, v):
         self._node_set["comfortTemperature"]= {}
         self._node_set["comfortTemperature"]["celsius"] = v
         self._node_set["comfortTemperature"]["mode"] = "temperature"
         self.changed()
+
+    @property
+    def reduced_temperature(self):
+        return self._node["reducedTemperature"]["celsius"]
 
     def set_reduced_temperature(self, v):
         self._node_set["reducedTemperature"]= {}
