@@ -16,6 +16,7 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
 
     manufacturer = None
     product_name = None
+    fw_version   = None
     is_connected = None
 
     def __repr__(self):
@@ -34,10 +35,12 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
         if self._fritz._use_aha:
             self.manufacturer = node.attrib["manufacturer"]
             self.product_name = node.attrib["productname"]
+            self.fw_version   = node.attrib["fwversion"]
             self.is_connected = self.get_node_value_as_int_as_bool(node, "present")
         else:
             self.manufacturer = self._node["manufacturer"]
             self.product_name = self._node["productName"]
+            self.fw_version   = self._node["firmwareVersion"]
             self.is_connected = self._node["isConnected"]
 
     def update_unit(self, unit, node):
