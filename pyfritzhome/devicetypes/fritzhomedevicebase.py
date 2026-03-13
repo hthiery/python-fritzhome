@@ -108,3 +108,46 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
     @property
     def has_color(self):
         return False
+
+    @property
+    def has_blind(self):
+        return False
+
+    @property
+    def has_alarm(self):
+        return False
+
+    @property
+    def has_lightbulb(self):
+        return False
+    @property
+    def holiday_active(self):
+        return False
+    @property
+    def summer_active(self):
+        return False
+    @property
+    def lock(self):
+        return False
+    @property
+    def device_lock(self):
+        return False
+
+    @property
+    def battery_level(self):
+        return False
+
+    @property
+    def battery_low(self):
+        return False
+
+    @property
+    def window_open(self):
+        return False
+
+    @property
+    def nextchange_temperature(self):
+        return False
+    @property
+    def nextchange_endperiod(self):
+        return False
