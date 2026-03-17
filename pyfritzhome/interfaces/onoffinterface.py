@@ -28,16 +28,16 @@ class FritzhomeOnOffInterface(FritzhomeInterfaceBase):
                 self.switch_state = self._node["active"]
 
     def set_switch_state_on(self, wait=False):
-        self._node["active"] = True
-        return self
+        self._node_set["active"] = True
+        self.changed(wait)
 
     def set_switch_state_off(self, wait=False):
-        self._node["active"] = False
-        return self
+        self._node_set["active"] = False
+        self.changed(wait)
 
     def set_switch_state_toggle(self, wait=False):
-        self._node["active"] = not self._node["active"]
-        return self
+        self._node_set["active"] = not self._node["active"]
+        self.changed(wait)
 
 
 class FritzhomeOnOffMixin():
@@ -54,15 +54,18 @@ class FritzhomeOnOffMixin():
         """ Get the current switch state """
         return self.find_switch_interface().switch_state
 
-    def set_switch_state_on(self):
+    def set_switch_state_on(self, wait=False):
         """Set the switch state to on."""
-        self.find_switch_interface().set_switch_state_on().commit()
+        self.find_switch_interface().set_switch_state_on()
+        return self
 
-    def set_switch_state_off(self):
+    def set_switch_state_off(self, wait=False):
         """Set the switch state to off."""
-        self.find_switch_interface().set_switch_state_off().commit()
+        self.find_switch_interface().set_switch_state_off()
+        return self
 
-    def set_switch_state_toggle(self):
+    def set_switch_state_toggle(self, wait=False):
         """Toggle the switch state."""
-        self.find_switch_interface().set_switch_state_toggle().commit()
+        self.find_switch_interface().set_switch_state_toggle()
+        return self
 
