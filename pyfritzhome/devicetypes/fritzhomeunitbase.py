@@ -15,12 +15,11 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeUnitBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
-    interfaces = None
-
     def __init__(self, fritz=None, node=None):
         """Create a unit object (REST-only)."""
-        super().__init__(fritz, node)
         self._updates = {}
+        self.interfaces = {}
+        super().__init__(fritz, node)
 
     def __repr__(self):
         """Return a string."""
@@ -37,18 +36,20 @@ class FritzhomeUnitBase(FritzhomeEntityBase):
         if self.ain != node["ain"]:
             raise ValueError
 
-        # unshare class attribute on write
-        self.interfaces = {}
         for iface, node in node["interfaces"].items():
-            self.interfaces[iface] = interfaces.FritzhomeInterface(self, iface, node)
+            if n := self.interfaces.get(iface):
+                self.interfaces[iface]._update_from_node(node)
+            else:
+                self.interfaces[iface] = interfaces.FritzhomeInterface(self, iface, node)
 
     def update_interface(self, interface, node=None):
-        import traceback
         if self.commit_now:
-            traceback.print_stack()
             self._fritz.put_unit(self.ain, {"interfaces": {interface.type: node or interface._node}})
         else:
             self._updates |= {"interfaces": {interface.type: node or interface._node}}
+
+    def update(self):
+        self._fritz._update_unit(self.ain)
 
     def begin(self):
         """DOC-TODO (REST)"""

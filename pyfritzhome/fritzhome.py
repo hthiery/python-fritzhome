@@ -278,6 +278,13 @@ class Fritzhome(object):
             device.add_or_update_unit(unit)
         return device
 
+    def _update_unit(self, ain):
+        """Update the unit, using its configuration endpoint."""
+        _LOGGER.info(f"Updating Unit {ain}  ...")
+        if node := self._rest_request(f"configuration/units/{ain}"):
+            return self._update_unit_from_node(node)
+        return None
+
     def get_config(self, ain):
         """ DOC-TODO """
         return self._update_device_config(ain)
