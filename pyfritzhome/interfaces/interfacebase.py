@@ -16,8 +16,6 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeInterfaceBase():
     """The Fritzhome Interface class."""
 
-    update_intervals = [ 0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 15 ]
-
     @staticmethod
     def node_property(node_name, value_name):
         return property(
@@ -42,26 +40,9 @@ class FritzhomeInterfaceBase():
         self._node = node
 
     def changed(self, wait=False):
-        import sys
         assert self._node_set.keys() <= self._node.keys(), "_node_set must be a strict subset"
-        self._unit_ref().update_interface(self, self._node_set)
-        if not wait:
-            self._node_set = {}
-            return
-        import time
-        off = 0
-        for i in self.update_intervals:
-            self._unit_ref().update()
-            if self._node | self._node_set == self._node:
-                self._node_set = {}
-                return
-            time.sleep(i - off)
-            off = i
-        self._unit_ref().update()
-        if self._node | self._node_set == self._node:
-            self._node_set = {}
-            return
-        raise RuntimeError("Failed to fetch updated interface")
+        self._unit_ref().interface_changed(self, self._node_set, wait)
+        self._node_set = {}
 
     @property
     def node(self):

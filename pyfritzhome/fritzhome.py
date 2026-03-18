@@ -230,7 +230,6 @@ class Fritzhome(object):
         if self._units is None:
             self._units = {}
 
-        _LOGGER.info("put units ...\n" + json.dumps(node))
         params = {"Authorization": f"AVM-SID {self._sid}"}
         data = self._put(f"{self.rest_url}/configuration/units/{ain}", node, headers=params)
 
@@ -448,7 +447,7 @@ class Fritzhome(object):
             result = self._aha_request("setswitchon", ain=ain, rf=bool)
             wait and self.wait_device_txbusy(ain)
             return result
-        return self._switch_action(ain, lambda dev: dev.set_switch_state_on())
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_on(wait))
 
     def set_switch_state_off(self, ain, wait=False):
         """Set the switch to off state."""
@@ -456,7 +455,7 @@ class Fritzhome(object):
             result = self._aha_request("setswitchoff", ain=ain, rf=bool)
             wait and self.wait_device_txbusy(ain)
             return result
-        return self._switch_action(ain, lambda dev: dev.set_switch_state_off())
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_off(wait))
 
     def set_switch_state_toggle(self, ain, wait=False):
         """Toggle the switch state."""
@@ -464,7 +463,7 @@ class Fritzhome(object):
             result = self._aha_request("setswitchtoggle", ain=ain, rf=bool)
             wait and self.wait_device_txbusy(ain)
             return result
-        return self._switch_action(ain, lambda dev: dev.set_switch_state_toggle())
+        return self._switch_action(ain, lambda dev: dev.set_switch_state_toggle(wait))
 
     def get_switch_power(self, ain):
         """Get the switch power consumption."""

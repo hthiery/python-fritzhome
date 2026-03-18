@@ -11,9 +11,22 @@ from .. import interfaces
 
 _LOGGER = logging.getLogger(__name__)
 
+def dict_deepmerge(base, override):
+    """ Returns a new dict which is a recursive merge of two input dicts. """
+    result = base.copy()
+    for key, value in override.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = dict_deepmerge(result[key], value)
+        elif isinstance(value, dict):
+            result[key] = value.copy()
+        else:
+            result[key] = value
+    return result
 
 class FritzhomeUnitBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
+
+    _update_intervals = [ 0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 15 ]
 
     def __init__(self, fritz=None, node=None):
         """Create a unit object (REST-only)."""
@@ -42,14 +55,34 @@ class FritzhomeUnitBase(FritzhomeEntityBase):
             else:
                 self.interfaces[iface] = interfaces.FritzhomeInterface(self, iface, node)
 
-    def update_interface(self, interface, node=None):
-        if self.commit_now:
-            self._fritz.put_unit(self.ain, {"interfaces": {interface.type: node or interface._node}})
-        else:
-            self._updates |= {"interfaces": {interface.type: node or interface._node}}
 
-    def update(self):
-        self._fritz._update_unit(self.ain)
+    def _update_unit(self, node, wait=False):
+        self._fritz.put_unit(self.ain, node)
+        if not wait:
+            return
+        import time
+        off = 0
+        for i in self._update_intervals:
+            # this calls our _update_from_node eventually
+            self._fritz._update_unit(self.ain)
+            if dict_deepmerge(self._node, node) == self._node:
+                return
+            time.sleep(i - off)
+            off = i
+        self._unit_ref().update()
+        if self._node | node == self._node:
+            return
+        raise RuntimeError("Failed to fetch updated unit")
+
+    def interface_changed(self, interface, node=None, wait=False):
+        import sys
+
+        if not self.commit_now:
+            if wait:
+                LOGGER.err("wait=True not supported in bulk update")
+            self._updates |= {"interfaces": {interface.type: node or interface._node}}
+            return
+        self._update_unit({"interfaces": {interface.type: node or interface._node}}, wait)
 
     def begin(self):
         """DOC-TODO (REST)"""
@@ -58,14 +91,12 @@ class FritzhomeUnitBase(FritzhomeEntityBase):
         self.commit_now = False
         return self
 
-    def end(self):
+    def end(self, wait=False):
         """DOC-TODO (REST)"""
         print(f"Z {self}")
         self.commit_now = True
-        self.trigger_update()
-
-    def trigger_update(self):
-        self._fritz.put_unit(self.ain, self._updates)
+        self._update_unit(self._updates, wait)
+        self._updates = {}
 
     def find_interface(self, interface):
         return self.interfaces.get(interface);

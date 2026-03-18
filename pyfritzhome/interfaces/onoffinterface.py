@@ -56,16 +56,16 @@ class FritzhomeOnOffMixin():
 
     def set_switch_state_on(self, wait=False):
         """Set the switch state to on."""
-        self.find_switch_interface().set_switch_state_on()
+        self.find_switch_interface().set_switch_state_on(wait)
         return self
 
     def set_switch_state_off(self, wait=False):
         """Set the switch state to off."""
-        self.find_switch_interface().set_switch_state_off()
+        self.find_switch_interface().set_switch_state_off(wait)
         return self
 
     def set_switch_state_toggle(self, wait=False):
         """Toggle the switch state."""
-        self.find_switch_interface().set_switch_state_toggle()
+        self.find_switch_interface().set_switch_state_toggle(wait)
         return self
 
