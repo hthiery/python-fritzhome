@@ -26,8 +26,8 @@ class FritzhomeTemperatureInterface(FritzhomeInterfaceBase):
                 _LOGGER.warning("interface state not valid")
             else:
                 self.celsius = self._node["celsius"]
-                # offset is not always exposed (for Thermo 302 the offset is in the thermostatInterface)
-                self.offset = self._node.get("offset") or 0.0
+                # offset is not always exposed (only through /smarthome/configuration/… endpoints)
+                self.offset = self._node.get("offset")
 
 
 
