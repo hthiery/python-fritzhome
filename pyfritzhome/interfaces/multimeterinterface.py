@@ -21,8 +21,8 @@ class FritzhomeMultimeterInterface(FritzhomeInterfaceBase):
         return self.type == "multimeterInterface"
 
     def _update_from_node(self, node):
-        _LOGGER.debug("update switch device")
         super()._update_from_node(node)
+        _LOGGER.debug(f"update {self.type}")
         if self.is_powermeter:
             if self._node["state"] != "valid":
                 _LOGGER.warning("interface state not valid")

@@ -18,8 +18,8 @@ class FritzhomeHumidityInterface(FritzhomeInterfaceBase):
         return self.type == "humidityInterface"
 
     def _update_from_node(self, node):
-        _LOGGER.debug("update switch device")
         super()._update_from_node(node)
+        _LOGGER.debug(f"update {self.type}")
         if self.is_humidity:
             if self._node["state"] != "valid":
                 _LOGGER.warning("interface state not valid")

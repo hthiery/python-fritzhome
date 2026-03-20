@@ -23,8 +23,8 @@ class FritzhomeThermostatInterface(FritzhomeInterfaceBase):
         return self.type == "thermostatInterface"
 
     def _update_from_node(self, node):
-        _LOGGER.debug("update switch device")
         super()._update_from_node(node)
+        _LOGGER.debug(f"update {self.type}")
 
     @property
     def target_temperature(self):
