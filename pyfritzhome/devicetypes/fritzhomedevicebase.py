@@ -14,10 +14,13 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
-    manufacturer = None
-    product_name = None
-    fw_version   = None
-    is_connected = None
+    manufacturer  = None
+    product_name  = None
+    fw_version    = None
+    is_connected  = None
+    has_battery   = None
+    battery_low   = None
+    battery_level = None
 
     def __repr__(self):
         """Return a string."""
@@ -37,11 +40,22 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
             self.product_name = node.attrib["productname"]
             self.fw_version   = node.attrib["fwversion"]
             self.is_connected = self.get_node_value_as_int_as_bool(node, "present")
+
+            self._battery     = self.get_node_value_as_int(node, "battery")
+            self.has_battery  = self._battery is not None or self.battery_low is not None
+            if self.has_battery and self.is_connected:
+                self.battery_low  = self.get_node_value_as_int(node, "batterylow")
+                self.battery_level = self._battery or 0
         else:
             self.manufacturer = self._node["manufacturer"]
             self.product_name = self._node["productName"]
             self.fw_version   = self._node["firmwareVersion"]
             self.is_connected = self._node["isConnected"]
+
+            self.has_battery  = self._node["isBatteryPowered"]
+            if self.has_battery and self.is_connected:
+                self.battery_low  = self._node["isBatteryLow"]
+                self.battery_level = self._node["batteryValue"]
 
     def update_unit(self, unit, node):
         """DOC-TODO (REST)"""
@@ -107,47 +121,39 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
 
     @property
     def has_color(self):
-        return False
+        return None
 
     @property
     def has_blind(self):
-        return False
+        return None
 
     @property
     def has_alarm(self):
-        return False
+        return None
 
     @property
     def has_lightbulb(self):
-        return False
+        return None
     @property
     def holiday_active(self):
-        return False
+        return None
     @property
     def summer_active(self):
-        return False
+        return None
     @property
     def lock(self):
-        return False
+        return None
     @property
     def device_lock(self):
-        return False
-
-    @property
-    def battery_level(self):
-        return False
-
-    @property
-    def battery_low(self):
-        return False
+        return None
 
     @property
     def window_open(self):
-        return False
+        return None
 
     @property
     def nextchange_temperature(self):
-        return False
+        return None
     @property
     def nextchange_endperiod(self):
-        return False
+        return None

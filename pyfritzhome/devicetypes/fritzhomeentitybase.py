@@ -76,7 +76,9 @@ class FritzhomeEntityBase(ABC):
 
     def get_node_value_as_int(self, elem, node) -> int:
         """Get the node value as integer."""
-        return int(self.get_node_value(elem, node))
+        if value := self.get_node_value(elem, node):
+            return int(value)
+        return None
 
     def get_node_value_as_int_as_bool(self, elem, node) -> bool:
         """Get the node value as boolean."""
