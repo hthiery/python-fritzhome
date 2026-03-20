@@ -48,21 +48,21 @@ class FritzhomeMultimeterMixin():
     @property
     def power(self):
         """ Get the current powermeter power """
-        self.find_multimeter_interface().current
+        return self.find_multimeter_interface().power
 
     @property
     def energy(self):
         """ Get the current currentmeter energy """
-        self.find_multimeter_interface().energy
+        return self.find_multimeter_interface().energy
 
     @property
     def voltage(self):
         """ Get the current voltagemeter voltage """
-        self.find_multimeter_interface().voltage
+        return self.find_multimeter_interface().voltage
 
     @property
     def current(self):
         """ Get the current currentmeter current """
-        self.find_multimeter_interface().current
+        return self.find_multimeter_interface().current
 
 

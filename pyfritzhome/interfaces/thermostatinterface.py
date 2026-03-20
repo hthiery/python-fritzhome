@@ -84,7 +84,7 @@ class FritzhomeThermostatMixin():
     @property
     def target_temperature(self):
         """ Get the current thermostat """
-        self.find_thermostat_interface().target_temperature
+        return self.find_thermostat_interface().target_temperature
 
     def set_target_temperature(self, v):
         """ Get the current thermostat """
@@ -94,7 +94,7 @@ class FritzhomeThermostatMixin():
     @property
     def reduced_temperature(self):
         """ Get the current thermostat offset """
-        self.find_thermostat_interface().reduced_temperature
+        return self.find_thermostat_interface().reduced_temperature
 
     def set_reduced_temperature(self, v):
         """ Get the current thermostat """
@@ -103,7 +103,7 @@ class FritzhomeThermostatMixin():
 
     @property
     def comfort_temperature(self):
-        self.find_thermostat_interface().comfort_temperature
+        return self.find_thermostat_interface().comfort_temperature
 
     def set_comfort_temperature(self, v):
         """ Get the current thermostat """
