@@ -286,7 +286,10 @@ class Fritzhome(object):
 
     def get_config(self, ain):
         """ DOC-TODO """
-        return self._update_device_config(ain)
+        if self._use_aha:
+            return self._devices[ain]
+        else:
+            return self._update_device_config(ain)
 
     def update_devices(self, ignore_removed=True):
         """Update the device."""
