@@ -135,20 +135,10 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
     def has_lightbulb(self):
         return None
     @property
-    def holiday_active(self):
-        return None
-    @property
-    def summer_active(self):
-        return None
-    @property
     def lock(self):
         return None
     @property
     def device_lock(self):
-        return None
-
-    @property
-    def window_open(self):
         return None
 
     @property
