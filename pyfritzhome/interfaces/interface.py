@@ -18,18 +18,21 @@ from .thermostatinterface import FritzhomeThermostatInterface
 
 _LOGGER = logging.getLogger(__name__)
 
-class FritzhomeInterface(FritzhomeOnOffInterface,
-                         FritzhomeMultimeterInterface,
-                         FritzhomeTemperatureInterface,
-                         FritzhomeHumidityInterface,
-                         FritzhomeThermostatInterface):
-    """The Fritzhome Interface class."""
+class FritzhomeInterface():
+    """The Fritzhome Interface factory."""
 
-    def __init__(self, unit, type, node = None):
-        """Create an entity base object."""
-        super().__init__(unit, type, node)
+    @staticmethod
+    def create(unit, type, node = None):
+        """Create a specific interface object."""
+        cls = {
+            "onOffInterface":       FritzhomeOnOffInterface,
+            "multimeterInterface":  FritzhomeMultimeterInterface,
+            "temperatureInterface": FritzhomeTemperatureInterface,
+            "humidityInterface":    FritzhomeHumidityInterface,
+            "thermostatInterface" : FritzhomeThermostatInterface,
+        }
+        try:
+            return cls[type](unit, type, node)
+        except KeyError:
+            return FritzhomeInterfaceBase(unit, type, node)
 
-    # interfaces are not entities, only their parent units are, therefore this is
-    # called with the unit REST node
-    def _update_from_node(self, node):
-        super()._update_from_node(node)

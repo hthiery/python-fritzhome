@@ -9,24 +9,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class FritzhomeHumidityInterface(FritzhomeInterfaceBase):
-    """The Fritzhome Device class."""
-
-    rel_humidity = None
+    """The Fritzhome Humidity interface class."""
 
     @property
-    def is_humidity(self):
-        return self.type == "humidityInterface"
-
-    def _update_from_node(self, node):
-        super()._update_from_node(node)
-        _LOGGER.debug(f"update {self.type}")
-        if self.is_humidity:
-            if self._node["state"] != "valid":
-                _LOGGER.warning("interface state not valid")
-            else:
-                self.rel_humidity = self._node["relativeHumidity"]
-
-
+    def rel_humidity(self):
+        return self._node["relativeHumidity"]
 
 class FritzhomeHumidityMixin():
     """The Fritzhome Humidity mixin."""

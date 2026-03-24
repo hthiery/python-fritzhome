@@ -9,23 +9,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class FritzhomeOnOffInterface(FritzhomeInterfaceBase):
-    """The Fritzhome OnOff interface class."""
+    """The Fritzhome OnOff (switch) interface class."""
 
-    switch_state = None
-
-    # Switch
     @property
-    def is_switch(self):
-        return self.type == "onOffInterface"
-
-    def _update_from_node(self, node):
-        super()._update_from_node(node)
-        _LOGGER.debug(f"update {self.type}")
-        if self.is_switch:
-            if self._node["state"] != "valid":
-                _LOGGER.warning("interface state not valid")
-            else:
-                self.switch_state = self._node["active"]
+    def switch_state(self):
+        return self._node["active"]
 
     def set_switch_state_on(self, wait=False):
         self._node_set["active"] = True

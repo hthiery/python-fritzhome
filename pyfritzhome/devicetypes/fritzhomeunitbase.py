@@ -53,7 +53,7 @@ class FritzhomeUnitBase(FritzhomeEntityBase):
             if n := self.interfaces.get(iface):
                 self.interfaces[iface]._update_from_node(node)
             else:
-                self.interfaces[iface] = interfaces.FritzhomeInterface(self, iface, node)
+                self.interfaces[iface] = interfaces.FritzhomeInterface.create(self, iface, node)
 
 
     def _update_unit(self, node, wait=False):

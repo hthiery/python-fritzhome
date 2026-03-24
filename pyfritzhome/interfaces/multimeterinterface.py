@@ -9,28 +9,23 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class FritzhomeMultimeterInterface(FritzhomeInterfaceBase):
-    """The Fritzhome Device class."""
-
-    power = None
-    energy = None
-    voltage = None
-    current = None
+    """The Fritzhome Multimeter interface class."""
 
     @property
-    def is_powermeter(self):
-        return self.type == "multimeterInterface"
+    def power(self):
+        return self._node["power"]
 
-    def _update_from_node(self, node):
-        super()._update_from_node(node)
-        _LOGGER.debug(f"update {self.type}")
-        if self.is_powermeter:
-            if self._node["state"] != "valid":
-                _LOGGER.warning("interface state not valid")
-            else:
-                self.power = self._node["power"]
-                self.energy = self._node["energy"]
-                self.voltage = self._node["voltage"]
-                self.current = self._node["current"]
+    @property
+    def energy(self):
+        return self._node["energy"]
+
+    @property
+    def voltage(self):
+        return self._node["voltage"]
+
+    @property
+    def current(self):
+        return self._node["current"]
 
 
 
@@ -43,7 +38,7 @@ class FritzhomeMultimeterMixin():
     @property
     def has_powermeter(self):
         """Check if the device has powermeter sensors."""
-        return self.find_multimeter_interface() != None
+        return self.find_multimeter_interface() is not None
 
     @property
     def power(self):

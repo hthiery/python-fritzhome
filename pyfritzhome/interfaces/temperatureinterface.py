@@ -9,27 +9,16 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class FritzhomeTemperatureInterface(FritzhomeInterfaceBase):
-    """The Fritzhome Device class."""
-
-    celsius = None
-    offset = None
+    """The Fritzhome Temperature interface class."""
 
     @property
-    def is_temperature(self):
-        return self.type == "temperatureInterface"
+    def celsius(self):
+        return self._node["celsius"]
 
-    def _update_from_node(self, node):
-        super()._update_from_node(node)
-        _LOGGER.debug(f"update {self.type}")
-        if self.is_temperature:
-            if self._node["state"] != "valid":
-                _LOGGER.warning("interface state not valid")
-            else:
-                self.celsius = self._node["celsius"]
-                # offset is not always exposed (only through /smarthome/configuration/… endpoints)
-                self.offset = self._node.get("offset")
-
-
+    @property
+    def offset(self):
+        # offset is not always exposed (only through /smarthome/configuration/… endpoints)
+        return self._node.get("offset")
 
 class FritzhomeTemperatureMixin():
     """The Fritzhome Temperature mixin."""

@@ -9,22 +9,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class FritzhomeThermostatInterface(FritzhomeInterfaceBase):
-    """The Fritzhome Device class."""
-
-    def __init__(self, unit, type, node):
-        super().__init__(unit, type, node)
-        if type == "thermostatInterface":
-            FritzhomeInterfaceBase.node_property("setPointTemperature", "celsius")
-            FritzhomeInterfaceBase.node_property("comfortTemperature", "celsius")
-            FritzhomeInterfaceBase.node_property("reducedTemperature", "celsius")
-
-    @property
-    def is_thermostat(self):
-        return self.type == "thermostatInterface"
-
-    def _update_from_node(self, node):
-        super()._update_from_node(node)
-        _LOGGER.debug(f"update {self.type}")
+    """The Fritzhome Thermostat interface class."""
 
     @property
     def target_temperature(self):
@@ -131,7 +116,7 @@ class FritzhomeThermostatMixin():
     @property
     def has_thermostat(self):
         """Check if the device has thermostat sensors."""
-        return self.find_thermostat_interface() != None
+        return self.find_thermostat_interface() is not None
 
     @property
     def target_temperature(self):
