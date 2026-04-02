@@ -20,15 +20,12 @@ def list_all(fritz, args):
         print("#" * 30)
         print("name=%s" % device.name)
         print("  ain=%s" % device.ain)
-        print("  id=%s" % device.identifier)
         print("  productname=%s" % device.productname)
         print("  manufacturer=%s" % device.manufacturer)
         print("  present=%s" % device.present)
-        print("  lock=%s" % device.lock)
-        print("  devicelock=%s" % device.device_lock)
-        print("  is_group=%s" % device.is_group)
-        if device.is_group:
-            print("  group_members=%s" % device.group_members)
+        #~ print("  is_group=%s" % device.is_group)
+        #~ if device.is_group:
+            #~ print("  group_members=%s" % device.group_members)
 
         if device.present is False:
             continue
@@ -41,10 +38,14 @@ def list_all(fritz, args):
             print("  power=%s" % device.power)
             print("  energy=%s" % device.energy)
             print("  voltage=%s" % device.voltage)
+            print("  current=%s" % device.current)
         if device.has_temperature_sensor:
             print(" Temperature:")
             print("  temperature=%s" % device.temperature)
             print("  offset=%s" % device.offset)
+        if device.has_humidity_sensor:
+            print(" Humidity:")
+            print("  relative_humidity=%s" % device.rel_humidity)
         if device.has_thermostat:
             print(" Thermostat:")
             print("  battery_low=%s" % device.battery_low)
@@ -60,22 +61,22 @@ def list_all(fritz, args):
             print("  adaptive_heating_running=%s" % device.adaptive_heating_running)
             print("  summer=%s" % device.summer_active)
             print("  holiday=%s" % device.holiday_active)
-        if device.has_alarm:
-            print(" Alert:")
-            print("  alert=%s" % device.alert_state)
-        if device.has_lightbulb:
-            print(" Light bulb:")
-            print("  state=%s" % ("Off" if device.state == 0 else "On"))
-            if device.has_level:
-                print("  level=%s" % device.level)
-            if device.has_color:
-                print("  hue=%s" % device.hue)
-                print("  saturation=%s" % device.saturation)
-        if device.has_blind:
-            print(" Blind:")
-            print("  level=%s" % device.level)
-            print("  levelpercentage=%s" % device.levelpercentage)
-            print("  endpositionset=%s" % device.endpositionsset)
+        #~ if device.has_alarm:
+            #~ print(" Alert:")
+            #~ print("  alert=%s" % device.alert_state)
+        #~ if device.has_lightbulb:
+            #~ print(" Light bulb:")
+            #~ print("  state=%s" % ("Off" if device.state == 0 else "On"))
+            #~ if device.has_level:
+                #~ print("  level=%s" % device.level)
+            #~ if device.has_color:
+                #~ print("  hue=%s" % device.hue)
+                #~ print("  saturation=%s" % device.saturation)
+        #~ if device.has_blind:
+            #~ print(" Blind:")
+            #~ print("  level=%s" % device.level)
+            #~ print("  levelpercentage=%s" % device.levelpercentage)
+            #~ print("  endpositionset=%s" % device.endpositionsset)
 
 
 def device_name(fritz, args):
@@ -108,6 +109,10 @@ def blind_set_level_percentage(fritz, args):
     """Command that sets the blind level as percentage."""
     fritz.set_level_percentage(args.ain, args.level)
 
+
+def thermostat_get_info(fritz, args):
+    """DOC-TODO"""
+    print(fritz.get_device_infos(args.ain))
 
 def thermostat_set_target_temperature(fritz, args):
     """Command that sets the thermostat temperature."""
@@ -165,9 +170,13 @@ def list_templates(fritz, args):
         print("  color=%s" % template.apply_color)
         print("  dialhelper=%s" % template.apply_dialhelper)
 
-        print(" Devices:")
-        for device_id in template.devices:
-            print("  %s=%s" % (device_id, devices[device_id].name))
+        # REST api does not expose group devices in the devices list
+        # (TODO: there's a groups endpoint)
+        template_devs = template.devices & devices.keys()
+        if len(template_devs) > 0:
+            print(" Devices:")
+            for device_id in template_devs.devices:
+                print("  %s=%s" % (device_id, devices[device_id].name))
 
 
 def template_apply(fritz, args):
@@ -203,6 +212,9 @@ def main(args=None):
         "-v", action="store_true", dest="verbose", help="be more verbose"
     )
     parser.add_argument(
+        "-A", "--aha", action="store_true", dest="aha_api", help="Use legacy AHA API"
+    )
+    parser.add_argument(
         "-f",
         "--fritzbox",
         type=str,
@@ -233,6 +245,12 @@ def main(args=None):
         action="version",
         version="{version}".format(version=__version__),
         help="Print version",
+    )
+    parser.add_argument(
+        "--test-data",
+        action="store_true",
+        dest="testdata",
+        help="Use offline test data"
     )
 
     _sub = parser.add_subparsers(title="Commands")
@@ -287,6 +305,13 @@ def main(args=None):
     # thermostat
     subparser = _sub.add_parser("thermostat", help="Thermostat commands")
     _sub_switch = subparser.add_subparsers()
+
+    # thermostat target temperature
+    subparser = _sub_switch.add_parser(
+        "get_info", help="Get thermostat information"
+    )
+    subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
+    subparser.set_defaults(func=thermostat_get_info)
 
     # thermostat target temperature
     subparser = _sub_switch.add_parser(
@@ -399,6 +424,8 @@ def main(args=None):
             password=args.password,
             port=args.port or None,
             ssl_verify=not args.insecure,
+            force_aha_api=args.aha_api,
+            use_testdata=args.testdata
         )
         fritzbox.login()
         args.func(fritzbox, args)

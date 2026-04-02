@@ -1,5 +1,6 @@
 """Init file for the device types."""
 
+from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicealarm import FritzhomeDeviceAlarm
 from .fritzhomedevicebutton import FritzhomeDeviceButton
 from .fritzhomedevicehumidity import FritzhomeDeviceHumidity
@@ -13,9 +14,11 @@ from .fritzhomedevicelightbulb import FritzhomeDeviceLightBulb
 from .fritzhomedeviceblind import FritzhomeDeviceBlind
 from .fritzhometemplate import FritzhomeTemplate
 from .fritzhometrigger import FritzhomeTrigger
+from .fritzhomeunit import FritzhomeUnit
 
 
 __all__ = (
+    "FritzhomeDeviceBase",
     "FritzhomeDeviceAlarm",
     "FritzhomeDeviceButton",
     "FritzhomeDeviceHumidity",
@@ -29,4 +32,5 @@ __all__ = (
     "FritzhomeDeviceBlind",
     "FritzhomeTemplate",
     "FritzhomeTrigger",
+    "FritzhomeUnit",
 )
