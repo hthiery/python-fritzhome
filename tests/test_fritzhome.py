@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from requests.exceptions import ConnectionError, HTTPError
 from unittest.mock import MagicMock, patch
 

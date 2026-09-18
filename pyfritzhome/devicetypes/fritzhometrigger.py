@@ -1,5 +1,4 @@
 """The trigger class."""
-# -*- coding: utf-8 -*-
 
 import logging
 from xml.etree import ElementTree
