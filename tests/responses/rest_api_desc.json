@@ -1,0 +1,7 @@
+{
+  "endpoints": [
+    { "methods": ["get"], "path": "/api/v0/setup/status" },
+    { "methods": ["get"], "path": "/api/v0/smarthome/overview" },
+    { "methods": ["get", "put"], "path": "/api/v0/smarthome/devices" }
+  ]
+}

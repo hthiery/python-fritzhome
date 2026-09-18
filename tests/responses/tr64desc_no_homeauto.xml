@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<root xmlns="urn:dslforum-org:device-1-0">
+<specVersion>
+<major>1</major>
+<minor>0</minor>
+</specVersion>
+<device>
+<deviceType>urn:dslforum-org:device:InternetGatewayDevice:1</deviceType>
+<friendlyName>FRITZ!Box 7490</friendlyName>
+<manufacturer>FRITZ! GmbH</manufacturer>
+<manufacturerURL>https://fritz.com</manufacturerURL>
+<modelDescription>FRITZ!Box 7490</modelDescription>
+<modelName>FRITZ!Box 7490</modelName>
+<modelNumber>7490 - avm</modelNumber>
+<modelURL>https://fritz.com</modelURL>
+<UDN>uuid:00000000-0000-0000-0000-000000000001</UDN>
+<serviceList>
+<service>
+<serviceType>urn:dslforum-org:service:DeviceInfo:1</serviceType>
+<serviceId>urn:DeviceInfo-com:serviceId:DeviceInfo1</serviceId>
+<controlURL>/upnp/control/deviceinfo</controlURL>
+<eventSubURL>/upnp/control/deviceinfo</eventSubURL>
+<SCPDURL>/deviceinfoSCPD.xml</SCPDURL>
+</service>
+<service>
+<serviceType>urn:dslforum-org:service:DeviceConfig:1</serviceType>
+<serviceId>urn:DeviceConfig-com:serviceId:DeviceConfig1</serviceId>
+<controlURL>/upnp/control/deviceconfig</controlURL>
+<eventSubURL>/upnp/control/deviceconfig</eventSubURL>
+<SCPDURL>/deviceconfigSCPD.xml</SCPDURL>
+</service>
+</serviceList>
+</device>
+</root>
