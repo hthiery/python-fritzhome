@@ -1,0 +1,11 @@
+-e .
+black
+coverage
+docutils
+flake8
+future
+pre-commit
+pytest
+pytest-cov
+python-coveralls
+rstcheck
