@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from requests.exceptions import ConnectionError, HTTPError
 from unittest.mock import MagicMock, patch
 
@@ -407,3 +405,82 @@ class TestFritzhome(object):
 
         assert not self.fritz.wait_device_txbusy("11960 0089208", 1)
         assert self.mock.call_count == 1
+
+    def test_has_smarthome_capabilities(self):
+        self.mock.side_effect = [Helper.response("tr64desc")]
+
+        assert self.fritz.has_smarthome_capabilities() is True
+        self.mock.assert_called_with("http://10.0.0.1:49000/tr64desc.xml")
+
+    def test_has_smarthome_capabilities_ipv6_host(self):
+        fritz = Fritzhome("[2001:db8::1]", "user", "admin123")
+        fritz._request = MagicMock(side_effect=[Helper.response("tr64desc")])
+
+        assert fritz.has_smarthome_capabilities() is True
+        fritz._request.assert_called_with("http://[2001:db8::1]:49000/tr64desc.xml")
+
+    def test_has_smarthome_capabilities_ipv6_host_restapi_fallback(self):
+        fritz = Fritzhome("[2001:db8::1]", "user", "admin123")
+        fritz._request = MagicMock(
+            side_effect=[ConnectionError, Helper.response("rest_api_desc", "json")]
+        )
+
+        assert fritz.has_smarthome_capabilities() is True
+        fritz._request.assert_called_with("http://[2001:db8::1]/rest_api_desc.json")
+
+    def test_has_smarthome_capabilities_not_supported(self):
+        self.mock.side_effect = [Helper.response("tr64desc_no_homeauto")]
+
+        assert self.fritz.has_smarthome_capabilities() is False
+
+    def test_has_smarthome_capabilities_connection_error(self):
+        self.mock.side_effect = ConnectionError
+
+        assert self.fritz.has_smarthome_capabilities() is None
+
+    def test_has_smarthome_capabilities_parse_error(self):
+        self.mock.side_effect = ["not valid xml", ConnectionError]
+
+        assert self.fritz.has_smarthome_capabilities() is None
+
+    def test_has_smarthome_capabilities_restapi_fallback(self):
+        """TR-064 is unreachable, but the REST API lists a /smarthome endpoint."""
+        self.mock.side_effect = [
+            ConnectionError,
+            Helper.response("rest_api_desc", "json"),
+        ]
+
+        assert self.fritz.has_smarthome_capabilities() is True
+        self.mock.assert_called_with("http://10.0.0.1/rest_api_desc.json")
+
+    def test_has_smarthome_capabilities_restapi_fallback_unexpected_shape(self):
+        """REST API returns valid JSON but with an unexpected top-level shape."""
+        self.mock.side_effect = [ConnectionError, "[1, 2, 3]"]
+
+        assert self.fritz.has_smarthome_capabilities() is None
+
+    def test_has_smarthome_capabilities_restapi_fallback_unexpected_endpoints_type(
+        self,
+    ):
+        """REST API returns valid JSON but "endpoints" is not a list."""
+        self.mock.side_effect = [ConnectionError, '{"endpoints": 42}']
+
+        assert self.fritz.has_smarthome_capabilities() is None
+
+    def test_has_smarthome_capabilities_restapi_fallback_not_supported(self):
+        self.mock.side_effect = [
+            ConnectionError,
+            Helper.response("rest_api_desc_no_smarthome", "json"),
+        ]
+
+        assert self.fritz.has_smarthome_capabilities() is False
+
+    def test_has_smarthome_capabilities_restapi_fallback_failed(self):
+        self.mock.side_effect = [ConnectionError, ConnectionError]
+
+        assert self.fritz.has_smarthome_capabilities() is None
+
+    def test_has_smarthome_capabilities_restapi_fallback_parse_error(self):
+        self.mock.side_effect = [ConnectionError, "not valid json"]
+
+        assert self.fritz.has_smarthome_capabilities() is None

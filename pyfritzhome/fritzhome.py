@@ -1,11 +1,12 @@
 """The main fritzhome handling class."""
-# -*- coding: utf-8 -*-
 
 from __future__ import print_function
 
 import hashlib
+import json
 import logging
 import time
+from urllib.parse import urlparse
 from xml.etree import ElementTree
 
 from cryptography.hazmat.primitives import hashes
@@ -69,6 +70,50 @@ class Fritzhome(object):
         challenge = dom.findtext("Challenge")
 
         return (sid, challenge, blocktime)
+
+    def has_smarthome_capabilities(self) -> Optional[bool]:
+        """Check if the device offers smart home capabilities.
+
+        Tries the TR-064 device description first and, if that could not be
+        retrieved or parsed, falls back to the REST API description. Returns
+        True if a smart home service/endpoint is present, False if a
+        description was retrieved but does not list one, and None if neither
+        description could be retrieved or parsed.
+        """
+        host = urlparse(self.base_url).hostname
+        if host and ":" in host:
+            # re-add brackets stripped by urlparse for IPv6 literals
+            host = f"[{host}]"
+
+        try:
+            plain = self._request(f"http://{host}:49000/tr64desc.xml")
+            dom = ElementTree.fromstring(plain)
+        except (exceptions.RequestException, ElementTree.ParseError) as ex:
+            _LOGGER.debug(
+                "could not determine smarthome capabilities via TR-064: %s", ex
+            )
+        else:
+            for service_type in dom.iter("{urn:dslforum-org:device-1-0}serviceType"):
+                if service_type.text and "X_AVM-DE_Homeauto" in service_type.text:
+                    return True
+            return False
+
+        try:
+            plain = self._request(f"http://{host}/rest_api_desc.json")
+            endpoints = json.loads(plain).get("endpoints", [])
+            return any(
+                "/smarthome" in endpoint.get("path", "") for endpoint in endpoints
+            )
+        except (
+            exceptions.RequestException,
+            ValueError,
+            AttributeError,
+            TypeError,
+        ) as ex:
+            _LOGGER.debug(
+                "could not determine smarthome capabilities via REST API: %s", ex
+            )
+            return None
 
     def _logout_request(self):
         """Send a logout request."""
