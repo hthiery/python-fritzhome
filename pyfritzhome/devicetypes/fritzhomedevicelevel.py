@@ -1,5 +1,4 @@
 """The level device class."""
-# -*- coding: utf-8 -*-
 
 import logging
 

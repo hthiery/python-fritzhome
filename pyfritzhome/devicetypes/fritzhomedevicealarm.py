@@ -1,5 +1,4 @@
 """The alarm device class."""
-# -*- coding: utf-8 -*-
 
 import logging
 

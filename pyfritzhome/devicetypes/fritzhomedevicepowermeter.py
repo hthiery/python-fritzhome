@@ -1,5 +1,4 @@
 """The powermeter device class."""
-# -*- coding: utf-8 -*-
 
 import logging
 
