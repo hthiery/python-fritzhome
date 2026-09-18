@@ -1,0 +1,6 @@
+{
+  "endpoints": [
+    { "methods": ["get"], "path": "/api/v0/setup/status" },
+    { "methods": ["get", "put"], "path": "/api/v0/monitor/online" }
+  ]
+}
