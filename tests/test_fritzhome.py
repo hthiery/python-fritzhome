@@ -25,6 +25,17 @@ class TestFritzhome(object):
             self.fritz.login()
         assert str(ex.value) == 'login for user="user" failed'
 
+    def test_login_missing_challenge(self):
+        self.fritz._login_request = MagicMock(
+            return_value=("0000000000000000", None, 0)
+        )
+
+        with pytest.raises(LoginError) as ex:
+            self.fritz.login()
+        assert str(ex.value) == (
+            'login for user="user" failed: challenge missing from login response'
+        )
+
     def test_login_connection_error(self):
         self.mock.side_effect = ConnectionError
 

@@ -16,37 +16,48 @@ from requests import exceptions, Session
 
 from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhomedevice import FritzhomeDevice
-from .fritzhomedevice import FritzhomeTemplate
-from .fritzhomedevice import FritzhomeTrigger
-from typing import Dict, Optional
+from .devicetypes import FritzhomeTemplate, FritzhomeTrigger
+from typing import Dict, Mapping, Optional, Sequence, SupportsInt, Union, overload
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class Fritzhome(object):
     """Fritzhome object to communicate with the device."""
 
-    _sid = None
-    _session = None
+    _sid: Optional[str] = None
+    _session: Session
     _devices: Optional[Dict[str, FritzhomeDevice]] = None
     _templates: Optional[Dict[str, FritzhomeTemplate]] = None
     _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
 
-    def __init__(self, host, user, password, port=None, ssl_verify=True, timeout=10):
+    def __init__(
+        self,
+        host: str,
+        user: str,
+        password: str,
+        port: Optional[int] = None,
+        ssl_verify: bool = True,
+        timeout: int = 10,
+    ) -> None:
         """Create a fritzhome object."""
-        self._user = user
-        self._password = password
+        self._user: str = user
+        self._password: str = password
         self._session = Session()
-        self._ssl_verify = ssl_verify
-        self._timeout = timeout
-        self._has_getdeviceinfos = True
-        self._has_txbusy = True
+        self._ssl_verify: bool = ssl_verify
+        self._timeout: int = timeout
+        self._has_getdeviceinfos: bool = True
+        self._has_txbusy: bool = True
         if host.startswith("https://") or host.startswith("http://"):
-            self.base_url = f"{host}:{port}" if port else host
+            self.base_url: str = f"{host}:{port}" if port else host
         else:
             self.base_url = f"http://{host}:{port}" if port else f"http://{host}"
 
-    def _request(self, url, params=None):
+    def _request(
+        self,
+        url: str,
+        params: Optional[Mapping[str, Union[str, int, None]]] = None,
+    ) -> str:
         """Send a request with parameters."""
         rsp = self._session.get(
             url, params=params, timeout=self._timeout, verify=self._ssl_verify
@@ -54,7 +65,9 @@ class Fritzhome(object):
         rsp.raise_for_status()
         return rsp.text.strip()
 
-    def _login_request(self, username=None, secret=None):
+    def _login_request(
+        self, username: Optional[str] = None, secret: Optional[str] = None
+    ) -> tuple[Optional[str], Optional[str], int]:
         """Send a login request with paramerters."""
         url = f"{self.base_url}/login_sid.lua?version=2"
         params = {}
@@ -66,7 +79,7 @@ class Fritzhome(object):
         plain = self._request(url, params)
         dom = ElementTree.fromstring(plain)
         sid = dom.findtext("SID")
-        blocktime = int(dom.findtext("BlockTime"))
+        blocktime = int(dom.findtext("BlockTime") or 0)
         challenge = dom.findtext("Challenge")
 
         return (sid, challenge, blocktime)
@@ -115,7 +128,7 @@ class Fritzhome(object):
             )
             return None
 
-    def _logout_request(self):
+    def _logout_request(self) -> None:
         """Send a logout request."""
         _LOGGER.debug("logout")
         url = f"{self.base_url}/login_sid.lua"
@@ -124,7 +137,7 @@ class Fritzhome(object):
         self._request(url, params)
 
     @staticmethod
-    def _create_login_secrete_pbkdf2(challenge, password):
+    def _create_login_secrete_pbkdf2(challenge: str, password: str) -> str:
         challenge_parts = challenge.split("$")
         # Extract all necessary values encoded into the challenge
         iter1 = int(challenge_parts[1])
@@ -146,13 +159,55 @@ class Fritzhome(object):
         return f"{challenge_parts[4]}${hash2.hex()}"
 
     @staticmethod
-    def _create_login_secret_md5(challenge, password):
+    def _create_login_secret_md5(challenge: str, password: str) -> str:
         """Create a login secret."""
         to_hash = (challenge + "-" + password).encode("UTF-16LE")
         hashed = hashlib.md5(to_hash).hexdigest()
         return "{0}-{1}".format(challenge, hashed)
 
-    def _aha_request(self, cmd, ain=None, param=None, rf=str):
+    @overload
+    def _aha_request(
+        self,
+        cmd: str,
+        ain: Optional[str] = None,
+        param: Optional[Mapping[str, Union[str, int]]] = None,
+        rf: type[str] = str,
+    ) -> str: ...
+
+    @overload
+    def _aha_request(
+        self,
+        cmd: str,
+        ain: Optional[str] = None,
+        param: Optional[Mapping[str, Union[str, int]]] = None,
+        rf: type[bool] = bool,
+    ) -> bool: ...
+
+    @overload
+    def _aha_request(
+        self,
+        cmd: str,
+        ain: Optional[str] = None,
+        param: Optional[Mapping[str, Union[str, int]]] = None,
+        rf: type[int] = int,
+    ) -> int: ...
+
+    @overload
+    def _aha_request(
+        self,
+        cmd: str,
+        ain: Optional[str] = None,
+        param: Optional[Mapping[str, Union[str, int]]] = None,
+        rf: type[float] = float,
+    ) -> float: ...
+
+    def _aha_request(
+        self,
+        cmd: str,
+        ain: Optional[str] = None,
+        param: Optional[Mapping[str, Union[str, int]]] = None,
+        rf: Union[type[str], type[bool], type[int], type[float]] = str,
+    ) -> Union[str, bool, int, float]:
         """Send an AHA request."""
         url = f"{self.base_url}/webservices/homeautoswitch.lua"
 
@@ -161,9 +216,10 @@ class Fritzhome(object):
         if not self._sid:
             raise NotLoggedInError
 
-        params = {"switchcmd": cmd, "sid": self._sid}
+        params: Dict[str, Union[str, int]] = {"switchcmd": cmd, "sid": self._sid}
         if param:
-            params.update(param)
+            for key, value in param.items():
+                params[key] = value
         if ain:
             params["ain"] = ain
 
@@ -175,13 +231,15 @@ class Fritzhome(object):
             return bool(int(plain))
         return rf(plain)
 
-    def login(self):
+    def login(self) -> None:
         """Login and get a valid session ID."""
         (sid, challenge, blocktime) = self._login_request()
         _LOGGER.info("sid:%s, challenge:%s, blocktime:%s", sid, challenge, blocktime)
         if sid == "0000000000000000":
             if blocktime > 0:
                 time.sleep(blocktime)
+            if challenge is None:
+                raise LoginError(self._user, "challenge missing from login response")
             # PBKDF2 (FRITZ!OS 7.24 or later)
             if challenge.startswith("2$"):
                 secret = self._create_login_secrete_pbkdf2(challenge, self._password)
@@ -196,12 +254,12 @@ class Fritzhome(object):
                 raise LoginError(self._user)
             self._sid = sid2
 
-    def logout(self):
+    def logout(self) -> None:
         """Logout."""
         self._logout_request()
         self._sid = None
 
-    def update_devices(self, ignore_removed=True):
+    def update_devices(self, ignore_removed: bool = True) -> bool:
         """Update the device."""
         _LOGGER.info("Updating Devices ...")
         if self._devices is None:
@@ -229,14 +287,14 @@ class Fritzhome(object):
 
         return True
 
-    def _get_listinfo_elements(self, entity_type):
+    def _get_listinfo_elements(self, entity_type: str) -> list[ElementTree.Element]:
         """Get the DOM elements for the entity list."""
         plain = self._aha_request("get" + entity_type + "listinfos")
         dom = ElementTree.fromstring(plain)
         _LOGGER.debug(dom)
         return dom.findall("*")
 
-    def wait_device_txbusy(self, ain, retries=10):
+    def wait_device_txbusy(self, ain: str, retries: int = 10) -> bool:
         """Wait for device to finish command execution."""
         if not self._has_txbusy:
             return True
@@ -252,7 +310,10 @@ class Fritzhome(object):
                     self._has_getdeviceinfos = False
 
             if not self._has_getdeviceinfos:
-                dom = self.get_device_element(ain)
+                fallback_dom = self.get_device_element(ain)
+                if fallback_dom is None:
+                    return False
+                dom = fallback_dom
 
             txbusy = dom.findall("txbusy")
             if not txbusy:
@@ -266,11 +327,11 @@ class Fritzhome(object):
             time.sleep(0.2)
         return False
 
-    def get_device_elements(self):
+    def get_device_elements(self) -> list[ElementTree.Element]:
         """Get the DOM elements for the device list."""
         return self._get_listinfo_elements("device")
 
-    def get_device_element(self, ain):
+    def get_device_element(self, ain: str) -> Optional[ElementTree.Element]:
         """Get the DOM element for the specified device."""
         elements = self.get_device_elements()
         for element in elements:
@@ -278,75 +339,78 @@ class Fritzhome(object):
                 return element
         return None
 
-    def get_devices(self):
+    def get_devices(self) -> list[FritzhomeDevice]:
         """Get the list of all known devices."""
         return list(self.get_devices_as_dict().values())
 
-    def get_devices_as_dict(self):
+    def get_devices_as_dict(self) -> Dict[str, FritzhomeDevice]:
         """Get the list of all known devices."""
         if self._devices is None:
             self.update_devices()
+            assert self._devices is not None
         return self._devices
 
-    def get_device_by_ain(self, ain):
+    def get_device_by_ain(self, ain: str) -> FritzhomeDevice:
         """Return a device specified by the AIN."""
         return self.get_devices_as_dict()[ain]
 
-    def get_device_infos(self, ain):
+    def get_device_infos(self, ain: str) -> str:
         """Get the device infos."""
         return self._aha_request("getdeviceinfos", ain=ain)
 
-    def get_device_present(self, ain):
+    def get_device_present(self, ain: str) -> bool:
         """Get the device presence."""
         return self._aha_request("getswitchpresent", ain=ain, rf=bool)
 
-    def get_device_name(self, ain):
+    def get_device_name(self, ain: str) -> str:
         """Get the device name."""
         return self._aha_request("getswitchname", ain=ain)
 
-    def get_switch_state(self, ain):
+    def get_switch_state(self, ain: str) -> bool:
         """Get the switch state."""
         return self._aha_request("getswitchstate", ain=ain, rf=bool)
 
-    def set_switch_state_on(self, ain, wait=False):
+    def set_switch_state_on(self, ain: str, wait: bool = False) -> bool:
         """Set the switch to on state."""
         result = self._aha_request("setswitchon", ain=ain, rf=bool)
         wait and self.wait_device_txbusy(ain)
         return result
 
-    def set_switch_state_off(self, ain, wait=False):
+    def set_switch_state_off(self, ain: str, wait: bool = False) -> bool:
         """Set the switch to off state."""
         result = self._aha_request("setswitchoff", ain=ain, rf=bool)
         wait and self.wait_device_txbusy(ain)
         return result
 
-    def set_switch_state_toggle(self, ain, wait=False):
+    def set_switch_state_toggle(self, ain: str, wait: bool = False) -> bool:
         """Toggle the switch state."""
         result = self._aha_request("setswitchtoggle", ain=ain, rf=bool)
         wait and self.wait_device_txbusy(ain)
         return result
 
-    def get_switch_power(self, ain):
+    def get_switch_power(self, ain: str) -> int:
         """Get the switch power consumption."""
         return self._aha_request("getswitchpower", ain=ain, rf=int)
 
-    def get_switch_energy(self, ain):
+    def get_switch_energy(self, ain: str) -> int:
         """Get the switch energy."""
         return self._aha_request("getswitchenergy", ain=ain, rf=int)
 
-    def get_temperature(self, ain):
+    def get_temperature(self, ain: str) -> float:
         """Get the device temperature sensor value."""
         return self._aha_request("gettemperature", ain=ain, rf=float) / 10.0
 
-    def _get_temperature(self, ain, name):
+    def _get_temperature(self, ain: str, name: str) -> float:
         plain = self._aha_request(name, ain=ain, rf=float)
         return plain / 2
 
-    def get_target_temperature(self, ain):
+    def get_target_temperature(self, ain: str) -> float:
         """Get the thermostate target temperature."""
         return self._get_temperature(ain, "gethkrtsoll")
 
-    def set_target_temperature(self, ain, temperature, wait=False):
+    def set_target_temperature(
+        self, ain: str, temperature: float, wait: bool = False
+    ) -> None:
         """Set the thermostate target temperature."""
         temp = int(temperature * 2)
 
@@ -358,7 +422,7 @@ class Fritzhome(object):
         self._aha_request("sethkrtsoll", ain=ain, param={"param": temp})
         wait and self.wait_device_txbusy(ain)
 
-    def set_window_open(self, ain, seconds, wait=False):
+    def set_window_open(self, ain: str, seconds: float, wait: bool = False) -> None:
         """Set the thermostate target temperature."""
         endtimestamp = int(time.time() + seconds)
 
@@ -367,44 +431,44 @@ class Fritzhome(object):
         )
         wait and self.wait_device_txbusy(ain)
 
-    def set_boost_mode(self, ain, seconds, wait=False):
+    def set_boost_mode(self, ain: str, seconds: float, wait: bool = False) -> None:
         """Set the thermostate to boost mode."""
         endtimestamp = int(time.time() + seconds)
 
         self._aha_request("sethkrboost", ain=ain, param={"endtimestamp": endtimestamp})
         wait and self.wait_device_txbusy(ain)
 
-    def get_comfort_temperature(self, ain):
+    def get_comfort_temperature(self, ain: str) -> float:
         """Get the thermostate comfort temperature."""
         return self._get_temperature(ain, "gethkrkomfort")
 
-    def get_eco_temperature(self, ain):
+    def get_eco_temperature(self, ain: str) -> float:
         """Get the thermostate eco temperature."""
         return self._get_temperature(ain, "gethkrabsenk")
 
-    def get_device_statistics(self, ain):
+    def get_device_statistics(self, ain: str) -> str:
         """Get device statistics."""
         plain = self._aha_request("getbasicdevicestats", ain=ain)
         return plain
 
     # Lightbulb-related commands
 
-    def set_state_off(self, ain, wait=False):
+    def set_state_off(self, ain: str, wait: bool = False) -> None:
         """Set the switch/actuator/lightbulb to on state."""
         self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 0})
         wait and self.wait_device_txbusy(ain)
 
-    def set_state_on(self, ain, wait=False):
+    def set_state_on(self, ain: str, wait: bool = False) -> None:
         """Set the switch/actuator/lightbulb to on state."""
         self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 1})
         wait and self.wait_device_txbusy(ain)
 
-    def set_state_toggle(self, ain, wait=False):
+    def set_state_toggle(self, ain: str, wait: bool = False) -> None:
         """Toggle the switch/actuator/lightbulb state."""
         self._aha_request("setsimpleonoff", ain=ain, param={"onoff": 2})
         wait and self.wait_device_txbusy(ain)
 
-    def set_level(self, ain, level, wait=False):
+    def set_level(self, ain: str, level: float, wait: bool = False) -> None:
         """Set level/brightness/height in interval [0,255]."""
         if level < 0:
             level = 0  # 0%
@@ -414,7 +478,7 @@ class Fritzhome(object):
         self._aha_request("setlevel", ain=ain, param={"level": int(level)})
         wait and self.wait_device_txbusy(ain)
 
-    def set_level_percentage(self, ain, level, wait=False):
+    def set_level_percentage(self, ain: str, level: float, wait: bool = False) -> None:
         """Set level/brightness/height in interval [0,100]."""
         if level < 0:
             level = 0
@@ -424,23 +488,35 @@ class Fritzhome(object):
         self._aha_request("setlevelpercentage", ain=ain, param={"level": int(level)})
         wait and self.wait_device_txbusy(ain)
 
-    def _get_colordefaults(self, ain):
+    def _get_colordefaults(self, ain: str) -> ElementTree.Element:
         plain = self._aha_request("getcolordefaults", ain=ain)
         return ElementTree.fromstring(plain)
 
-    def get_colors(self, ain):
+    def get_colors(
+        self, ain: str
+    ) -> dict[str, list[tuple[Optional[str], Optional[str], Optional[str]]]]:
         """Get colors (HSV-space) supported by this lightbulb."""
         colordefaults = self._get_colordefaults(ain)
         colors = {}
         for hs in colordefaults.iter("hs"):
-            name = hs.find("name").text.strip()
+            name_element = hs.find("name")
+            if name_element is None or name_element.text is None:
+                continue
+            name = name_element.text.strip()
             values = []
             for st in hs.iter("color"):
                 values.append((st.get("hue"), st.get("sat"), st.get("val")))
             colors[name] = values
         return colors
 
-    def set_color(self, ain, hsv, duration=0, mapped=True, wait=False):
+    def set_color(
+        self,
+        ain: str,
+        hsv: Sequence[Union[str, SupportsInt]],
+        duration: int = 0,
+        mapped: bool = True,
+        wait: bool = False,
+    ) -> None:
         """Set hue and saturation.
 
         hsv: HUE colorspace element obtained from get_colors()
@@ -458,7 +534,7 @@ class Fritzhome(object):
             self._aha_request("setunmappedcolor", ain=ain, param=params)
         wait and self.wait_device_txbusy(ain)
 
-    def get_color_temps(self, ain):
+    def get_color_temps(self, ain: str) -> list[Optional[str]]:
         """Get temperatures supported by this lightbulb."""
         colordefaults = self._get_colordefaults(ain)
         temperatures = []
@@ -466,7 +542,13 @@ class Fritzhome(object):
             temperatures.append(temp.get("value"))
         return temperatures
 
-    def set_color_temp(self, ain, temperature, duration=0, wait=False):
+    def set_color_temp(
+        self,
+        ain: str,
+        temperature: Union[str, int, float],
+        duration: int = 0,
+        wait: bool = False,
+    ) -> None:
         """Set color temperature.
 
         temperature: temperature element obtained from get_temperatures()
@@ -478,27 +560,27 @@ class Fritzhome(object):
 
     # blinds
     # states: open, close, stop
-    def _set_blind_state(self, ain, state):
+    def _set_blind_state(self, ain: str, state: str) -> None:
         self._aha_request("setblind", ain=ain, param={"target": state})
 
-    def set_blind_open(self, ain, wait=False):
+    def set_blind_open(self, ain: str, wait: bool = False) -> None:
         """Set the blind state to open."""
         self._set_blind_state(ain, "open")
         wait and self.wait_device_txbusy(ain)
 
-    def set_blind_close(self, ain, wait=False):
+    def set_blind_close(self, ain: str, wait: bool = False) -> None:
         """Set the blind state to close."""
         self._set_blind_state(ain, "close")
         wait and self.wait_device_txbusy(ain)
 
-    def set_blind_stop(self, ain, wait=False):
+    def set_blind_stop(self, ain: str, wait: bool = False) -> None:
         """Set the blind state to stop."""
         self._set_blind_state(ain, "stop")
         wait and self.wait_device_txbusy(ain)
 
     # Template-related commands
 
-    def has_templates(self):
+    def has_templates(self) -> bool:
         """Check if the Fritz!Box supports smarthome templates."""
         plain = self._aha_request("gettemplatelistinfos")
         try:
@@ -507,7 +589,7 @@ class Fritzhome(object):
             return False
         return True
 
-    def update_templates(self, ignore_removed=True):
+    def update_templates(self, ignore_removed: bool = True) -> bool:
         """Update the template."""
         _LOGGER.info("Updating Templates ...")
         if self._templates is None:
@@ -535,31 +617,32 @@ class Fritzhome(object):
 
         return True
 
-    def get_template_elements(self):
+    def get_template_elements(self) -> list[ElementTree.Element]:
         """Get the DOM elements for the template list."""
         return self._get_listinfo_elements("template")
 
-    def get_templates(self):
+    def get_templates(self) -> list[FritzhomeTemplate]:
         """Get the list of all known templates."""
         return list(self.get_templates_as_dict().values())
 
-    def get_templates_as_dict(self):
+    def get_templates_as_dict(self) -> Dict[str, FritzhomeTemplate]:
         """Get the list of all known templates."""
         if self._templates is None:
             self.update_templates()
+            assert self._templates is not None
         return self._templates
 
-    def get_template_by_ain(self, ain):
+    def get_template_by_ain(self, ain: str) -> FritzhomeTemplate:
         """Return a template specified by the AIN."""
         return self.get_templates_as_dict()[ain]
 
-    def apply_template(self, ain):
+    def apply_template(self, ain: str) -> None:
         """Appliy a template."""
         self._aha_request("applytemplate", ain=ain)
 
     # Trigger-related commands
 
-    def has_triggers(self):
+    def has_triggers(self) -> bool:
         """Check if the Fritz!Box supports smarthome triggers."""
         plain = self._aha_request("gettriggerlistinfos")
         try:
@@ -568,7 +651,7 @@ class Fritzhome(object):
             return False
         return True
 
-    def update_triggers(self, ignore_removed=True):
+    def update_triggers(self, ignore_removed: bool = True) -> bool:
         """Update the triger."""
         _LOGGER.info("Updating Trigers ...")
         if self._triggers is None:
@@ -596,31 +679,32 @@ class Fritzhome(object):
 
         return True
 
-    def get_trigger_elements(self):
+    def get_trigger_elements(self) -> list[ElementTree.Element]:
         """Get the DOM elements for the trigger list."""
         return self._get_listinfo_elements("trigger")
 
-    def get_triggers(self):
+    def get_triggers(self) -> list[FritzhomeTrigger]:
         """Get the list of all known triggers."""
         return list(self.get_triggers_as_dict().values())
 
-    def get_triggers_as_dict(self):
+    def get_triggers_as_dict(self) -> Dict[str, FritzhomeTrigger]:
         """Get all known triggers as dictionary."""
         if self._triggers is None:
             self.update_triggers()
+            assert self._triggers is not None
         return self._triggers
 
-    def get_trigger_by_ain(self, ain):
+    def get_trigger_by_ain(self, ain: str) -> FritzhomeTrigger:
         """Return a trigger specified by the AIN."""
         return self.get_triggers_as_dict()[ain]
 
-    def _set_trigger_state(self, ain, state):
+    def _set_trigger_state(self, ain: str, state: str) -> None:
         self._aha_request("settriggeractive", ain=ain, param={"active": state})
 
-    def set_trigger_active(self, ain):
+    def set_trigger_active(self, ain: str) -> None:
         """Set the trigger to active state."""
         self._set_trigger_state(ain, "1")
 
-    def set_trigger_inactive(self, ain):
+    def set_trigger_inactive(self, ain: str) -> None:
         """Set the trigger to inactive state."""
         self._set_trigger_state(ain, "0")

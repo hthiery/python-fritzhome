@@ -1,6 +1,8 @@
 """The humidity device class."""
 
 import logging
+from typing import Optional
+from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -11,9 +13,9 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceHumidity(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    rel_humidity = None
+    rel_humidity: Optional[int] = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
@@ -23,11 +25,11 @@ class FritzhomeDeviceHumidity(FritzhomeDeviceBase):
 
     # Humidity
     @property
-    def has_humidity_sensor(self):
+    def has_humidity_sensor(self) -> bool:
         """Check if the device has humidity function."""
         return self._has_feature(FritzhomeDeviceFeatures.HUMIDITY)
 
-    def _update_humidity_from_node(self, node):
+    def _update_humidity_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update humidity device")
         humidity_element = node.find("humidity")
         try:

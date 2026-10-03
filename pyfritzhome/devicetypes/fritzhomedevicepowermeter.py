@@ -1,6 +1,8 @@
 """The powermeter device class."""
 
 import logging
+from typing import Optional
+from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -11,12 +13,12 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    power = None
-    energy = None
-    voltage = None
-    current = None
+    power: Optional[int] = None
+    energy: Optional[int] = None
+    voltage: Optional[int] = None
+    current: Optional[float] = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
@@ -26,26 +28,34 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
 
     # Power Meter
     @property
-    def has_powermeter(self):
+    def has_powermeter(self) -> bool:
         """Check if the device has powermeter function."""
         return self._has_feature(FritzhomeDeviceFeatures.POWER_METER)
 
-    def _update_powermeter_from_node(self, node):
+    def _update_powermeter_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update powermeter device")
         val = node.find("powermeter")
+        if val is None:
+            return
 
         try:
-            self.power = int(val.findtext("power"))
+            power = val.findtext("power")
+            if power is not None:
+                self.power = int(power)
         except Exception:
             pass
 
         try:
-            self.energy = int(val.findtext("energy"))
+            energy = val.findtext("energy")
+            if energy is not None:
+                self.energy = int(energy)
         except Exception:
             pass
 
         try:
-            self.voltage = int(val.findtext("voltage"))
+            voltage = val.findtext("voltage")
+            if voltage is not None:
+                self.voltage = int(voltage)
         except Exception:
             pass
 
@@ -58,10 +68,10 @@ class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
         else:
             self.current = None
 
-    def get_switch_power(self):
+    def get_switch_power(self) -> int:
         """Get the switch state."""
         return self._fritz.get_switch_power(self.ain)
 
-    def get_switch_energy(self):
+    def get_switch_energy(self) -> int:
         """Get the switch energy."""
         return self._fritz.get_switch_energy(self.ain)

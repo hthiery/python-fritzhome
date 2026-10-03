@@ -2,6 +2,8 @@
 
 import logging
 import time
+from typing import Optional
+from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -12,25 +14,25 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    actual_temperature = None
-    target_temperature = None
-    eco_temperature = None
-    comfort_temperature = None
-    device_lock = None
-    lock = None
-    error_code = None
-    window_open = None
-    window_open_endtime = None
-    boost_active = None
-    boost_active_endtime = None
-    adaptive_heating_active = None
-    adaptive_heating_running = None
-    summer_active = None
-    holiday_active = None
-    nextchange_endperiod = None
-    nextchange_temperature = None
+    actual_temperature: Optional[float] = None
+    target_temperature: Optional[float] = None
+    eco_temperature: Optional[float] = None
+    comfort_temperature: Optional[float] = None
+    device_lock: Optional[bool] = None
+    lock: Optional[bool] = None
+    error_code: Optional[int] = None
+    window_open: Optional[bool] = None
+    window_open_endtime: Optional[float] = None
+    boost_active: Optional[bool] = None
+    boost_active_endtime: Optional[float] = None
+    adaptive_heating_active: Optional[bool] = None
+    adaptive_heating_running: Optional[bool] = None
+    summer_active: Optional[bool] = None
+    holiday_active: Optional[bool] = None
+    nextchange_endperiod: Optional[int] = None
+    nextchange_temperature: Optional[float] = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
@@ -40,13 +42,15 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
 
     # Thermostat
     @property
-    def has_thermostat(self):
+    def has_thermostat(self) -> bool:
         """Check if the device has thermostat function."""
         return self._has_feature(FritzhomeDeviceFeatures.THERMOSTAT)
 
-    def _update_hkr_from_node(self, node):
+    def _update_hkr_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update thermostat device")
         hkr_element = node.find("hkr")
+        if hkr_element is None:
+            return
 
         try:
             self.actual_temperature = self.get_temp_from_node(hkr_element, "tist")
@@ -123,35 +127,35 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         except Exception:
             pass
 
-    def get_temperature(self):
+    def get_temperature(self) -> float:
         """Get the device temperature value."""
         return self._fritz.get_temperature(self.ain)
 
-    def get_target_temperature(self):
+    def get_target_temperature(self) -> float:
         """Get the thermostate target temperature."""
         return self._fritz.get_target_temperature(self.ain)
 
-    def set_target_temperature(self, temperature, wait=False):
+    def set_target_temperature(self, temperature: float, wait: bool = False) -> None:
         """Set the thermostate target temperature."""
         return self._fritz.set_target_temperature(self.ain, temperature, wait)
 
-    def set_window_open(self, seconds, wait=False):
+    def set_window_open(self, seconds: float, wait: bool = False) -> None:
         """Set the thermostate to window open."""
         return self._fritz.set_window_open(self.ain, seconds, wait)
 
-    def set_boost_mode(self, seconds, wait=False):
+    def set_boost_mode(self, seconds: float, wait: bool = False) -> None:
         """Set the thermostate into boost mode."""
         return self._fritz.set_boost_mode(self.ain, seconds, wait)
 
-    def get_comfort_temperature(self):
+    def get_comfort_temperature(self) -> float:
         """Get the thermostate comfort temperature."""
         return self._fritz.get_comfort_temperature(self.ain)
 
-    def get_eco_temperature(self):
+    def get_eco_temperature(self) -> float:
         """Get the thermostate eco temperature."""
         return self._fritz.get_eco_temperature(self.ain)
 
-    def get_hkr_state(self):
+    def get_hkr_state(self) -> str:
         """Get the thermostate state."""
         try:
             return {
@@ -163,7 +167,7 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         except KeyError:
             return "manual"
 
-    def set_hkr_state(self, state, wait=False):
+    def set_hkr_state(self, state: str, wait: bool = False) -> None:
         """Set the state of the thermostat.
 
         Possible values for state are: 'on', 'off', 'comfort', 'eco'.
@@ -178,4 +182,5 @@ class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
         except KeyError:
             return
 
-        self.set_target_temperature(value, wait)
+        if value is not None:
+            self.set_target_temperature(value, wait)

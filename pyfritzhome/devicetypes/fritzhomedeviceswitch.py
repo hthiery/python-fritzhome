@@ -1,6 +1,8 @@
 """The switch device class."""
 
 import logging
+from typing import Optional
+from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -11,11 +13,12 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    switch_state = None
-    switch_mode = None
-    lock = None
+    switch_state: Optional[bool] = None
+    switch_mode: Optional[str] = None
+    lock: Optional[bool] = None
+    device_lock: Optional[bool] = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
@@ -25,7 +28,7 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
 
     # Switch
     @property
-    def has_switch(self):
+    def has_switch(self) -> bool:
         """Check if the device has switch function."""
         if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
             # for AVM plugs like FRITZ!DECT 200 and FRITZ!DECT 210
@@ -37,7 +40,7 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
             return True
         return False
 
-    def _update_switch_from_node(self, node):
+    def _update_switch_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update switch device")
         if self._has_feature(FritzhomeDeviceFeatures.SWITCH):
             val = node.find("switch")
@@ -63,18 +66,18 @@ class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
             except Exception:
                 self.switch_state = None
 
-    def get_switch_state(self):
+    def get_switch_state(self) -> bool:
         """Get the switch state."""
         return self._fritz.get_switch_state(self.ain)
 
-    def set_switch_state_on(self, wait=False):
+    def set_switch_state_on(self, wait: bool = False) -> bool:
         """Set the switch state to on."""
         return self._fritz.set_switch_state_on(self.ain, wait)
 
-    def set_switch_state_off(self, wait=False):
+    def set_switch_state_off(self, wait: bool = False) -> bool:
         """Set the switch state to off."""
         return self._fritz.set_switch_state_off(self.ain, wait)
 
-    def set_switch_state_toggle(self, wait=False):
+    def set_switch_state_toggle(self, wait: bool = False) -> bool:
         """Toggle the switch state."""
         return self._fritz.set_switch_state_toggle(self.ain, wait)
