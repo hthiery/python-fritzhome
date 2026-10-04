@@ -21,6 +21,8 @@ repos:
     rev: v1.19.1
     hooks:
       - id: mypy
+        args: []
         additional_dependencies:
+          - cryptography
           - types-requests
         files: ^pyfritzhome/.+\.py$
