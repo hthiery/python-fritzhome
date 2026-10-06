@@ -1,9 +1,10 @@
 """The base device class."""
 
-from __future__ import print_function
-
+from __future__ import annotations
 
 import logging
+
+from xml.etree import ElementTree
 
 from pyfritzhome.devicetypes.fritzhomeentitybase import FritzhomeEntityBase
 
@@ -13,18 +14,18 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
-    battery_level = None
-    battery_low = None
-    identifier = None
-    is_group = None
-    fw_version = None
-    group_members = None
-    manufacturer = None
-    productname = None
-    present = None
-    tx_busy = None
+    battery_level: int | None = None
+    battery_low: bool | None = None
+    identifier: str | None = None
+    is_group: bool | None = None
+    fw_version: str | None = None
+    group_members: list[str] | None = None
+    manufacturer: str | None = None
+    productname: str | None = None
+    present: bool | None = None
+    tx_busy: bool | None = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string."""
         return "{ain} {identifier} {manuf} {prod} {name}".format(
             ain=self.ain,
@@ -34,11 +35,11 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
             name=self.name,
         )
 
-    def update(self):
+    def update(self) -> None:
         """Update the device values."""
         self._fritz.update_devices()
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update base device")
         super()._update_from_node(node)
         self.ain = node.attrib["identifier"]
@@ -47,11 +48,14 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
         self.manufacturer = node.attrib["manufacturer"]
         self.productname = node.attrib["productname"]
 
-        self.present = bool(int(node.findtext("present")))
+        present_value = node.findtext("present")
+        if present_value is None:
+            raise ValueError("device node is missing present state")
+        self.present = bool(int(present_value))
 
         groupinfo = node.find("groupinfo")
         self.is_group = groupinfo is not None
-        if self.is_group:
+        if groupinfo is not None:
             self.group_members = str(groupinfo.findtext("members")).split(",")
 
         try:
@@ -66,6 +70,6 @@ class FritzhomeDeviceBase(FritzhomeEntityBase):
             pass
 
     # General
-    def get_present(self):
+    def get_present(self) -> bool:
         """Check if the device is present."""
         return self._fritz.get_device_present(self.ain)

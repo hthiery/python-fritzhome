@@ -1,6 +1,7 @@
 """The repeater device class."""
 
 import logging
+from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -11,13 +12,13 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceRepeater(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
 
     # Repeater
     @property
-    def has_repeater(self):
+    def has_repeater(self) -> bool:
         """Check if the device has repeater function."""
         return self._has_feature(FritzhomeDeviceFeatures.DECT_REPEATER)

@@ -4,8 +4,10 @@ coverage
 docutils
 flake8
 future
+mypy
 pre-commit
 pytest
 pytest-cov
 python-coveralls
 rstcheck
+types-requests

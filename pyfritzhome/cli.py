@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 """A simple CLI tool."""
 
+from __future__ import annotations
 
-from __future__ import print_function
+from collections.abc import Sequence
 import logging
 import argparse
+
 
 from pyfritzhome import Fritzhome, __version__
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def list_all(fritz, args):
+def list_all(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that prints all device information."""
     devices = fritz.get_devices()
 
@@ -77,73 +79,75 @@ def list_all(fritz, args):
             print("  endpositionset=%s" % device.endpositionsset)
 
 
-def device_name(fritz, args):
+def device_name(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that prints the device name."""
     print(fritz.get_device_name(args.ain))
 
 
-def device_presence(fritz, args):
+def device_presence(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that prints the device presence."""
     print(int(fritz.get_device_present(args.ain)))
 
 
-def device_statistics(fritz, args):
+def device_statistics(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that prints the device statistics."""
     stats = fritz.get_device_statistics(args.ain)
     print(stats)
 
 
-def blind_set_open(fritz, args):
+def blind_set_open(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command to open the blinds."""
     fritz.set_blind_open(args.ain)
 
 
-def blind_set_close(fritz, args):
+def blind_set_close(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command close the blinds."""
     fritz.set_blind_close(args.ain)
 
 
-def blind_set_level_percentage(fritz, args):
+def blind_set_level_percentage(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that sets the blind level as percentage."""
     fritz.set_level_percentage(args.ain, args.level)
 
 
-def thermostat_set_target_temperature(fritz, args):
+def thermostat_set_target_temperature(
+    fritz: Fritzhome, args: argparse.Namespace
+) -> None:
     """Command that sets the thermostat temperature."""
     fritz.set_target_temperature(args.ain, args.temperature)
 
 
-def thermostat_set_window_open(fritz, args):
+def thermostat_set_window_open(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that sets the thermostats window state."""
     fritz.set_window_open(args.ain, args.timespan)
 
 
-def thermostat_set_boost_mode(fritz, args):
+def thermostat_set_boost_mode(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that sets the thermostats into boost mode."""
     fritz.set_boost_mode(args.ain, args.timespan)
 
 
-def switch_get(fritz, args):
+def switch_get(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that get the device switch state."""
     print(fritz.get_switch_state(args.ain))
 
 
-def switch_on(fritz, args):
+def switch_on(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that set the device switch state to on."""
     fritz.set_switch_state_on(args.ain)
 
 
-def switch_off(fritz, args):
+def switch_off(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that set the device switch state to off."""
     fritz.set_switch_state_off(args.ain)
 
 
-def switch_toggle(fritz, args):
+def switch_toggle(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that toggles the device switch state."""
     fritz.set_switch_state_toggle(args.ain)
 
 
-def list_templates(fritz, args):
+def list_templates(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that prints all template information."""
     templates = fritz.get_templates()
     devices = fritz.get_devices_as_dict()
@@ -165,16 +169,17 @@ def list_templates(fritz, args):
         print("  dialhelper=%s" % template.apply_dialhelper)
 
         print(" Devices:")
-        for device_id in template.devices:
-            print("  %s=%s" % (device_id, devices[device_id].name))
+        if template.devices is not None:
+            for device_id in template.devices:
+                print("  %s=%s" % (device_id, devices[device_id].name))
 
 
-def template_apply(fritz, args):
+def template_apply(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that applies a template."""
     fritz.apply_template(args.ain)
 
 
-def list_triggers(fritz, args):
+def list_triggers(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that prints all trigger information."""
     triggers = fritz.get_triggers()
 
@@ -185,17 +190,17 @@ def list_triggers(fritz, args):
         print("  active=%s" % trigger.active)
 
 
-def trigger_set_active(fritz, args):
+def trigger_set_active(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that enables a trigger."""
     fritz.set_trigger_active(args.ain)
 
 
-def trigger_set_inactive(fritz, args):
+def trigger_set_inactive(fritz: Fritzhome, args: argparse.Namespace) -> None:
     """Command that disables a trigger."""
     fritz.set_trigger_inactive(args.ain)
 
 
-def main(args=None):
+def main(args: Sequence[str] | None = None) -> None:
     """Enter the main function of the CLI tool."""
     parser = argparse.ArgumentParser(description="Fritz!Box Smarthome CLI tool.")
     parser.add_argument(
@@ -384,23 +389,23 @@ def main(args=None):
     subparser.add_argument("ain", type=str, metavar="AIN", help="Actor Identification")
     subparser.set_defaults(func=trigger_set_inactive)
 
-    args = parser.parse_args(args)
+    parsed_args = parser.parse_args(args)
 
     logging.basicConfig()
-    if args.verbose:
+    if parsed_args.verbose:
         logging.getLogger("pyfritzhome").setLevel(logging.DEBUG)
 
     fritzbox = None
     try:
         fritzbox = Fritzhome(
-            host=args.host,
-            user=args.user,
-            password=args.password,
-            port=args.port or None,
-            ssl_verify=not args.insecure,
+            host=parsed_args.host,
+            user=parsed_args.user,
+            password=parsed_args.password,
+            port=parsed_args.port or None,
+            ssl_verify=not parsed_args.insecure,
         )
         fritzbox.login()
-        args.func(fritzbox, args)
+        parsed_args.func(fritzbox, parsed_args)
     finally:
         if fritzbox is not None:
             fritzbox.logout()

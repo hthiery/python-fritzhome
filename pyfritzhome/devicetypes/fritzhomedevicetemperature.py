@@ -1,6 +1,10 @@
 """The temperature device class."""
 
+from __future__ import annotations
+
 import logging
+
+from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -11,10 +15,10 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceTemperature(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    offset = None
-    temperature = None
+    offset: float | None = None
+    temperature: float | None = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
@@ -24,11 +28,11 @@ class FritzhomeDeviceTemperature(FritzhomeDeviceBase):
 
     # Temperature
     @property
-    def has_temperature_sensor(self):
+    def has_temperature_sensor(self) -> bool:
         """Check if the device has temperature function."""
         return self._has_feature(FritzhomeDeviceFeatures.TEMPERATURE)
 
-    def _update_temperature_from_node(self, node):
+    def _update_temperature_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update temperature device")
         temperature_element = node.find("temperature")
         try:

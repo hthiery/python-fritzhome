@@ -1,6 +1,10 @@
 """The alarm device class."""
 
+from __future__ import annotations
+
 import logging
+
+from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
 from .fritzhomedevicefeatures import FritzhomeDeviceFeatures
@@ -11,9 +15,9 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceAlarm(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    alert_state = None
+    alert_state: bool | None = None
 
-    def _update_from_node(self, node):
+    def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
         if self.present is False:
             return
@@ -23,11 +27,11 @@ class FritzhomeDeviceAlarm(FritzhomeDeviceBase):
 
     # Alarm
     @property
-    def has_alarm(self):
+    def has_alarm(self) -> bool:
         """Check if the device has alarm function."""
         return self._has_feature(FritzhomeDeviceFeatures.ALARM)
 
-    def _update_alarm_from_node(self, node):
+    def _update_alarm_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update alert device")
         val = node.find("alert")
         try:
