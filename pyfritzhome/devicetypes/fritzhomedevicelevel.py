@@ -1,7 +1,8 @@
 """The level device class."""
 
+from __future__ import annotations
+
 import logging
-from typing import Optional, Union
 from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
@@ -13,8 +14,8 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceLevel(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    level: Optional[int] = None
-    levelpercentage: Optional[int] = None
+    level: int | None = None
+    levelpercentage: int | None = None
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)
@@ -41,20 +42,20 @@ class FritzhomeDeviceLevel(FritzhomeDeviceBase):
         except Exception:
             pass
 
-    def get_level(self) -> Optional[int]:
+    def get_level(self) -> int | None:
         """Get the level."""
         return self.level
 
-    def get_level_percentage(self) -> Optional[int]:
+    def get_level_percentage(self) -> int | None:
         """Get the level in percentage."""
         return self.levelpercentage
 
-    def set_level(self, level: Union[int, float], wait: bool = False) -> None:
+    def set_level(self, level: int | float, wait: bool = False) -> None:
         """Set the level."""
         self._fritz.set_level(self.ain, level, wait)
 
     def set_level_percentage(
-        self, levelpercentage: Union[int, float], wait: bool = False
+        self, levelpercentage: int | float, wait: bool = False
     ) -> None:
         """Set the level in percentage."""
         self._fritz.set_level_percentage(self.ain, levelpercentage, wait)

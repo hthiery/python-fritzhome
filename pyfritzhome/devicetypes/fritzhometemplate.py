@@ -1,7 +1,9 @@
 """The template class."""
 
+from __future__ import annotations
+
 import logging
-from typing import Optional
+
 from xml.etree import ElementTree
 
 from .fritzhomeentitybase import FritzhomeEntityBase
@@ -13,17 +15,17 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeTemplate(FritzhomeEntityBase):
     """The Fritzhome Template class."""
 
-    devices: Optional[list[str]] = None
-    features: Optional[FritzhomeDeviceFeatures] = None
-    apply_hkr_summer: Optional[bool] = None
-    apply_hkr_temperature: Optional[bool] = None
-    apply_hkr_holidays: Optional[bool] = None
-    apply_hkr_time_table: Optional[bool] = None
-    apply_relay_manual: Optional[bool] = None
-    apply_relay_automatic: Optional[bool] = None
-    apply_level: Optional[bool] = None
-    apply_color: Optional[bool] = None
-    apply_dialhelper: Optional[bool] = None
+    devices: list[str] | None = None
+    features: FritzhomeDeviceFeatures | None = None
+    apply_hkr_summer: bool | None = None
+    apply_hkr_temperature: bool | None = None
+    apply_hkr_holidays: bool | None = None
+    apply_hkr_time_table: bool | None = None
+    apply_relay_manual: bool | None = None
+    apply_relay_automatic: bool | None = None
+    apply_level: bool | None = None
+    apply_color: bool | None = None
+    apply_dialhelper: bool | None = None
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update template")

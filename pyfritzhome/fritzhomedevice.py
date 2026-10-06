@@ -1,6 +1,10 @@
 """Toplevel device for pyfritzhome."""
 
-from typing import Optional, TYPE_CHECKING
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+
 from xml.etree import ElementTree
 
 from .devicetypes import FritzhomeTemplate  # noqa: F401
@@ -40,8 +44,8 @@ class FritzhomeDevice(
 
     def __init__(
         self,
-        fritz: Optional["Fritzhome"] = None,
-        node: Optional[ElementTree.Element] = None,
+        fritz: "Fritzhome" | None = None,
+        node: ElementTree.Element | None = None,
     ) -> None:
         """Create a device object."""
         super().__init__(fritz, node)

@@ -1,7 +1,9 @@
 """The switch device class."""
 
+from __future__ import annotations
+
 import logging
-from typing import Optional
+
 from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
@@ -13,10 +15,10 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceSwitch(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    switch_state: Optional[bool] = None
-    switch_mode: Optional[str] = None
-    lock: Optional[bool] = None
-    device_lock: Optional[bool] = None
+    switch_state: bool | None = None
+    switch_mode: str | None = None
+    lock: bool | None = None
+    device_lock: bool | None = None
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)

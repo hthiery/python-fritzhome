@@ -1,10 +1,9 @@
 """The base device class."""
 
-from __future__ import print_function
-
+from __future__ import annotations
 
 import logging
-from typing import Optional
+
 from xml.etree import ElementTree
 
 from pyfritzhome.devicetypes.fritzhomeentitybase import FritzhomeEntityBase
@@ -15,16 +14,16 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceBase(FritzhomeEntityBase):
     """The Fritzhome Device class."""
 
-    battery_level: Optional[int] = None
-    battery_low: Optional[bool] = None
-    identifier: Optional[str] = None
-    is_group: Optional[bool] = None
-    fw_version: Optional[str] = None
-    group_members: Optional[list[str]] = None
-    manufacturer: Optional[str] = None
-    productname: Optional[str] = None
-    present: Optional[bool] = None
-    tx_busy: Optional[bool] = None
+    battery_level: int | None = None
+    battery_low: bool | None = None
+    identifier: str | None = None
+    is_group: bool | None = None
+    fw_version: str | None = None
+    group_members: list[str] | None = None
+    manufacturer: str | None = None
+    productname: str | None = None
+    present: bool | None = None
+    tx_busy: bool | None = None
 
     def __repr__(self) -> str:
         """Return a string."""

@@ -1,6 +1,10 @@
 """The main fritzhome handling class."""
 
-from __future__ import print_function
+from __future__ import annotations
+
+
+from collections.abc import Mapping, Sequence
+from typing import SupportsInt, overload
 
 import hashlib
 import json
@@ -17,7 +21,6 @@ from requests import exceptions, Session
 from .errors import InvalidError, LoginError, NotLoggedInError
 from .fritzhomedevice import FritzhomeDevice
 from .devicetypes import FritzhomeTemplate, FritzhomeTrigger
-from typing import Dict, Mapping, Optional, Sequence, SupportsInt, Union, overload
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -25,18 +28,18 @@ _LOGGER: logging.Logger = logging.getLogger(__name__)
 class Fritzhome(object):
     """Fritzhome object to communicate with the device."""
 
-    _sid: Optional[str] = None
+    _sid: str | None = None
     _session: Session
-    _devices: Optional[Dict[str, FritzhomeDevice]] = None
-    _templates: Optional[Dict[str, FritzhomeTemplate]] = None
-    _triggers: Optional[Dict[str, FritzhomeTrigger]] = None
+    _devices: dict[str, FritzhomeDevice] | None = None
+    _templates: dict[str, FritzhomeTemplate] | None = None
+    _triggers: dict[str, FritzhomeTrigger] | None = None
 
     def __init__(
         self,
         host: str,
         user: str,
         password: str,
-        port: Optional[int] = None,
+        port: int | None = None,
         ssl_verify: bool = True,
         timeout: int = 10,
     ) -> None:
@@ -56,7 +59,7 @@ class Fritzhome(object):
     def _request(
         self,
         url: str,
-        params: Optional[Mapping[str, Union[str, int, None]]] = None,
+        params: Mapping[str, str | int | None] | None = None,
     ) -> str:
         """Send a request with parameters."""
         rsp = self._session.get(
@@ -66,8 +69,8 @@ class Fritzhome(object):
         return rsp.text.strip()
 
     def _login_request(
-        self, username: Optional[str] = None, secret: Optional[str] = None
-    ) -> tuple[Optional[str], Optional[str], int]:
+        self, username: str | None = None, secret: str | None = None
+    ) -> tuple[str | None, str | None, int]:
         """Send a login request with paramerters."""
         url = f"{self.base_url}/login_sid.lua?version=2"
         params = {}
@@ -84,7 +87,7 @@ class Fritzhome(object):
 
         return (sid, challenge, blocktime)
 
-    def has_smarthome_capabilities(self) -> Optional[bool]:
+    def has_smarthome_capabilities(self) -> bool | None:
         """Check if the device offers smart home capabilities.
 
         Tries the TR-064 device description first and, if that could not be
@@ -169,8 +172,8 @@ class Fritzhome(object):
     def _aha_request(
         self,
         cmd: str,
-        ain: Optional[str] = None,
-        param: Optional[Mapping[str, Union[str, int]]] = None,
+        ain: str | None = None,
+        param: Mapping[str, str | int] | None = None,
         rf: type[str] = str,
     ) -> str: ...
 
@@ -178,8 +181,8 @@ class Fritzhome(object):
     def _aha_request(
         self,
         cmd: str,
-        ain: Optional[str] = None,
-        param: Optional[Mapping[str, Union[str, int]]] = None,
+        ain: str | None = None,
+        param: Mapping[str, str | int] | None = None,
         rf: type[bool] = bool,
     ) -> bool: ...
 
@@ -187,8 +190,8 @@ class Fritzhome(object):
     def _aha_request(
         self,
         cmd: str,
-        ain: Optional[str] = None,
-        param: Optional[Mapping[str, Union[str, int]]] = None,
+        ain: str | None = None,
+        param: Mapping[str, str | int] | None = None,
         rf: type[int] = int,
     ) -> int: ...
 
@@ -196,18 +199,18 @@ class Fritzhome(object):
     def _aha_request(
         self,
         cmd: str,
-        ain: Optional[str] = None,
-        param: Optional[Mapping[str, Union[str, int]]] = None,
+        ain: str | None = None,
+        param: Mapping[str, str | int] | None = None,
         rf: type[float] = float,
     ) -> float: ...
 
     def _aha_request(
         self,
         cmd: str,
-        ain: Optional[str] = None,
-        param: Optional[Mapping[str, Union[str, int]]] = None,
-        rf: Union[type[str], type[bool], type[int], type[float]] = str,
-    ) -> Union[str, bool, int, float]:
+        ain: str | None = None,
+        param: Mapping[str, str | int] | None = None,
+        rf: type[str] | type[bool] | type[int] | type[float] = str,
+    ) -> str | bool | int | float:
         """Send an AHA request."""
         url = f"{self.base_url}/webservices/homeautoswitch.lua"
 
@@ -216,7 +219,7 @@ class Fritzhome(object):
         if not self._sid:
             raise NotLoggedInError
 
-        params: Dict[str, Union[str, int]] = {"switchcmd": cmd, "sid": self._sid}
+        params: dict[str, str | int] = {"switchcmd": cmd, "sid": self._sid}
         if param:
             for key, value in param.items():
                 params[key] = value
@@ -331,7 +334,7 @@ class Fritzhome(object):
         """Get the DOM elements for the device list."""
         return self._get_listinfo_elements("device")
 
-    def get_device_element(self, ain: str) -> Optional[ElementTree.Element]:
+    def get_device_element(self, ain: str) -> ElementTree.Element | None:
         """Get the DOM element for the specified device."""
         elements = self.get_device_elements()
         for element in elements:
@@ -343,7 +346,7 @@ class Fritzhome(object):
         """Get the list of all known devices."""
         return list(self.get_devices_as_dict().values())
 
-    def get_devices_as_dict(self) -> Dict[str, FritzhomeDevice]:
+    def get_devices_as_dict(self) -> dict[str, FritzhomeDevice]:
         """Get the list of all known devices."""
         if self._devices is None:
             self.update_devices()
@@ -494,7 +497,7 @@ class Fritzhome(object):
 
     def get_colors(
         self, ain: str
-    ) -> dict[str, list[tuple[Optional[str], Optional[str], Optional[str]]]]:
+    ) -> dict[str, list[tuple[str | None, str | None, str | None]]]:
         """Get colors (HSV-space) supported by this lightbulb."""
         colordefaults = self._get_colordefaults(ain)
         colors = {}
@@ -512,7 +515,7 @@ class Fritzhome(object):
     def set_color(
         self,
         ain: str,
-        hsv: Sequence[Union[str, SupportsInt]],
+        hsv: Sequence[str | SupportsInt],
         duration: int = 0,
         mapped: bool = True,
         wait: bool = False,
@@ -534,7 +537,7 @@ class Fritzhome(object):
             self._aha_request("setunmappedcolor", ain=ain, param=params)
         wait and self.wait_device_txbusy(ain)
 
-    def get_color_temps(self, ain: str) -> list[Optional[str]]:
+    def get_color_temps(self, ain: str) -> list[str | None]:
         """Get temperatures supported by this lightbulb."""
         colordefaults = self._get_colordefaults(ain)
         temperatures = []
@@ -545,7 +548,7 @@ class Fritzhome(object):
     def set_color_temp(
         self,
         ain: str,
-        temperature: Union[str, int, float],
+        temperature: str | int | float,
         duration: int = 0,
         wait: bool = False,
     ) -> None:
@@ -625,7 +628,7 @@ class Fritzhome(object):
         """Get the list of all known templates."""
         return list(self.get_templates_as_dict().values())
 
-    def get_templates_as_dict(self) -> Dict[str, FritzhomeTemplate]:
+    def get_templates_as_dict(self) -> dict[str, FritzhomeTemplate]:
         """Get the list of all known templates."""
         if self._templates is None:
             self.update_templates()
@@ -687,7 +690,7 @@ class Fritzhome(object):
         """Get the list of all known triggers."""
         return list(self.get_triggers_as_dict().values())
 
-    def get_triggers_as_dict(self) -> Dict[str, FritzhomeTrigger]:
+    def get_triggers_as_dict(self) -> dict[str, FritzhomeTrigger]:
         """Get all known triggers as dictionary."""
         if self._triggers is None:
             self.update_triggers()

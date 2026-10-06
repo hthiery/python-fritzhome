@@ -1,7 +1,11 @@
 """The light bulb device class."""
 
+from __future__ import annotations
+
+from collections.abc import Sequence
+from typing import SupportsInt
+
 import logging
-from typing import Optional, Sequence, SupportsInt, Union
 from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
@@ -13,14 +17,14 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    state: Optional[bool] = None
-    hue: Optional[int] = None
-    saturation: Optional[int] = None
-    unmapped_hue: Optional[int] = None
-    unmapped_saturation: Optional[int] = None
-    color_temp: Optional[int] = None
-    color_mode: Optional[str] = None
-    supported_color_mode: Optional[str] = None
+    state: bool | None = None
+    hue: int | None = None
+    saturation: int | None = None
+    unmapped_hue: int | None = None
+    unmapped_saturation: int | None = None
+    color_temp: int | None = None
+    color_mode: str | None = None
+    supported_color_mode: str | None = None
     fullcolorsupport: bool = False
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
@@ -116,7 +120,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def get_colors(
         self,
-    ) -> dict[str, list[tuple[Optional[str], Optional[str], Optional[str]]]]:
+    ) -> dict[str, list[tuple[str | None, str | None, str | None]]]:
         """Get the supported colors."""
         if self.has_color:
             return self._fritz.get_colors(self.ain)
@@ -125,7 +129,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def set_color(
         self,
-        hsv: Sequence[Union[str, SupportsInt]],
+        hsv: Sequence[str | SupportsInt],
         duration: int = 0,
         wait: bool = False,
     ) -> None:
@@ -135,7 +139,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def set_unmapped_color(
         self,
-        hsv: Sequence[Union[str, SupportsInt]],
+        hsv: Sequence[str | SupportsInt],
         duration: int = 0,
         wait: bool = False,
     ) -> None:
@@ -143,7 +147,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
         if self.has_color and self.fullcolorsupport:
             self._fritz.set_color(self.ain, hsv, duration, False, wait)
 
-    def get_color_temps(self) -> list[Optional[str]]:
+    def get_color_temps(self) -> list[str | None]:
         """Get the supported color temperatures energy."""
         if self.has_color:
             return self._fritz.get_color_temps(self.ain)
@@ -152,7 +156,7 @@ class FritzhomeDeviceLightBulb(FritzhomeDeviceBase):
 
     def set_color_temp(
         self,
-        temperature: Union[str, int, float],
+        temperature: str | int | float,
         duration: int = 0,
         wait: bool = False,
     ) -> None:

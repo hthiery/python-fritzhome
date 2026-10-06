@@ -1,7 +1,9 @@
 """The powermeter device class."""
 
+from __future__ import annotations
+
 import logging
-from typing import Optional
+
 from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
@@ -13,10 +15,10 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDevicePowermeter(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    power: Optional[int] = None
-    energy: Optional[int] = None
-    voltage: Optional[int] = None
-    current: Optional[float] = None
+    power: int | None = None
+    energy: int | None = None
+    voltage: int | None = None
+    current: float | None = None
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)

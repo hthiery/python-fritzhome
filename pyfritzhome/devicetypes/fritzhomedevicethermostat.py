@@ -1,8 +1,10 @@
 """The thermostat device class."""
 
+from __future__ import annotations
+
 import logging
 import time
-from typing import Optional
+
 from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
@@ -14,23 +16,23 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceThermostat(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    actual_temperature: Optional[float] = None
-    target_temperature: Optional[float] = None
-    eco_temperature: Optional[float] = None
-    comfort_temperature: Optional[float] = None
-    device_lock: Optional[bool] = None
-    lock: Optional[bool] = None
-    error_code: Optional[int] = None
-    window_open: Optional[bool] = None
-    window_open_endtime: Optional[float] = None
-    boost_active: Optional[bool] = None
-    boost_active_endtime: Optional[float] = None
-    adaptive_heating_active: Optional[bool] = None
-    adaptive_heating_running: Optional[bool] = None
-    summer_active: Optional[bool] = None
-    holiday_active: Optional[bool] = None
-    nextchange_endperiod: Optional[int] = None
-    nextchange_temperature: Optional[float] = None
+    actual_temperature: float | None = None
+    target_temperature: float | None = None
+    eco_temperature: float | None = None
+    comfort_temperature: float | None = None
+    device_lock: bool | None = None
+    lock: bool | None = None
+    error_code: int | None = None
+    window_open: bool | None = None
+    window_open_endtime: float | None = None
+    boost_active: bool | None = None
+    boost_active_endtime: float | None = None
+    adaptive_heating_active: bool | None = None
+    adaptive_heating_running: bool | None = None
+    summer_active: bool | None = None
+    holiday_active: bool | None = None
+    nextchange_endperiod: int | None = None
+    nextchange_temperature: float | None = None
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)

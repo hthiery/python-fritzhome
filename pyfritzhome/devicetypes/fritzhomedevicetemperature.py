@@ -1,7 +1,9 @@
 """The temperature device class."""
 
+from __future__ import annotations
+
 import logging
-from typing import Optional
+
 from xml.etree import ElementTree
 
 from .fritzhomedevicebase import FritzhomeDeviceBase
@@ -13,8 +15,8 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeDeviceTemperature(FritzhomeDeviceBase):
     """The Fritzhome Device class."""
 
-    offset: Optional[float] = None
-    temperature: Optional[float] = None
+    offset: float | None = None
+    temperature: float | None = None
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
         super()._update_from_node(node)

@@ -1,7 +1,9 @@
 """The button device class."""
 
+from __future__ import annotations
+
 import logging
-from typing import Optional
+
 
 from xml.etree import ElementTree
 from .fritzhomedevicebase import FritzhomeDeviceBase
@@ -43,12 +45,12 @@ class FritzhomeDeviceButton(FritzhomeDeviceBase):
 class FritzhomeButton(object):
     """The Fritzhome Button Device class."""
 
-    ain: Optional[str] = None
-    identifier: Optional[str] = None
-    name: Optional[str] = None
-    last_pressed: Optional[int] = None
+    ain: str | None = None
+    identifier: str | None = None
+    name: str | None = None
+    last_pressed: int | None = None
 
-    def __init__(self, node: Optional[ElementTree.Element] = None) -> None:
+    def __init__(self, node: ElementTree.Element | None = None) -> None:
         """Create a button object."""
         if node is not None:
             self._update_from_node(node)
@@ -63,17 +65,13 @@ class FritzhomeButton(object):
         except ValueError:
             pass
 
-    def get_node_value(
-        self, elem: Optional[ElementTree.Element], node: str
-    ) -> Optional[str]:
+    def get_node_value(self, elem: ElementTree.Element | None, node: str) -> str | None:
         """Get the node value."""
         if elem is None:
             return None
         return elem.findtext(node)
 
-    def get_node_value_as_int(
-        self, elem: Optional[ElementTree.Element], node: str
-    ) -> int:
+    def get_node_value_as_int(self, elem: ElementTree.Element | None, node: str) -> int:
         """Get the node value as integer."""
         value = self.get_node_value(elem, node)
         if value is None:

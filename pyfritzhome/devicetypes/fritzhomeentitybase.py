@@ -1,9 +1,9 @@
 """The entity base class."""
 
-from __future__ import annotations, print_function
-from abc import ABC
-from typing import TYPE_CHECKING, Optional, cast
+from __future__ import annotations
 
+from abc import ABC
+from typing import TYPE_CHECKING, cast
 
 import logging
 from xml.etree import ElementTree
@@ -25,8 +25,8 @@ class FritzhomeEntityBase(ABC):
 
     def __init__(
         self,
-        fritz: Optional["Fritzhome"] = None,
-        node: Optional[ElementTree.Element] = None,
+        fritz: "Fritzhome" | None = None,
+        node: ElementTree.Element | None = None,
     ) -> None:
         """Create an entity base object."""
         if fritz is not None:
@@ -57,7 +57,7 @@ class FritzhomeEntityBase(ABC):
                 self.supported_features.append(feature)
 
     @property
-    def device_and_unit_id(self) -> tuple[Optional[str], Optional[str]]:
+    def device_and_unit_id(self) -> tuple[str | None, str | None]:
         """Get the device and possible unit id."""
         if (
             self.ain.startswith("tmp")
@@ -73,17 +73,13 @@ class FritzhomeEntityBase(ABC):
 
     # XML Helpers
 
-    def get_node_value(
-        self, elem: Optional[ElementTree.Element], node: str
-    ) -> Optional[str]:
+    def get_node_value(self, elem: ElementTree.Element | None, node: str) -> str | None:
         """Get the node value."""
         if elem is None:
             return None
         return elem.findtext(node)
 
-    def get_node_value_as_int(
-        self, elem: Optional[ElementTree.Element], node: str
-    ) -> int:
+    def get_node_value_as_int(self, elem: ElementTree.Element | None, node: str) -> int:
         """Get the node value as integer."""
         value = self.get_node_value(elem, node)
         if value is None:
@@ -91,14 +87,12 @@ class FritzhomeEntityBase(ABC):
         return int(value)
 
     def get_node_value_as_int_as_bool(
-        self, elem: Optional[ElementTree.Element], node: str
+        self, elem: ElementTree.Element | None, node: str
     ) -> bool:
         """Get the node value as boolean."""
         return bool(self.get_node_value_as_int(elem, node))
 
-    def get_temp_from_node(
-        self, elem: Optional[ElementTree.Element], node: str
-    ) -> float:
+    def get_temp_from_node(self, elem: ElementTree.Element | None, node: str) -> float:
         """Get the node temp value as float."""
         value = self.get_node_value(elem, node)
         if value is None:

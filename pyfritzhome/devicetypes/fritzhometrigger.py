@@ -1,7 +1,9 @@
 """The trigger class."""
 
+from __future__ import annotations
+
 import logging
-from typing import Optional
+
 from xml.etree import ElementTree
 
 from .fritzhomeentitybase import FritzhomeEntityBase
@@ -12,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 class FritzhomeTrigger(FritzhomeEntityBase):
     """The Fritzhome Trigger class."""
 
-    active: Optional[bool] = None
+    active: bool | None = None
 
     def _update_from_node(self, node: ElementTree.Element) -> None:
         _LOGGER.debug("update trigger")

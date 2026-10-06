@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 """A simple CLI tool."""
 
+from __future__ import annotations
 
-from __future__ import print_function
+from collections.abc import Sequence
 import logging
 import argparse
-from typing import Optional, Sequence
+
 
 from pyfritzhome import Fritzhome, __version__
 
@@ -199,7 +200,7 @@ def trigger_set_inactive(fritz: Fritzhome, args: argparse.Namespace) -> None:
     fritz.set_trigger_inactive(args.ain)
 
 
-def main(args: Optional[Sequence[str]] = None) -> None:
+def main(args: Sequence[str] | None = None) -> None:
     """Enter the main function of the CLI tool."""
     parser = argparse.ArgumentParser(description="Fritz!Box Smarthome CLI tool.")
     parser.add_argument(
